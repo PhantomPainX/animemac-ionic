@@ -1,0 +1,187 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Datos del Usuario</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="goBack()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-card *ngIf="consultedUser">
+    <ion-card-header>
+      <ion-avatar style="border: 0.5px solid #bebebe">
+        <img src="{{ domain }}{{consultedUser.user_extra.avatar}}">
+      </ion-avatar>
+      <ion-card-title>{{ consultedUser.username }}</ion-card-title>
+      <ion-card-subtitle>{{ consultedUser.first_name }} {{ consultedUser.last_name }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content style="padding: 0;">
+      <!-- Muestra la información del usuario -->
+      <ion-list>
+
+        <ion-item>
+          <ion-label>
+            <h2>Identificador unico</h2>
+            <p>{{ consultedUser.id }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Nombre de usuario</h2>
+            <p>{{ consultedUser.username }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Nombres</h2>
+            <p>{{ consultedUser.first_name }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Apellidos</h2>
+            <p>{{ consultedUser.last_name }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Correo Electrónico</h2>
+            <p>{{ consultedUser.email }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Cuenta creada con Google</h2>
+            <p *ngIf="consultedUser.created_with_google">Si</p>
+            <p *ngIf="!consultedUser.created_with_google">No</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Administrador</h2>
+            <p *ngIf="consultedUser.is_staff">Si</p>
+            <p *ngIf="!consultedUser.is_staff">No</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Super Usuario (Server Admin)</h2>
+            <p *ngIf="consultedUser.is_superuser">Si</p>
+            <p *ngIf="!consultedUser.is_superuser">No</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Moderador</h2>
+            <p *ngIf="consultedUser.groups.includes('Moderator')">Si</p>
+            <p *ngIf="!consultedUser.groups.includes('Moderator')">No</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Usuario VIP</h2>
+            <p *ngIf="consultedUser.groups.includes('VIP')">Si</p>
+            <p *ngIf="!consultedUser.groups.includes('VIP')">No</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Reportes</h2>
+            <p>Tiene {{ consultedUser.reports }} reportes</p>
+          </ion-label>
+          <ion-button *ngIf="consultedUser.reports > 0" (click)="openReports()" color="primary" slot="end">
+            <ion-icon slot="start" name="newspaper-outline"></ion-icon>
+            Reportes
+          </ion-button>
+        </ion-item>
+
+        <ion-item *ngIf="consultedUser.is_active">
+          <ion-label>
+            <h2>Estado</h2>
+            <p style="color: #0c9500">Activo</p>
+          </ion-label>
+          <ion-button (click)="banUser(consultedUser)" color="danger" slot="end">
+            <ion-icon slot="start" name="ban-outline"></ion-icon>
+            Banear
+          </ion-button>
+        </ion-item>
+
+        <ion-item *ngIf="!consultedUser.is_active">
+          <ion-label>
+            <h2>Estado</h2>
+            <p style="color: #FF0000">Baneado</p>
+          </ion-label>
+          <ion-button (click)="unbanUser(consultedUser)" color="tertiary" slot="end">
+            <ion-icon slot="start" name="key-outline"></ion-icon>
+            Desbanear
+          </ion-button>
+        </ion-item>
+
+        <ion-item-group *ngIf="!consultedUser.is_active">
+          <ion-item-divider>
+            <ion-label>Información del ban</ion-label>
+          </ion-item-divider>
+
+          <ion-item class="textarea_item">
+            <ion-label>
+              <h2>Motivo del ban</h2>
+            </ion-label>
+            <ion-textarea [(ngModel)]="consultedUser.user_extra.ban_reason" [readonly]="true">
+            </ion-textarea>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <h2>Baneado por:</h2>
+              <p>{{ consultedUser.user_extra.ban_admin.username }} - {{ consultedUser.user_extra.ban_admin.email }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <h2>Fecha del ban:</h2>
+              <p>{{ utils.formatDate(consultedUser.user_extra.ban_date) }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-item-group>
+
+        <ion-item>
+          <ion-label>
+            <h2>Fecha de registro</h2>
+            <p>{{ utils.formatDate(consultedUser.date_joined) }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Último inicio de sesión</h2>
+            <p>{{ utils.formatDate(consultedUser.last_login) }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Fecha de última modificación de perfil</h2>
+            <p>{{ utils.formatDate(consultedUser.user_extra.updated_at) }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

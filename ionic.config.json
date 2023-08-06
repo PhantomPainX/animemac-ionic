@@ -1,0 +1,8 @@
+{
+  "name": "AnimeMac",
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
+  "type": "angular"
+}

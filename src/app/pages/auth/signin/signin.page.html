@@ -1,0 +1,68 @@
+<ion-header mode="ios" collapse="fade">
+  <ion-toolbar #toolbar>
+    <ion-buttons slot="end" mode="md">
+      <ion-button color="primary" (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+  <div class="main__wrapper">
+
+    <div class="title">
+      <h1>Iniciar Sesión</h1>
+      <p>Accede a tu cuenta para ver tus animes agregados y utilizar todas las funciones</p>
+    </div>
+
+    <div class="card">
+
+      <form [formGroup]="formLogin" (ngSubmit)="login()">
+  
+        <ion-input fill="outline" shape="round" label="Usuario o Email" label-placement="floating" formControlName="email"></ion-input>
+      
+        <ion-input fill="outline" shape="round" label="Contraseña" label-placement="floating" formControlName="password" type="password"></ion-input>
+
+        <div class="hyperlinks">
+          <ion-button fill="clear" (click)="forgotAccount()">Recuperar cuenta</ion-button>
+        </div>
+
+        <ion-button [disabled]="!formLogin.valid" expand="block"  shape="round" class="login yellowButton" type="submit">Iniciar Sesión</ion-button>
+
+        <div class="division">
+          <div class="hr"></div>
+          <p>o</p>
+          <div class="hr"></div>
+        </div>
+
+        <ion-button *ngIf="userHasBiometricCredentials" class="biometricBtn" expand="block"  shape="round" (click)="biometricLogin()">
+          <ion-icon slot="start" name="finger-print-outline"></ion-icon>
+          <ion-label>Acceder con Biometría</ion-label>
+        </ion-button>
+
+        <ion-button class="googleBtn" expand="block"  shape="round" (click)="googleLogin()">
+          <ion-thumbnail slot="start">
+            <img style="background-color: unset;" src="assets/icon/google_logo.png">
+          </ion-thumbnail>
+          <ion-label>Acceder con Google</ion-label>
+        </ion-button>
+
+        <div class="disclaimer">
+          <p>Si anteriormente usaste un proveedor para crear tu cuenta (ej: Discord), crea una contraseña accediendo a Recuperar Cuenta</p>
+        </div>
+    
+      </form>
+
+      <div class="disclaimer">
+        <p>Al iniciar sesión, aceptas nuestras <a (click)="utils.openSimpleUrl('https://animemac.net/condiciones-del-servicio/')">Condiciones del Servicio</a> y <a (click)="utils.openSimpleUrl('https://animemac.net/politica-de-privacidad/')">Política de Privacidad</a>.</p>
+      </div>
+
+      <!-- <div class="logo_bottom">
+        <img src="assets/icon/dangoanime-icon.png" alt="logo">
+      </div> -->
+    </div>
+
+  </div>
+</ion-content>

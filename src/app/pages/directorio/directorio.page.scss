@@ -1,0 +1,42 @@
+ion-header {
+    ion-title {
+        img {
+            margin-top: 10px;
+        }
+    }
+
+    ion-toolbar {
+        ion-searchbar {
+            padding-bottom: 15px;
+        }
+    }
+}
+
+ion-content {
+
+        // margin: 0 calc(42px - 10px) 0 calc(42px - 4px);
+        // max-height: 100%;
+        // overflow: overlay;
+    
+    .spinner {
+        //ponlo al centro de la pantalla
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    ion-grid {
+
+        // ion-col {
+        //     --ion-grid-column-padding: calc(8px / 2);
+        // }
+        
+        figure {
+
+            figcaption {
+                margin-top: 3px;
+                font-size: 13px;
+            }
+        }
+    }
+}

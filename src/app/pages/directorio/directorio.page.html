@@ -1,0 +1,104 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-title>Directorio</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar mode="ios" #mainSearchbar debounce="500" spellcheck animated placeholder="Escribe el nombre del anime" (ionInput)="search($event)"></ion-searchbar>
+    <ion-progress-bar *ngIf="searching && !firstTime" type="indeterminate" style="--background: transparent !important; border-radius: 50px;"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-content fullscreen scrollEvents="true" [appHideHeader]="header"> -->
+<ion-content fullscreen>
+
+  <!-- <div class="spinner" *ngIf="searching">
+    <ion-spinner name="dots"></ion-spinner>
+  </div> -->
+
+  <ion-grid *ngIf="animes.length != 0" class="anime-grid anime-grid-full">
+    <ion-row>
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" class="animate__animated animate__fadeIn" *ngFor="let anime of animes">
+
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-infinite-scroll #InfiniteScrollSearched (ionInfinite)="loadMoreResults($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+
+  <!-- RANDOM -->
+
+  <ion-toolbar class="animate__animated animate__fadeIn" *ngIf="animes.length == 0 && randomAnimes.length > 0">
+    <ion-title style="padding: 0 10px;">Te podrían interesar</ion-title>
+  </ion-toolbar>
+
+  <ion-grid class="anime-grid anime-grid-full" *ngIf="animes.length == 0 && randomAnimes.length > 0">
+
+    <ion-row>
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" class="animate__animated animate__fadeIn" *ngFor="let anime of randomAnimes">
+
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <ion-toolbar *ngIf="animes.length == 0 && firstTime">
+    <ion-skeleton-text animated *ngIf="firstTime" style="width: 50%; border-radius: 10px; height: 15px; margin: 0 0 0 10px;"></ion-skeleton-text>
+  </ion-toolbar>
+
+  <ion-grid class="anime-grid anime-grid-full" *ngIf="firstTime">
+    <ion-row>
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let item of [].constructor(16); let i = index">
+        <ion-card class="anime-grid-card">
+          <figure>
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-skeleton-text style="width: 80%; border-radius: 10px;"></ion-skeleton-text>
+              <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-infinite-scroll #InfiniteScrollRandom (ionInfinite)="loadMoreRandomAnimes($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+
+</ion-content>

@@ -1,0 +1,37 @@
+.main__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+    height: 100%;
+
+    h1 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 15px;
+
+        img {
+            width: 100px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+        .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    ion-progress-bar {
+        height: 10px;
+        border-radius: 50px;
+    }
+}

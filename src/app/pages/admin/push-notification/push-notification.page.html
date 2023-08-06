@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Notificación Push Global</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="/admin" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Notificación Push</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="pushForm" (ngSubmit)="onSubmit()">
+        <ion-item fill="outline">
+          <ion-label position="floating">Título</ion-label>
+          <ion-input formControlName="title"></ion-input>
+        </ion-item>
+  
+        <ion-item fill="outline">
+          <ion-label position="floating">Mensaje</ion-label>
+          <ion-input formControlName="message"></ion-input>
+        </ion-item>
+
+        <ion-item fill="outline">
+          <ion-label position="floating">Imagen</ion-label>
+          <ion-input formControlName="image"></ion-input>
+        </ion-item>
+  
+        <!-- create an item with key and value -->
+  
+        <ion-button [disabled]="!pushForm.valid" shape="round" expand="block" type="submit">Enviar Notificación</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

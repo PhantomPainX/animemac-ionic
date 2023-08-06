@@ -1,0 +1,454 @@
+<ion-header #header class="ion-no-border">
+  <ion-toolbar #toolbar>
+
+    <ion-buttons slot="primary">
+      <ion-button shape="round" (click)="openOptions()">
+        <div class="avatar_button">
+          <img *ngIf="!isLogged" src="assets/icon/avatar.svg" />
+          <img *ngIf="isLogged" src="{{ profileImage }}" />
+        </div>
+      </ion-button>
+      <!-- <ion-button (click)="changeTheme()">
+        <ion-icon slot="icon-only" name="color-fill-outline"></ion-icon>
+      </ion-button> -->
+    </ion-buttons>
+
+    <div class="header-bar" align-title=”center”>
+        <img style="width: 40px; border-radius: 10px;" src="assets/icon/AnimeMacLogo.png">
+        <h4>AnimeMac</h4>
+    </div>
+    
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content fullscreen>
+
+  <!-- Continuar viendo -->
+  <ion-toolbar class="animate__animated animate__fadeIn" style="--background: transparent; background: transparent;" *ngIf="nextToSee != undefined">
+    <ion-title>Continuar viendo</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button [disabled]="fetchingNextToSee" shape="round" color="primary" (click)="obtainNextToSee()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <swiper-container 
+  [initialSlide]="0"
+  [speed]="600"
+  [breakpoints]="nextToSeeSwiperBreakpoints"
+   class="animate__animated animate__fadeIn" style="margin-left: 15px;" *ngIf="nextToSee != undefined">
+    <swiper-slide *ngFor="let episode of nextToSee" (click)="openProviders($event, episode)" (press)="openEpisodeOptions(episode)">
+      <div class="nextToSeeCard ion-activatable ripple-parent rounded-rectangle" style="background: {{episode.color?.hex}}">
+        <ion-ripple-effect></ion-ripple-effect>
+
+        <div class="image">
+          <img defaultImage="{{ domain }}{{ episode.anime.image_thumbnail }}" lazyLoad="{{ episode.anime.imagen }}">
+        </div>
+        <div class="info">
+          <div class="title">
+            <h4 *ngIf="episode.color?.isDark" style="color: #ffffff">Episodio {{ episode.numero }}</h4>
+            <h4 *ngIf="!episode.color?.isDark" style="color: #000000">Episodio {{ episode.numero }}</h4>
+          </div>
+          
+          <div class="description">
+            <p *ngIf="episode.color?.isDark" style="color: #ffffff">{{episode.anime.nombre}}</p>
+            <p *ngIf="!episode.color?.isDark" style="color: #000000">{{episode.anime.nombre}}</p>
+          </div>
+          <p style="padding-top: 4px; color: #ffffff" *ngIf="episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+            <p style="padding-top: 4px; color: #000000" *ngIf="!episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+        </div>
+        <div class="playIcon">
+          <ion-icon size="large" name="play-outline" *ngIf="episode.color?.isDark" style="color: #ffffff"></ion-icon>
+          <ion-icon size="large" name="play-outline" *ngIf="!episode.color?.isDark" style="color: #000000"></ion-icon>
+        </div>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <!-- En Emisión -->
+
+  <ion-toolbar class="animate__animated animate__fadeIn" style="--background: transparent; background: transparent;" *ngIf="inBroadcast != undefined">
+    <ion-title>En Emisión</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button shape="round" color="primary" (click)="seeMore('in-broadcast')">
+        Ver Más
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="obtainInBroadcast()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent; background: transparent;" *ngIf="inBroadcast == undefined">
+    <ion-title><ion-skeleton-text animated style="width: 70%; height: 20px; border-radius: 10px;"></ion-skeleton-text></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text animated style="width: 50px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+      <ion-button>
+        <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <swiper-container 
+  initialSlide="0" 
+  speed="600" 
+  [autoplay]="autoplaySwiperOptions"
+  autoplay="true"
+  autoheight="true"
+  [breakpoints]="animeSwiperBreakpoints" 
+  #swiperContainerBroadcast
+  class="animate__animated animate__fadeIn" style="margin-left: 15px;" *ngIf="inBroadcast != undefined">
+    <swiper-slide *ngFor="let anime of inBroadcast" (click)="openAnimeOptions(anime)">
+      <div class="animeCard ion-activatable ripple-parent rounded-rectangle">
+        <ion-ripple-effect></ion-ripple-effect>
+
+        <div class="image">
+          <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+        </div>
+        <div class="info">
+          <div class="title">
+            <h4>{{ anime.nombre }}</h4>
+          </div>
+          <p>{{anime.tipo}} • {{anime.estreno}}</p>
+
+          <div class="description">
+            <p>{{ anime.sinopsis }}</p>
+          </div>
+        </div>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <swiper-container 
+  [initialSlide]="0"
+  [speed]="600"
+  [breakpoints]="animeSwiperBreakpoints"
+  style="margin-left: 15px;" *ngIf="inBroadcast == undefined">
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <!-- Últimos Episodios -->
+
+  <ion-toolbar #ultimosEpisodios class="animate__animated animate__fadeIn" style="--background: transparent" *ngIf="latestEpisodes != undefined">
+    <ion-title>Últimos Episodios</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button shape="round" color="primary" (click)="seeMore('latest-episodes')">
+        Ver Más
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="obtainLatestEpisodes()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent" *ngIf="latestEpisodes == undefined">
+    <ion-title><ion-skeleton-text animated style="width: 70%; height: 20px; border-radius: 10px;"></ion-skeleton-text></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text animated style="width: 50px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+      <ion-button>
+        <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-list *ngIf="latestEpisodes != undefined" class="animate__animated animate__fadeIn">
+    <ion-item lines="inset" *ngFor="let episode of latestEpisodes" style="margin-bottom: 10px">
+      <ion-thumbnail slot="start" style="border-radius: 10px">
+        <img defaultImage="{{ domain }}{{ episode.anime.image_thumbnail }}" lazyLoad="{{ episode.anime.imagen }}">
+      </ion-thumbnail>
+      <ion-label>
+        <h4>{{ episode.anime.nombre }}</h4>
+        <h6>Episodio {{ episode.numero }}</h6>
+        <p>{{ utils.dateAgo(episode.fecha) }}</p>
+        <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+      </ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button shape="round" color="primary" (click)="openProviders($event, episode)">
+          <ion-icon name="play"></ion-icon>
+        </ion-button>
+
+        <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="latestEpisodes == undefined">
+    <ion-item lines="inset" detail="false" *ngFor="let item of [].constructor(10); let i = index">
+      <ion-buttons slot="end">
+
+        <ion-button>
+          <ion-skeleton-text animated style="width: 15px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+
+        <ion-button>
+          <ion-skeleton-text animated style="width: 15px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated style="width: 100%; border-radius: 5px;"></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 100%; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%; border-radius: 10px;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Últimos en Japonés -->
+
+  <ion-toolbar style="--background: transparent" *ngIf="latestAnimes != undefined" class="animate__animated animate__fadeIn">
+    <ion-title>Últimos en Japonés</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button shape="round" color="primary" (click)="seeMore('japanese')">
+        Ver Más
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="obtainLatestAnimes();">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent" *ngIf="latestAnimes == undefined">
+    <ion-title><ion-skeleton-text animated style="width: 70%; height: 20px; border-radius: 10px;"></ion-skeleton-text></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text animated style="width: 50px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+      <ion-button>
+        <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <swiper-container 
+  [initialSlide]="0" 
+  speed="600" 
+  [autoplay]="autoplaySwiperOptions"
+  autoplay="true"
+  autoheight="true"
+  [breakpoints]="animeSwiperBreakpoints" 
+  #swiperContainerLatestAnimes
+  style="margin-left: 15px;" *ngIf="latestAnimes != undefined" class="animate__animated animate__fadeIn">
+    <swiper-slide *ngFor="let anime of latestAnimes" (click)="openAnimeOptions(anime)">
+      <div class="animeCard ion-activatable ripple-parent rounded-rectangle">
+        <ion-ripple-effect></ion-ripple-effect>
+
+        <div class="image">
+          <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+        </div>
+        <div class="info">
+          <div class="title">
+            <h4>{{ anime.nombre }}</h4>
+          </div>
+          <p>{{anime.tipo}} • {{anime.estreno}} • {{ anime.estado }}</p>
+
+          <div class="description">
+            <p>{{ anime.sinopsis }}</p>
+          </div>
+        </div>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <swiper-container 
+  [initialSlide]="0"
+  [speed]="600"
+  [breakpoints]="animeSwiperBreakpoints"
+  style="margin-left: 15px;" *ngIf="latestAnimes == undefined">
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+    <swiper-slide>
+      <div class="animeCard">
+        <ion-skeleton-text animated style="width: 100%; height: 140px;"></ion-skeleton-text>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <!-- Últimos en Latino -->
+
+  <ion-toolbar style="--background: transparent" class="animate__animated animate__fadeIn" *ngIf="latestLatino != undefined">
+    <ion-title>Animes en Latino</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button shape="round" color="primary" (click)="seeMore('latin')">
+        Ver Más
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="obtainLatestLatino()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent" *ngIf="latestLatino == undefined">
+    <ion-title><ion-skeleton-text animated style="width: 70%; height: 20px; border-radius: 10px;"></ion-skeleton-text></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text animated style="width: 50px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+      <ion-button>
+        <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-grid class="anime-grid" *ngIf="latestLatino != undefined">
+    <ion-row>
+      <ion-col class="animate__animated animate__fadeIn" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let anime of latestLatino">
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="anime-grid" *ngIf="latestLatino == undefined">
+
+    <ion-row>
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let item of [].constructor(16); let i = index">
+
+          <ion-card class="anime-grid-card">
+            <figure>
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </figure>
+            <ion-card-header>
+              <div class="title">
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </div>
+            </ion-card-header>
+          </ion-card>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+  <!-- Series -->
+
+  <ion-toolbar style="--background: transparent" class="animate__animated animate__fadeIn" *ngIf="latestSeries != undefined">
+    <ion-title>Series</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button shape="round" color="primary" (click)="seeMore('series')">
+        Ver Más
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="obtainLatestSeries()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent" *ngIf="latestSeries == undefined">
+    <ion-title><ion-skeleton-text animated style="width: 70%; height: 20px;"></ion-skeleton-text></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text animated style="width: 50px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+      <ion-button>
+        <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-grid class="anime-grid" *ngIf="latestLatino != undefined">
+    <ion-row>
+      <ion-col class="animate__animated animate__fadeIn" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let anime of latestSeries">
+
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="anime-grid" *ngIf="latestSeries == undefined">
+
+    <ion-row>
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let item of [].constructor(16); let i = index">
+
+          <ion-card class="anime-grid-card">
+            <figure>
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </figure>
+            <ion-card-header>
+              <div class="title">
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </div>
+            </ion-card-header>
+          </ion-card>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

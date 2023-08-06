@@ -1,0 +1,16 @@
+<ion-content>
+
+  <div class="main__wrapper">
+    <div class="header">
+      <img style="background-color: unset;" src="{{ imagePath }}" alt="{{ title }}">
+      <h1>{{ title }}</h1>
+    </div>
+    <div class="content">
+      <p>{{ message }}</p>
+    </div>
+    <div class="buttons">
+      <ion-button expand="block" shape="round" color="primary" (click)="dismiss()">{{ buttonText }}</ion-button>
+    </div>
+  </div>
+
+</ion-content>

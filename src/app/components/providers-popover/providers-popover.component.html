@@ -1,0 +1,149 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item lines="none" style="--background: transparent;">
+      <ion-thumbnail slot="start" style="margin: 0px 8px 0px 0; --border-radius: 10px;">
+        <img src="{{ animeImage }}" />
+      </ion-thumbnail>
+      <ion-label>
+        <h1 style="font-size: larger;
+        font-weight: 600;">Proveedores</h1>
+        <h2>{{ animeName }}</h2>
+        <p>Episodio {{ episode?.numero }}</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" color="primary">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list style="padding: 0;">
+    
+    <ion-item lines="full" *ngIf="animemacAvailable && !fetchingAnimemac" button detail="true" (click)="openEmbedsPopover($event, 'animemac')">
+      <ion-label>
+        <h2>AnimeMac</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item lines="full" disabled button *ngIf="!animemacAvailable && fetchingAnimemac">
+      <ion-label>
+        <h2>AnimeMac</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+      <ion-spinner slot="end" name="dots"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button detail="true" *ngIf="!animemacAvailable && !fetchingAnimemac">
+      <ion-label>
+        <h2>AnimeMac</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+    </ion-item>
+
+
+
+
+    <!--DESACTIVADO, ARREGLAR MÁS TARDE PARA ANDROID (EN IOS NO SIRVE)-->
+    <!-- <ion-item lines="full" [disabled]="!animeuiAvailable" *ngIf="animeuiAvailable && !fetchingAnimeui && aditionalProviders" button detail="true" (click)="openEmbedsPopover($event, 'animeui')">
+      <ion-label>
+        <h2>AnimeUI</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+      <ion-spinner *ngIf="!animeuiAvailable && fetchingAnimeui" name="dots" style="margin-right: 10px;"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button *ngIf="!animeuiAvailable && fetchingAnimeui && aditionalProviders">
+      <ion-label>
+        <h2>AnimeUI</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+      <ion-spinner name="dots"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button detail="true" *ngIf="!animeuiAvailable && !fetchingAnimeui && aditionalProviders">
+      <ion-label>
+        <h2>AnimeUI</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+    </ion-item> -->
+
+
+
+    <ion-item lines="full" [disabled]="!animeflvAvailable" *ngIf="animeflvAvailable && !fetchingAnimeflv && aditionalProviders" button detail="true" (click)="openEmbedsPopover($event, 'animeflv')">
+      <ion-label>
+        <h2>AnimeFLV</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+      <ion-spinner *ngIf="!animeflvAvailable && fetchingAnimeflv" name="dots" style="margin-right: 10px;"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button *ngIf="!animeflvAvailable && fetchingAnimeflv && aditionalProviders">
+      <ion-label>
+        <h2>AnimeFLV</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+      <ion-spinner name="dots"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button detail="true" *ngIf="!animeflvAvailable && !fetchingAnimeflv && aditionalProviders">
+      <ion-label>
+        <h2>AnimeFLV</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+    </ion-item>
+
+
+
+    <ion-item lines="full" [disabled]="!animemeowAvailable" *ngIf="animemeowAvailable && !fetchingAnimemeow && aditionalProviders" button detail="true" (click)="openEmbedsPopover($event, 'animemeow')">
+      <ion-label>
+        <h2>AnimeMeow</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+      <ion-spinner *ngIf="!animeflvAvailable && fetchingAnimemeow" name="dots" style="margin-right: 10px;"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button *ngIf="!animemeowAvailable && fetchingAnimemeow && aditionalProviders">
+      <ion-label>
+        <h2>AnimeMeow</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+      <ion-spinner name="dots"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button detail="true" *ngIf="!animemeowAvailable && !fetchingAnimemeow && aditionalProviders">
+      <ion-label>
+        <h2>AnimeMeow</h2>
+        <p>Calidad máxima 720p</p>
+      </ion-label>
+    </ion-item>
+
+
+    <ion-item lines="full" [disabled]="!animefenixAvailable" *ngIf="animefenixAvailable && !fetchingAnimefenix && aditionalProviders" button detail="true" (click)="openEmbedsPopover($event, 'animefenix')">
+      <ion-label>
+        <h2>AnimeFenix</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+      <ion-spinner *ngIf="!animefenixAvailable && fetchingAnimefenix && aditionalProviders" name="dots" style="margin-right: 10px;"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button *ngIf="!animefenixAvailable && fetchingAnimefenix && aditionalProviders">
+      <ion-label>
+        <h2>AnimeFenix</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+      <ion-spinner name="dots"></ion-spinner>
+    </ion-item>
+
+    <ion-item lines="full" disabled button detail="true" *ngIf="!animefenixAvailable && !fetchingAnimefenix && aditionalProviders">
+      <ion-label>
+        <h2>AnimeFenix</h2>
+        <p>Calidad máxima 1080p</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

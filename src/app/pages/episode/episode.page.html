@@ -1,0 +1,160 @@
+<ion-header #header>
+
+  <ion-toolbar #toolbar>
+    <ion-item lines="none" style="--background: transparent;">
+      <ion-thumbnail slot="start">
+        <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ anime.nombre }}</h2>
+        <p>Episodios {{ totalEpisodes }}</p>
+      </ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button shape="round" color="primary" [disabled]="searchedEpisode.length == 0 || searchedEpisode.length == 1" (click)="openSortPopover($event)">
+          <ion-icon *ngIf="sortName == 'ultimos'" slot="start" name="chevron-down-outline"></ion-icon>
+          <ion-icon *ngIf="sortName == 'antiguos'" slot="start" name="chevron-up-outline"></ion-icon>
+          Orden
+        </ion-button>
+
+        <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+          <ng-template>
+            <ion-item lines="full" button (click)="sort('ultimos')" [disabled]="sortName == 'ultimos'">
+              <ion-label>Más recientes</ion-label>
+              <ion-checkbox slot="end" [checked]="sortName == 'ultimos'"></ion-checkbox>
+            </ion-item>
+            <ion-item lines="full" button (click)="sort('antiguos')" [disabled]="sortName == 'antiguos'">
+              <ion-label>Menos recientes</ion-label>
+              <ion-checkbox slot="end" [checked]="sortName == 'antiguos'"></ion-checkbox>
+            </ion-item>
+          </ng-template>
+        </ion-popover>
+
+        <ion-button color="primary" (click)="close()">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar [value]="searchBarValue" [disabled]="anime.episodios.length < 4" mode="ios" inputmode="numeric" type="number" placeholder="Número del episodio" (ionInput)="search($any($event.target).value)"></ion-searchbar>
+    <ion-buttons slot="end" style="padding-bottom: 15px;">
+
+      <ion-button (click)="openAutoplayPopover($event)">
+        <ion-icon style="color: rgb(0, 165, 0);" slot="icon-only" name="infinite-outline" *ngIf="autoplay"></ion-icon>
+        <ion-icon style="color: rgb(255, 32, 32);" slot="icon-only" name="infinite-outline" *ngIf="!autoplay"></ion-icon>
+      </ion-button>
+
+      <ion-popover #autoplayPopover [isOpen]="isAutoplayPopoverOpened" (didDismiss)="isAutoplayPopoverOpened = false">
+        <ng-template>
+          <ion-item lines="full">
+            <ion-checkbox label-placement="start" [checked]="autoplay" (ionChange)="autoplaySet()">Autoplay</ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+
+      <ion-button [disabled]="anime.episodios.length == 1" color="primary" (click)="setTestAutoplayPreferences()" (press)="randomEpisodeNotSeen()">
+        <ion-icon slot="icon-only" name="shuffle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="false">
+
+  <cdk-virtual-scroll-viewport itemSize="86" minBufferPx="900" maxBufferPx="1350" *ngIf="!checkingEpisodes">
+
+    <ion-list style="padding: 0;">
+      <ion-item lines="full" class="animate__animated animate__fadeIn animate__faster" detail="false" *cdkVirtualFor="let episode of searchedEpisode">
+        <ion-buttons slot="end">
+  
+          <!-- <ion-button shape="round" color="primary" *ngIf="isLogged && episode.seen == null">
+            <ion-spinner name="crescent"></ion-spinner>
+          </ion-button>
+  
+          <ion-button [disabled]="isLogged && episode.seen == null" shape="round" color="primary" *ngIf="(isLogged && !checkingEpisodes && episode.seen) && episode.seen != null" (click)="toggleEpisode(episode)">
+            <ion-icon name="eye"></ion-icon>
+          </ion-button>
+  
+          <ion-button [disabled]="isLogged && episode.seen == null" shape="round" color="primary" *ngIf="(isLogged && !checkingEpisodes && !episode.seen) && episode.seen != null" (click)="toggleEpisode(episode)">
+            <ion-icon name="eye-outline"></ion-icon>
+          </ion-button> -->
+  
+          <!-- <ion-button shape="round" color="primary" *ngIf="isLogged && episode.seen == null">
+            <ion-spinner name="crescent"></ion-spinner>
+          </ion-button> -->
+  
+          <ion-button [disabled]="isLogged && episode.seen == null" shape="round" color="primary" *ngIf="(isLogged && !checkingEpisodes && episode.seen)" (click)="toggleEpisode(episode)">
+            <ion-icon name="eye"></ion-icon>
+          </ion-button>
+  
+          <ion-button [disabled]="isLogged && episode.seen == null" shape="round" color="primary" *ngIf="(isLogged && !checkingEpisodes && !episode.seen)" (click)="toggleEpisode(episode)">
+            <ion-icon name="eye-outline"></ion-icon>
+          </ion-button>
+  
+          <ion-button shape="round" color="primary" (click)="openProviders($event, episode)">
+            <ion-icon name="play-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+  
+        <ion-label *ngIf="episode.ep_nombre">
+          <h2>({{episode.numero}}) | T{{episode.temporada}} {{episode.ep_nombre}}</h2>
+          <p>{{ utils.dateAgo(episode.fecha) }}</p>
+          <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+        </ion-label>
+        <ion-label *ngIf="!episode.ep_nombre">
+          <h2>Episodio {{episode.numero}}</h2>
+          <p>{{ utils.dateAgo(episode.fecha) }}</p>
+          <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+  </cdk-virtual-scroll-viewport>
+
+  <ion-list *ngIf="checkingEpisodes">
+    <ion-item detail="false" *ngFor="let item of [].constructor(16); let i = index">
+      <ion-buttons slot="end">
+
+        <ion-button>
+          <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+
+        <ion-button>
+          <ion-skeleton-text animated style="width: 30px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%; border-radius: 10px;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer  *ngIf="isLogged && !checkingEpisodes && nextToSee != null">
+
+  <ion-item lines="full" class="nextToSeeItem">
+    <ion-label style="margin: 0;">
+      <h2 *ngIf="nextToSee.numero > 1">Seguir viendo episodio {{ nextToSee.numero }}</h2>
+      <h2 *ngIf="nextToSee.numero == 1">Ver episodio {{ nextToSee.numero }}</h2>
+    </ion-label>
+
+    <ion-buttons slot="end">
+      <ion-button shape="round" color="primary" (click)="openEpisodeOptions(nextToSee)">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+      <ion-button shape="round" color="primary" (click)="openProviders($event, nextToSee)">
+        <ion-icon name="play-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-item>
+
+</ion-footer>

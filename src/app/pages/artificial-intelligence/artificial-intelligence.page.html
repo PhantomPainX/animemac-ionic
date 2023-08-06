@@ -1,0 +1,183 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>GPT-3.5 Turbo</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tablinks/home" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button shape="round" (click)="openAiPopover($event)" [disabled]="gettingData || gettingWsMessage">
+        <ion-icon name="hardware-chip-outline"></ion-icon>
+      </ion-button>
+      <ion-popover #aiPopover [isOpen]="isAiPopoverOpened" (didDismiss)="isAiPopoverOpened = false">
+        <ng-template>
+          <ion-item button lines="full" detail="true" (click)="openAI('resume_no_spoilers')">
+            <ion-label>Resumen sin spoilers</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('resume')">
+            <ion-label>Resumen con spoilers</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('interesting_facts')">
+            <ion-label>Curiosidades</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('characters')">
+            <ion-label>Personajes</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('staff')">
+            <ion-label>Staff</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('relevant_episodes')">
+            <ion-label>Episodios relevantes</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('recommendations')">
+            <ion-label>Recomendaciones basadas en el anime</ion-label>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main__wrapper">
+
+    <!--Titulo-->
+    <div class="titles animate__animated animate__fadeIn animate__faster" *ngIf="!gettingData">
+      <div class="text">
+        <h1>
+          {{ title }}
+        </h1>
+        <h4>
+          {{ anime_name }}
+        </h4>
+      </div>
+
+      <div class="image">
+        <img src="{{ image }}" alt="{{ anime_name }}">
+      </div>
+    </div>
+
+    <!--Resumenes-->
+    <div class="resume animate__animated animate__fadeIn animate__faster" *ngIf="(type == 'resume_no_spoilers' || type == 'resume') && !gettingData">
+      <p *ngIf="!waitingWsChunkResponse">{{ resume }}</p>
+      <ion-spinner style="margin-top: 16px;" name="dots" *ngIf="waitingWsChunkResponse"></ion-spinner>
+      <p class="animate__animated animate__fadeIn animate__faster" *ngIf="wsConnectionEnded">La conexión con el servidor de websockets ha terminado.</p>
+    </div>
+
+    <!--Curiosidades-->
+    <div class="" mode="ios" *ngIf="type == 'interesting_facts' && !gettingData">
+      <ion-card style="margin: 15px 0" *ngFor="let fact of interestingFacts; let i = index">
+        <ion-card-header>
+          <ion-card-subtitle>Curiosidad #{{i+1}}</ion-card-subtitle>
+          <ion-card-title>{{ fact.nombre }}</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          {{ fact.descripcion }}
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!--Personajes-->
+    <div class="characters" mode="ios" *ngIf="type == 'characters' && !gettingData">
+      <ion-card style="margin: 15px 0" *ngFor="let char of characters; let i = index">
+        <ion-card-header>
+          <div class="text">
+            <ion-card-title>{{ char.nombre }}</ion-card-title>
+            <p>Edad: {{ char.edad }}</p>
+            <p>Genero: {{ char.genero }}</p>
+            <p>Ocupación: {{ char.ocupacion }}</p>
+          </div>
+          <div class="image">
+            <img src="{{ char.imagen }}" alt="">
+          </div>
+        </ion-card-header>
+      
+        <ion-card-content>
+        {{ char.descripcion }}
+        </ion-card-content>
+
+        <ion-button fill="clear" (click)="search(char.nombre)">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          Buscar personaje
+        </ion-button>
+      </ion-card>
+    </div>
+
+    <!--Staff-->
+    <div class="staff" mode="ios" *ngIf="type == 'staff' && !gettingData">
+      <ion-card style="margin: 15px 0" *ngFor="let char of staff; let i = index">
+        <ion-card-header>
+          <ion-card-title>{{ char.nombre }}</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          <p>Edad: {{ char.edad }}</p>
+          <p>Genero: {{ char.genero }}</p>
+          <p>Ocupación: {{ char.ocupacion }}</p>
+        </ion-card-content>
+        <ion-button fill="clear" (click)="search(char.nombre)">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          Buscar staff
+        </ion-button>
+      </ion-card>
+    </div>
+
+    <!--Episodios Relevantes-->
+    <div class="" mode="ios" *ngIf="type == 'relevant_episodes' && !gettingData">
+      <ion-card style="margin: 15px 0" *ngFor="let ep of relevantEpisodes; let i = index">
+        <ion-card-header>
+          <ion-card-subtitle>Episodio relevante #{{i+1}}</ion-card-subtitle>
+          <ion-card-title>{{ ep.nombre }}</ion-card-title>
+          <p>Numero: {{ ep.numero }}</p>
+          <p>Minuto más interesante: {{ ep.minuto_mas_interesante }}</p>
+        </ion-card-header>
+      
+        <ion-card-content>
+          {{ ep.descripcion }}
+        </ion-card-content>
+        <ion-button fill="clear" (click)="openEpisodes(ep.numero)">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          Buscar episodio {{ ep.numero }}
+        </ion-button>
+      </ion-card>
+    </div>
+
+    <!--Recomendaciones-->
+    <div class="" mode="ios" *ngIf="type == 'recommendations' && !gettingData">
+      <ion-card style="margin: 15px 0" *ngFor="let re of recommendations; let i = index">
+        <ion-card-header>
+          <ion-card-title>{{ re.nombre }}</ion-card-title>
+          <p>Fecha de emisión: {{ re.fecha_emision }}</p>
+          <p>Tiene {{ re.total_episodios }} episodios</p>
+        </ion-card-header>
+      
+        <ion-card-content>
+          {{ re.breve_descripcion }}
+        </ion-card-content>
+        <ion-button fill="clear" (click)="findAnime(re.nombre)">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          Buscar anime
+        </ion-button>
+      </ion-card>
+    </div>
+
+    <p class="animate__animated animate__fadeIn animate__faster" *ngIf="error != ''">{{ error }}</p>
+    <!--Loader-->
+    <div class="loader animate__animated animate__fadeIn animate__faster" *ngIf="gettingData">
+        <div class="image">
+          <img src="assets/icon/wave.gif" alt="">
+        </div>
+
+        <div class="text">
+          <h3>Generando una respuesta...</h3>
+          <p>Han pasado {{ seconds }} segundos</p>
+          <p *ngIf="showFact">Sabías que...</p>
+          <p *ngIf="showFact" class="animate__animated animate__fadeIn animate__faster">{{ fact }}</p>
+        </div>
+    </div>
+
+  </div>
+
+</ion-content>

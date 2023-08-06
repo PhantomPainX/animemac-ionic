@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Reportes de {{ consultedUser?.username }}</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="goBack()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher *ngIf="reports != null" slot="fixed" (ionRefresh)="toggleRefreshReports($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card *ngFor="let r of reports">
+
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img src="{{ domain }}{{ r.reporter_user.user_extra.avatar }}">
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ r.reporter_user.username }}</h2>
+        <p>{{ utils.formatDate(r.created_at) }}</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-card-content>
+      <p><strong>Razón:</strong> {{ r?.reason }}</p>
+    </ion-card-content>
+
+  </ion-card>
+
+  <ion-infinite-scroll *ngIf="reports != null" (ionInfinite)="loadMoreReports($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="center" *ngIf="reports == null">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+</ion-content>

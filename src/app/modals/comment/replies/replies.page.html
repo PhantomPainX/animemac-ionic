@@ -1,0 +1,200 @@
+<ion-header>
+  <ion-toolbar lines="none">
+    <ion-title>Respuestas</ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-buttons slot="end">
+        <ion-button shape="round" [disabled]="fetchingReplies || replies < 1" (click)="openSortPopover($event)" color="primary">
+          <ion-icon slot="start" name="filter-outline"></ion-icon>
+          Orden
+        </ion-button>
+      </ion-buttons>
+  
+      <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+        <ng-template>
+          <ion-item lines="full" button (click)="sort('-created_at')" [disabled]="sortName == '-created_at'">
+            <ion-label>Más recientes</ion-label>
+            <ion-checkbox slot="end" [checked]="sortName == '-created_at'"></ion-checkbox>
+          </ion-item>
+          <ion-item lines="full" button (click)="sort('created_at')" [disabled]="sortName == 'created_at'">
+            <ion-label>Menos recientes</ion-label>
+            <ion-checkbox slot="end" [checked]="sortName == 'created_at'"></ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+
+      <ion-button color="primary" (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-progress-bar *ngIf="fetchingReplies && !updatingReplies && !firstSearch" type="indeterminate" style="--background: transparent !important; border-radius: 50px;"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-refresher slot="fixed" (ionRefresh)="toggleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card class="main_comment_card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img src="{{ domain }}{{ comment.user.user_extra.avatar }}">
+      </ion-avatar>
+      <ion-label>
+        <h2 *ngIf="comment.user.is_active">{{ comment.user.username }}</h2>
+        <h2 *ngIf="!comment.user.is_active">{{ comment.user.username }} <span style="color: #c23400">(Baneado)</span></h2>
+        <p style="color: rgb(0, 205, 161)" *ngIf="comment.user.groups.includes('Moderator') && !comment.user.is_staff && !comment.user.is_superuser">Mod</p>
+        <p style="color: #f0b400" *ngIf="comment.user.groups.includes('VIP') && !comment.user.groups.includes('Moderator') && !comment.user.is_staff && !comment.user.is_superuser ">VIP</p>
+        <p style="color: rgb(0, 140, 255)" *ngIf="comment.user.is_staff && !comment.user.is_superuser">Admin</p>
+        <p style="color: rgb(255, 77, 0)" *ngIf="comment.user.is_superuser">Super Admin</p>
+        <p>{{ utils.dateAgo(comment.created_at) }}</p>
+      </ion-label>
+
+      <ion-buttons slot="end" *ngIf="isLogged && (user.is_staff || user.groups.moderator)">
+        <ion-button shape="round" (click)="openModeration(comment)" fill="clear" color="primary">
+          <ion-icon name="shield-half-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+
+    <ion-card-content>
+
+      <p style="color: #c23400" *ngIf="!comment.user.is_active">
+        [ Este comentario esta oculto porque el usuario ha sido baneado ]
+      </p>
+
+      <p style="color: #cd8c00" *ngIf="(comment.reports == 2 || comment.reports == 3 || comment.reports == 4) && comment.user.is_active" (click)="uncensorReply(comment)">
+        [ Comentario con {{ comment.reports }} denuncias, clic si quieres verlo igualmente ]
+      </p>
+
+      <p style="color: #c23400" *ngIf="comment.reports >= 5 && comment.user.is_active" (click)="showDeletedReply(comment)">[ Este comentario ha sido eliminado por muchas denuncias ]</p>
+
+      <p *ngIf="(comment.reports == 0 || comment.reports == 1) && comment.user.is_active">{{ comment.comment }}</p>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list style="background: transparent" *ngIf="replies.length > 0">
+    <ion-card *ngFor="let reply of replies" class="animate__animated animate__fadeIn animate__faster">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="{{ domain }}{{ reply.user.user_extra.avatar }}">
+        </ion-avatar>
+        <ion-label>
+          <h2 *ngIf="reply.user.is_active">{{ reply.user.username }}</h2>
+          <h2 *ngIf="!reply.user.is_active">{{ reply.user.username }} <span style="color: #c23400">(Baneado)</span></h2>
+          <p style="color: rgb(0, 205, 161)" *ngIf="reply.user.groups.includes('Moderator') && !reply.user.is_staff && !reply.user.is_superuser">Mod</p>
+          <p style="color: #f0b400" *ngIf="reply.user.groups.includes('VIP') && !reply.user.groups.includes('Moderator') && !reply.user.is_staff && !reply.user.is_superuser ">VIP</p>
+          <p style="color: rgb(0, 140, 255)" *ngIf="reply.user.is_staff && !reply.user.is_superuser">Admin</p>
+          <p style="color: rgb(255, 77, 0)" *ngIf="reply.user.is_superuser">Super Admin</p>
+          <p>{{ utils.dateAgo(reply.created_at) }}</p>
+        </ion-label>
+
+        <ion-buttons slot="end"  *ngIf="isLogged">
+          <ion-button shape="round" *ngIf="user.is_staff || user.groups.moderator" (click)="openModeration(reply)" fill="clear" color="primary">
+            <ion-icon name="shield-half-outline"></ion-icon>
+          </ion-button>
+          <ion-button shape="round" (click)="openReplyOptions(reply)" fill="clear" color="primary">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+      </ion-item>
+
+      <ion-card-content>
+
+        <p style="color: #c23400" *ngIf="!reply.user.is_active">
+          [ Esta respuesta esta oculta porque el usuario ha sido baneado ]
+        </p>
+
+        <p style="color: #cd8c00" *ngIf="(reply.reports == 2 || reply.reports == 3 || reply.reports == 4) && reply.user.is_active" (click)="uncensorReply(reply)">
+          [ Respuesta con {{ reply.reports }} denuncias, clic si quieres verla igualmente ]
+        </p>
+  
+        <p style="color: #c23400" *ngIf="reply.reports >= 5 && reply.user.is_active" (click)="showDeletedReply(reply)">[ Esta respuesta ha sido eliminada por muchas denuncias ]</p>
+  
+        <p *ngIf="(reply.reports == 0 || reply.reports == 1) && reply.user.is_active">{{ reply.reply }}</p>
+      </ion-card-content>
+
+      <div class="buttons">
+
+        <ion-button fill="clear" (click)="replyReply(reply)">
+          Responder
+        </ion-button>
+      </div>
+
+      <!-- <div class="buttons">
+
+        <ion-button *ngIf="isLogged" fill="clear">
+          Responder
+        </ion-button>
+
+        <ion-button *ngIf="isLogged && (reply.user.id == user.id)" (click)="deleteReply(reply)" fill="clear">
+          Eliminar Respuesta
+        </ion-button>
+      </div> -->
+    </ion-card>
+  </ion-list>
+
+  <ion-infinite-scroll #InfiniteScrollReplies (ionInfinite)="loadMoreReplies($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="centerInfo" *ngIf="replies.length == 0">
+
+    <ion-spinner color="primary" name="circular" *ngIf="firstSearch"></ion-spinner>
+
+    <ion-icon name="chatbox-ellipses-outline" *ngIf="!firstSearch && replies.length == 0 && isLogged"></ion-icon>
+    <p *ngIf="!firstSearch && replies.length == 0 && isLogged">¡Se el primero en responderle a {{ comment.user.username }}!</p>
+
+    <ion-icon name="log-in-outline" *ngIf="!firstSearch && replies.length == 0 && !isLogged"></ion-icon>
+    <p *ngIf="!firstSearch && replies.length == 0 && !isLogged">Inicia sesión para responder</p>
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+
+    <form [formGroup]="formReply" (ngSubmit)="sendReply()" *ngIf="isLogged">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img src="{{ profileImage  }}">
+        </ion-avatar>
+        <ion-input maxlength="300" autocorrect spellcheck inputmode="text" autocapitalize="sentences" #replyInput formControlName="reply" [disabled]="firstSearch" placeholder="Responder como {{ user.username }}..."></ion-input>
+        <ion-buttons slot="end">
+          <ion-button shape="round" [disabled]="!formReply.valid" color="primary" type="submit">
+            <ion-icon name="send"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </form>
+
+    <ion-item *ngIf="!isLogged">
+      <ion-avatar slot="start">
+        <img src="assets/icon/avatar.svg">
+      </ion-avatar>
+      <ion-input [disabled]="!isLogged" placeholder="Inicia sesión para responder..."></ion-input>
+      <ion-buttons slot="end">
+        <ion-button [disabled]="!isLogged" color="primary">
+          <ion-icon name="send"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+
+    <!-- input para escribir el comentario -->
+    <!-- <ion-input placeholder="Escribe un comentario"></ion-input>
+
+    <ion-buttons slot="end">
+      <ion-button color="primary">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-footer>

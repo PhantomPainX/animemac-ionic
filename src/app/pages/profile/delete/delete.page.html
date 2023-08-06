@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" color="primary">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scroll-y="false">
+  <div class="main__wrapper">
+    <div class="title">
+      <h1>¡Te extrañaremos!</h1>
+      <p *ngIf="!user?.created_with_google">Para eliminar tu cuenta debes confirmar tu contraseña abajo, recuerda que esta acción es irreversible.
+      </p>
+      <p *ngIf="user?.created_with_google">
+        Para eliminar tu cuenta debes ingresar con tu cuenta de Google, recuerda que esta acción es irreversible.
+      </p>
+      <p>
+        Que se eliminara:
+      </p>
+      <ul>
+        <li>Datos de tu cuenta</li>
+        <li>Tus comentarios</li>
+        <li>Animes favoritos</li>
+        <li>Episodios vistos</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <form [formGroup]="formPassword" (ngSubmit)="verifyPassword()" *ngIf="!user?.created_with_google">
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Contraseña" 
+        label-placement="floating" 
+        type="password" 
+        required
+        formControlName="password"></ion-input>
+
+        <ion-button [disabled]="!formPassword.valid" expand="block" shape="round" class="login redBtn" type="submit">Eliminar</ion-button>
+      </form>
+
+      <ion-button *ngIf="user?.created_with_google" class="googleBtn" expand="block" (click)="googleVerify()" [disabled]="!googleReady">
+        <ion-thumbnail slot="start">
+          <img style="background-color: unset;" src="assets/icon/google_logo.png">
+        </ion-thumbnail>
+        <ion-label>Verificar con Google</ion-label>
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

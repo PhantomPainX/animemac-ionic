@@ -1,0 +1,330 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+@import "~animate.css/animate.min.css";
+
+/* Material Design Icons */
+// @import "material-symbols";
+
+/* Material Design Ionic Compatibility */
+// @import "./style/material/tokens/tokens.scss";
+// @import "./style/material/support/support.scss";
+// @import "./style/material/ionic/patch.scss";
+
+// /* Useful CSS Resets */
+// @import "./style/resets.css";
+
+/* Fonts Local */
+@import "./style/fonts/roboto.css";
+
+* {
+    font-family: 'Roboto';
+}
+
+.item-interactive.ion-valid {
+    --highlight-background: var(--ion-color-primary, #3880ff);
+}
+
+// ion-toggle {
+//     --background-checked: #0080ff6f;
+// }
+
+.transparentModal {
+    background: transparent !important;
+    --background: transparent;
+    --min-height: 100%;
+    --min-width: 100%;
+}
+
+.fullscreenModal {
+    --min-height: 100%;
+    --min-width: 100%;
+}
+
+.modal-70-height {
+    --min-height: 70%;
+}
+
+.blur-transparent-modal {
+    --ion-background-color: transparent !important;
+    background: transparent;
+    backdrop-filter: blur(40px) saturate(250%);
+    -webkit-backdrop-filter: blur(40px) saturate(250%);
+    --min-height: 100%;
+    --min-width: 100%;
+}
+
+.white-searchbar {
+    --background: #fff;
+    --border-radius: 20px;
+    --color: rgb(7, 6, 33);
+}
+
+.grid-anime-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 5px;
+    --border-radius: 5px;
+    
+}
+
+.anime-skeleton-img {
+    width: 100%;
+    height: 260px;
+    --border-radius: 5px;
+}
+
+.grid-anime-figure {
+    // position: relative;
+    width: auto;
+    margin: 0!important;
+    position: relative;
+    padding-top: 150%;
+    margin: 0 0 0.5rem;
+    border-radius: 5px;
+}
+
+ion-header {
+    .custom-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+.anime-grid {
+    //--ion-grid-padding: 10px;
+
+    // img {
+
+    //     width: 100%;
+    //     height: 260px;
+    //     background-color: #1f1f1f;
+    //     border-radius: 5px;
+    //     object-fit: cover;
+        
+    // }
+    
+    // figure {
+    //     // position: relative;
+    //     width: auto;
+    //     margin: 0!important;
+    //     border-radius: 5px;
+    //     margin-bottom: 15px!important;
+
+    //     figcaption {
+    //         margin-top: 3px;
+    //         font-size: 13px;
+    //     }
+    // }
+}
+
+// IOS ALERT TRANSLUCENT
+@supports ((-webkit-backdrop-filter: blur(0)) or (backdrop-filter: blur(0))) {
+    .alert-translucent.sc-ion-alert-ios-h .alert-wrapper.sc-ion-alert-ios {
+        background: rgba(var(--ion-background-color-rgb, 255, 255, 255), 0.7);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        backdrop-filter: saturate(180%) blur(20px);
+    }
+}
+
+//Espaciado de letras en los botones del action sheet
+.action-sheet-button-inner.sc-ion-action-sheet-md {
+    line-height: 20px;
+}
+
+.action-sheet-group.sc-ion-action-sheet-md:first-child {
+    border-radius: 20px 20px 0 0;
+    line-height: 20px;
+}
+
+.rounded-modal::part(content) {
+    --border-radius: 20px 20px 0 0;
+}
+
+.custom-popover::part(content) {
+    border-radius: 10px;
+    // max-height: 50%
+}
+
+.custom-popover {
+    // backdrop-filter: blur(5px);
+    // --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.6);
+
+    ion-content {
+        --border-radius: 20px;
+        border-radius: 20px;
+        ion-segment {
+            border-radius: 0;
+
+            ion-segment-button {
+                --border-radius: 20px;
+            }
+        }
+    }
+}
+
+
+ion-card.anime-grid-card {
+    margin: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    border: var(--ion-color-card-border) 1px solid;
+
+    figure {
+        margin: 0 !important;
+        position: relative;
+        background-color: var(--ion-card-background);
+        width: 100%;
+        padding-top: 150%;
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        ion-img::part(image) {
+            object-fit: cover;
+        }
+
+        ion-skeleton-text {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        span {
+            position: absolute;
+            text-align: center;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            color: #fff;
+            background: rgb(0 0 0 / 51%);
+            backdrop-filter: blur(10px);
+            padding: 5px 0 5px 0;
+        }
+    }
+
+    ion-card-header {
+        padding: 10px 5px 10px 5px;
+
+        .title {
+            font-size: 13px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+
+            ion-skeleton-text {
+                margin: 5px auto;
+                border-radius: 10px;
+            }
+
+            ion-card-title {
+                font-size: 0.8rem;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+.alert-report-comment {
+
+    --max-width: 540px;
+    --width: 95%;
+
+    .alert-radio-label.sc-ion-alert-md {
+        text-overflow: unset;
+        overflow: unset;
+        white-space: unset;
+        padding-inline-end: 20px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    img {
+        background-color: #162b46;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    img {
+        background-color: #eeeeee;
+    }
+}
+
+.fabButton::part(native) {
+    position: relative;
+    overflow: visible;
+    contain: layout;
+}
+
+ion-fab-button {
+
+    --border-radius: 16px;
+    ion-label {
+        position: absolute;
+        top: 4px;
+        right: 45px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        line-height: 24px;
+        padding: 4px 8px;
+        border-radius: 10px;
+    }
+}
+
+cdk-virtual-scroll-viewport {
+    height: 100%;
+    width: 100%;
+
+    .cdk-virtual-scroll-content-wrapper {
+        right: 0;
+    }
+}

@@ -1,0 +1,16 @@
+ion-toolbar {
+    --padding-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+ion-card {
+    border-radius: 10px;
+    --border-radius: 10px;
+}

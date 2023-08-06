@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Usuarios bloqueados</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="/profile" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button [disabled]="blockedUsers == null || blockedUsers.length == 0" color="primary" (click)="openSortPopover($event)">
+        <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+      </ion-button>
+
+      <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+        <ng-template>
+          <ion-item lines="full" button (click)="sort('-created_at')" [disabled]="sortName == '-created_at'">
+            <p>Bloqueos recientes</p>
+            <ion-checkbox slot="end" [checked]="sortName == '-created_at'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('created_at')" [disabled]="sortName == 'created_at'">
+            <p>Bloqueos antiguos</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'created_at'"></ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher *ngIf="blockedUsers != null" slot="fixed" (ionRefresh)="toggleRefreshBlockedUsers($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="blockedUsers != null" style="padding: 0;">
+    <ion-item class="animate__animated animate__fadeIn animate__faster" *ngFor="let d of blockedUsers">
+      <ion-avatar slot="start" style="border: 0.5px solid #bebebe">
+        <img src="{{ domain }}{{d.blocked_user_detail.user_extra.avatar}}">
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ d.blocked_user_detail.username }}</h2>
+        <p>{{ utils.formatDate(d.created_at) }}</p>
+      </ion-label>
+
+      <ion-button fill="outline" color="danger" slot="end" (click)="unblockUser(d)">
+        Desbloquear
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-infinite-scroll #infiniteScroll (ionInfinite)="loadMoreBlockedUsers($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="center" *ngIf="blockedUsers != null && blockedUsers.length == 0">
+    <ion-icon name="leaf-outline" *ngIf="blockedUsers.length == 0"></ion-icon>
+    <p *ngIf="blockedUsers.length == 0">No tienes a ningún usuario bloqueado</p>
+  </div>
+
+  <div class="center" *ngIf="blockedUsers == null">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+</ion-content>

@@ -1,0 +1,38 @@
+ion-header {
+	--border: none;
+
+	ion-toolbar {
+		--background: var(--ion-tab-bar-background);
+	}
+
+	ion-title {
+		--color: var(--ion-text-color);
+
+		// padding-inline: 16px;
+	}
+
+	ion-buttons+ion-title {
+		padding-left: 10px;
+	}
+
+	ion-buttons {
+		&[slot="start"] {
+			color: var(--md-sys-color-on-surface);
+		}
+
+		&[slot="end"] {
+			color: var(--md-sys-color-on-surface-variant);
+		}
+	}
+
+	&[data-scrolled="true"] {
+		ion-toolbar {
+			--background: var(--md-sys-color-surface-container);
+		}
+	}
+
+	/* Disable Shadow */
+	&::after {
+		display: none;
+	}
+}

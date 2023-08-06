@@ -1,0 +1,56 @@
+<ion-header mode="ios" collapse="fade">
+  <ion-toolbar #toolbar>
+    <ion-title>Reproductor PWA</ion-title>
+    <ion-buttons slot="end" mode="md">
+      <ion-button color="primary" (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="main__container">
+
+    <div class="titles">
+      <div class="text">
+        <h1>
+          {{ episode.anime.nombre }}
+        </h1>
+        <h4>
+          Episodio {{ selectedEp.numero }}
+        </h4>
+      </div>
+
+      <div class="image">
+        <img src="{{ episode.anime.imagen }}" alt="{{ episode.anime.nombre }} portada">
+      </div>
+    </div>
+
+    <div class="boxPlayer">
+      <div class="iframeContainer">
+        <iframe referrerpolicy="strict-origin" class='webPage' [src]="safeUrl" *ngIf="safeUrl != null" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="buttons">
+        <ion-toolbar>
+
+          <ion-buttons slot="start">
+            <ion-button shape="round" fill="outline" color="primary" (click)="openProviders($event)">
+              <ion-icon slot="start" name="videocam-outline"></ion-icon>
+              {{ buttonText }}
+            </ion-button>
+          </ion-buttons>
+
+          <ion-buttons slot="end">
+            <ion-button color="primary" (click)="prevEp()" [disabled]="!hasPrevEp">
+              <ion-icon slot="icon-only" name="chevron-back-circle-outline"></ion-icon>
+            </ion-button>
+            <ion-button color="primary" (click)="nextEp()" [disabled]="!hasNextEp">
+              <ion-icon slot="icon-only" name="chevron-forward-circle-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </div>
+    </div>
+  </div>
+</ion-content>

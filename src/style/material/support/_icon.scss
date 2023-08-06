@@ -1,0 +1,13 @@
+md-icon {
+	&.rounded {
+		--md-icon-font: 'Material Symbols Rounded';
+	}
+
+	&.sharp {
+		--md-icon-font: 'Material Symbols Sharp';
+	}
+
+	&[filled] {
+		--md-icon-font-variation-settings: 'FILL' 1;
+	}
+}

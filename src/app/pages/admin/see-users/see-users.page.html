@@ -1,0 +1,137 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title *ngIf="cantUsers == 0">Usuarios</ion-title>
+    <ion-title *ngIf="cantUsers != 0">Usuarios ({{ cantUsers }})</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="/admin" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button shape="round" color="primary" (click)="openSortPopover($event)">
+        <ion-icon slot="start" name="filter-outline"></ion-icon>
+      </ion-button>
+
+      <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+        <ng-template>
+          <ion-item lines="full" button (click)="sort('-date_joined')" [disabled]="sortName == '-date_joined'">
+            <p>Ascendiente por fecha de registro</p>
+            <ion-checkbox slot="end" [checked]="sortName == '-date_joined'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('date_joined')" [disabled]="sortName == 'date_joined'">
+            <p>Descendiente por fecha de registro</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'date_joined'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('-last_login')" [disabled]="sortName == '-last_login'">
+            <p>Ascendiente por fecha de logueo</p>
+            <ion-checkbox slot="end" [checked]="sortName == '-last_login'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('last_login')" [disabled]="sortName == 'last_login'">
+            <p>Descendiente por fecha de logueo</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'last_login'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('profile-last-updated')" [disabled]="sortName == 'profile-last-updated'">
+            <p>Ascendiente por última modificación de perfil</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'profile-last-updated'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('more-reports')" [disabled]="sortName == 'more-reports'">
+            <p>Ascendiente por número de reportes</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'more-reports'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('less-reports')" [disabled]="sortName == 'less-reports'">
+            <p>Descendiente por número de reportes</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'less-reports'"></ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar mode="ios" #mainSearchbar debounce="500" spellcheck placeholder="Busca un usuario..." (ionInput)="search($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="false">
+
+  <ion-refresher *ngIf="users != null" slot="fixed" (ionRefresh)="toggleRefreshUsers($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <cdk-virtual-scroll-viewport itemSize="88" minBufferPx="900" maxBufferPx="1350" *ngIf="users != null" class="ion-content-scroll-host">
+    <ion-list style="padding: 0;">
+      <ion-item-sliding  *cdkVirtualFor="let user of users" #slidingItem style="overflow: hidden;">
+        <ion-item class="animate__animated animate__fadeIn animate__faster" detail="true" detail-icon="chevron-back-outline">
+          <ion-avatar slot="start" (click)="openUserImage(user)" style="border: 0.5px solid #bebebe">
+            <img src="{{ domain }}{{user.user_extra.avatar}}">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ user.username }}</h2>
+            <p>{{ user.email }}</p>
+            <p *ngIf="user.reports > 1">Ha sido reportado {{ user.reports }} veces</p>
+            <p *ngIf="user.reports == 1">Ha sido reportado {{ user.reports }} vez</p>
+            <p *ngIf="!user.is_active" style="color: #FF0000">Baneado: {{ user.user_extra.ban_reason }}</p>
+            <p *ngIf="sortName != 'last_login' && sortName != '-last_login' && sortName != 'profile-last-updated'">{{ utils.dateAgo(user.date_joined) }}</p>
+            <p *ngIf="sortName == 'last_login' || sortName == '-last_login'">{{ utils.dateAgo(user.last_login) }}</p>
+            <p *ngIf="sortName == 'profile-last-updated'">{{ utils.dateAgo(user.user_extra.updated_at) }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="goToUserDetail(user, slidingItem)">
+            <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+            Detalle
+          </ion-item-option>
+          <ion-item-option color="danger" *ngIf="user.is_active" (click)="banUser(user, slidingItem)">
+            <ion-icon slot="start" name="ban-outline"></ion-icon>
+            Banear
+          </ion-item-option>
+          <ion-item-option color="tertiary" *ngIf="!user.is_active" (click)="unbanUser(user, slidingItem)">
+            <ion-icon slot="start" name="key-outline"></ion-icon>
+            Desbanear
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="loadMoreUsers($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="dots">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </cdk-virtual-scroll-viewport>
+
+  <!-- crea un spinner para que se muestre mientras se cargan las categorias en el centro de la pantalla -->
+  <div class="center" *ngIf="users == null">
+
+    <ion-list style="padding: 0;">
+
+      <ion-item detail="false" *ngFor="let item of [].constructor(16); let i = index">
+
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+  
+        <ion-label>
+          <h2>
+            <ion-skeleton-text animated style="width: 40%; border-radius: 10px;"></ion-skeleton-text>
+          </h2>
+          <p>
+            <ion-skeleton-text animated style="width: 70%; border-radius: 10px;"></ion-skeleton-text>
+          </p>
+          <p>
+            <ion-skeleton-text animated style="width: 30%; border-radius: 10px;"></ion-skeleton-text>
+          </p>
+        </ion-label>
+      </ion-item>
+    
+    </ion-list>
+  </div>
+
+</ion-content>

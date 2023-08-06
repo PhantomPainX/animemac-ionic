@@ -1,0 +1,164 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="/tablinks/home" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+    
+    <ion-buttons slot="end" *ngIf="type != 'latest-episodes'">
+      <ion-button shape="round" color="primary" (click)="openSortPopover($event)" [disabled]="loading || noResults">
+        <ion-icon slot="start" name="filter-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button color="primary" (click)="shuffle()" *ngIf="type != 'latest-episodes'" [disabled]="loading || noResults || shuffling">
+        <ion-icon slot="icon-only" name="shuffle-outline"></ion-icon>
+      </ion-button>
+
+      <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+        <ng-template>
+          <ion-item lines="full" button (click)="sort('-agregado')" [disabled]="sortName == '-agregado'">
+            <p>Más nuevos</p>
+            <ion-checkbox slot="end" [checked]="sortName == '-agregado'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('agregado')" [disabled]="sortName == 'agregado'">
+            <p>Más antiguos</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'agregado'"></ion-checkbox>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-content fullscreen scrollEvents="true" [appHideHeader]="header"> -->
+<ion-content [fullscreen]="true">
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ title }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="toggleRefresh($event)" *ngIf="!noResults">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Layout Type Grid -->
+
+  <ion-toolbar style="--background: transparent;" *ngIf="results != undefined && !noResults && type != 'latest-episodes'">
+    <ion-title *ngIf="results?.length == 1" style="font-size:medium;" slot="end">{{ totalResults }} resultado</ion-title>
+    <ion-title *ngIf="results?.length > 1" style="font-size:medium;" slot="end">{{ totalResults }} resultados</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar style="--background: transparent;" *ngIf="results == undefined && type != 'latest-episodes'">
+    <ion-skeleton-text animated style="width: 130px;
+    margin: auto 10px auto auto;
+    border-radius: 10px;"></ion-skeleton-text>
+  </ion-toolbar>
+
+  <div class="centerInfo" *ngIf="noResults">
+    <ion-icon size="large" name="pizza-outline"></ion-icon>
+    <p>No se encontraron resultados</p>
+  </div>
+
+  <ion-grid class="anime-grid anime-grid-full" *ngIf="layoutStyle == 'grid' && !noResults">
+
+    <ion-row *ngIf="results != undefined">
+      <ion-col class="animate__animated animate__fadeIn animate__faster" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let result of results">
+
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(result)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ result.image_thumbnail }}" lazyLoad="{{ result.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ result.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+      <ion-infinite-scroll (ionInfinite)="loadMoreResults($event)">
+        <ion-infinite-scroll-content
+          loadingSpinner="dots">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+
+    </ion-row>
+
+    <ion-row *ngIf="results == undefined">
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let item of [].constructor(16); let i = index">
+        <ion-card class="anime-grid-card">
+          <figure>
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-skeleton-text style="width: 80%; border-radius: 10px;"></ion-skeleton-text>
+              <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Layout Type List -->
+
+  <ion-list *ngIf="results != undefined && !noResults && layoutStyle == 'list'">
+    <ion-item class="animate__animated animate__fadeIn animate__faster" *ngFor="let episode of results" style="margin-bottom: 10px">
+      <ion-thumbnail slot="start" style="border-radius: 10px">
+        <img defaultImage="{{ domain }}{{ episode.anime.image_thumbnail }}" lazyLoad="{{ episode.anime.imagen }}">
+      </ion-thumbnail>
+      <ion-label>
+        <h4>{{ episode.anime.nombre }}</h4>
+        <h5>Episodio {{ episode.numero }}</h5>
+        <p>{{ utils.dateAgo(episode.fecha) }}</p>
+        <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+      </ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button shape="round" color="primary" (click)="openProviders($event, episode)">
+          <ion-icon name="play"></ion-icon>
+        </ion-button>
+
+        <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+
+    <ion-infinite-scroll (ionInfinite)="loadMoreResults($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="dots">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </ion-list>
+
+  <ion-list *ngIf="results == undefined && !noResults && layoutStyle == 'list'">
+    <ion-item detail="false" *ngFor="let item of [].constructor(18); let i = index">
+      <ion-buttons slot="end">
+
+        <ion-button>
+          <ion-skeleton-text style="width: 15px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+
+        <ion-button>
+          <ion-skeleton-text style="width: 15px; border-radius: 10px;"></ion-skeleton-text>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated style="width: 100%; border-radius: 5px;"></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text style="width: 100%; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text style="width: 40%; border-radius: 10px;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

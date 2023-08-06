@@ -1,0 +1,79 @@
+.main__container {
+    margin: 20px 10px 0 10px;
+
+    .titles {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+
+        .text {
+            width: 100%;
+
+            h1 {
+                margin: 0 0 10px 0;
+                font-weight: 400;
+            }
+    
+            h4 {
+                margin: 0;
+                font-weight: normal;
+                font-style: italic;
+            }
+        }
+    
+        .image {
+            width: 100px;
+            img {
+                border-radius: 10px;
+            }
+        }
+        margin-bottom: 15px;
+    }
+
+    .boxPlayer {
+        background-color: var(--ion-card-background);
+        // padding: 0 0 20px 0;
+        border-radius: 10px;
+
+        .iframeContainer {
+            position: relative;
+            overflow: hidden;
+            background-color: #2e3a4d;
+            width: 100%;
+            padding-top: 56.25%;
+
+            &::before {
+                content: "Selecciona un video";
+                position: absolute;
+                display: flex;
+                color: #cfcfcf;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                align-items: center;
+                justify-content: center;
+            }
+            
+
+            iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+        }
+
+        .buttons {
+            ion-toolbar {
+                --background: var(--ion-card-background);
+                --border-radius: 50px;
+            }
+        }
+    }
+}

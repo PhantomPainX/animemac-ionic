@@ -1,0 +1,218 @@
+<ion-header class="ion-no-border" #header>
+  <ion-toolbar #toolbar>
+    <ion-buttons sort="start">
+      <ion-back-button defaultHref="/tablinks/home" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+
+      <ion-button shape="round" id="click-trigger" *ngIf="isLogged && user.is_staff">
+        <ion-icon slot="icon-only" name="shield-half"></ion-icon>
+      </ion-button>
+      <ion-popover *ngIf="isLogged && user.is_staff" trigger="click-trigger" triggerAction="click">
+        <ng-template>
+          <ion-item lines="none">
+            <ion-label>Comentarios</ion-label>
+            <ion-toggle slot="end" [checked]="!commentsDisabled" (ionChange)="toggleCommentsDisabled()"></ion-toggle>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+
+      <ion-button shape="round" (click)="openAiPopover($event)" [disabled]="anime == null || !isLogged">
+        <ion-icon slot="icon-only" name="hardware-chip-outline"></ion-icon>
+      </ion-button>
+      <ion-popover #aiPopover [isOpen]="isAiPopoverOpened" (didDismiss)="isAiPopoverOpened = false">
+        <ng-template>
+          <ion-item button lines="full" detail="true" (click)="openAI('resume_no_spoilers')">
+            <ion-label>Resumen sin spoilers</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('resume')">
+            <ion-label>Resumen con spoilers</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('interesting_facts')">
+            <ion-label>Curiosidades</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('characters')">
+            <ion-label>Personajes</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('staff')">
+            <ion-label>Staff</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('relevant_episodes')" *ngIf="!oneEpChecks.isOneEp">
+            <ion-label>Episodios relevantes</ion-label>
+          </ion-item>
+          <ion-item button lines="full" detail="true" (click)="openAI('recommendations')">
+            <ion-label>Recomendaciones basadas en el anime</ion-label>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+
+      <ion-button shape="round" fill="clear" *ngIf="isLogged && !favorited && !loadingFavorite" (click)="toggleFavorite()">
+        <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button shape="round" *ngIf="isLogged && favorited && !loadingFavorite" (click)="toggleFavorite()">
+        <ion-icon slot="icon-only" name="heart"></ion-icon>
+      </ion-button>
+
+      <ion-button *ngIf="isLogged && loadingFavorite">
+        <ion-spinner name="crescent"></ion-spinner>
+      </ion-button>
+
+      <ion-button #eyeOutlineButton class="animate__animated animate__fadeIn animate__faster" [disabled]="oneEpChecks.togglingSeenEp" shape="round" (click)="toggleEpisode()" *ngIf="oneEpChecks.isOneEp && oneEpChecks.firstCheckSeenEp && isLogged && oneEpChecks.episode != null && !oneEpChecks.episode.seen">
+        <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button #eyeButton class="animate__animated animate__fadeIn animate__faster" [disabled]="oneEpChecks.togglingSeenEp" shape="round" (click)="toggleEpisode()" *ngIf="oneEpChecks.isOneEp && oneEpChecks.firstCheckSeenEp && isLogged && oneEpChecks.episode != null && oneEpChecks.episode.seen">
+        <ion-icon slot="icon-only" name="eye"></ion-icon>
+      </ion-button>
+
+      <ion-button class="animate__animated animate__fadeIn animate__faster" shape="round" (click)="openProviders($event)" *ngIf="oneEpChecks.isOneEp">
+        <ion-icon slot="icon-only" name="play-outline"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #mainWrapper>
+
+  <div class="anime__card" *ngIf="!loadingColorHex">
+    <div class="header_image">
+      <figure class="animate__animated animate__fadeIn animate__faster">
+        <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
+        <span class="estado finalizado" *ngIf="anime.estado == 'Finalizado'">
+          Finalizado
+        </span>
+        <span class="estado emision" *ngIf="anime.estado == 'En emision'">
+          En Emisión
+        </span>
+        <span class="estado proximamente" *ngIf="anime.estado == 'Proximamente'">
+          Próximamente
+        </span>
+      </figure>
+    </div>
+
+    <div class="card_info">
+      <div class="titles animate__animated animate__fadeIn animate__faster">
+        <h1 #title>{{ anime.nombre }}</h1>
+        <h4 #japanTitle class="animate__animated animate__fadeIn animate__faster" *ngIf="extraInfo?.title_japanese != null && !loadingMoe">{{ extraInfo?.title_japanese }}</h4>
+        <ion-skeleton-text *ngIf="loadingMoe" animated class="skeleton" style="width: 60%; margin: 5px auto 0 auto; border-radius: 10px;"></ion-skeleton-text>
+      </div>
+
+      <div class="meta animate__animated animate__fadeIn animate__faster">
+        <div class="rating">
+          <span #rating class="item wb animate__animated animate__fadeIn animate__faster" *ngIf="extraInfo?.rating != null && !loadingMoe">{{ extraInfo?.rating }}</span>
+          <ion-skeleton-text *ngIf="loadingMoe" animated class="skeleton" style="height: 15px; width: 30%; margin: 10px auto 0 auto; border-radius: 10px;"></ion-skeleton-text>
+        </div>
+        <div class="first_line animate__animated animate__fadeIn animate__faster" *ngIf="!loadingMoe">
+          <span class="item bl" #type>{{anime.tipo}}</span>
+          <span class="dot"></span>
+          <span class="br" #release>{{anime.estreno}}</span>
+          <span class="dot"></span>
+          <span class="item" #eps>Eps: {{ anime.episodios.length }} <span *ngIf="extraInfo?.episodes != null" class="total_ep">/ {{ extraInfo?.episodes }}</span></span>
+        </div>
+        <div class="first_line" *ngIf="loadingMoe">
+          <ion-skeleton-text animated class="skeleton" style="height: 12px; width: 50%; margin: 5px auto 0 auto; border-radius: 10px;"></ion-skeleton-text>
+        </div>
+        <div class="below">
+          <span class="duration animate__animated animate__fadeIn animate__faster" *ngIf="extraInfo?.duration != null && !loadingMoe" #duration>{{ extraInfo?.duration }}</span>
+          <ion-skeleton-text *ngIf="loadingMoe" animated class="skeleton" style="width: 15%; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+
+          <ion-chip *ngIf="anime.prox_episodio" color="primary" #proxEp>
+            Próximo Episodio {{ anime.prox_episodio }}
+          </ion-chip>
+        </div>
+      </div>
+
+      <div class="genres animate__animated animate__fadeIn animate__faster">
+        <ion-chip mode="md" *ngFor="let genero of anime.generos" class="genresChip">
+          {{ genero }}
+        </ion-chip>
+      </div>
+
+      <div class="description animate__animated animate__fadeIn animate__faster" *ngIf="anime.sinopsis">
+        <p #description>{{ anime.sinopsis }}</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="anime__card" *ngIf="loadingColorHex">
+    <div class="header_image">
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </div>
+
+    <div class="card_info">
+      <div class="titles">
+        <ion-skeleton-text animated style="width: 60%; margin: auto auto 5px auto; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+      </div>
+
+      <div class="meta">
+        <div class="rating">
+          <ion-skeleton-text animated style="width: 40%; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+        </div>
+        <div class="first_line">
+          <ion-skeleton-text animated style="width: 50%; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+        </div>
+        <div class="below">
+          <ion-skeleton-text animated style="width: 25%; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%; height: 25px; margin: auto; border-radius: 10px;"></ion-skeleton-text>
+        </div>
+      </div>
+
+      <div class="genres">
+        <ion-skeleton-text animated style="width: 20%; height: 25px; margin: auto; border-radius: 25px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 20%; height: 25px; margin: auto; border-radius: 25px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 20%; height: 25px; margin: auto; border-radius: 25px;"></ion-skeleton-text>
+      </div>
+
+      <div class="description">
+        <ion-skeleton-text animated style="width: 90%; margin: 15px auto; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 80%; margin: 15px auto; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 83%; margin: 15px auto; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 74%; margin: 15px auto; border-radius: 10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 78%; margin: 15px auto; border-radius: 10px;"></ion-skeleton-text>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="margin: 70px;"></div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!loadingColorHex">
+    <ion-fab-button [disabled]="loadingMoe" #fabButton><ion-icon name="add"></ion-icon></ion-fab-button>
+  
+    <ion-fab-list side="top">
+      <ion-fab-button class="fabButton" (click)="openEpisodesModal()">
+        <ion-icon name="albums-outline"></ion-icon>
+        <ion-label>{{ episodesText }}</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="openComments()">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <ion-label>Comentarios</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="share()">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <ion-label>Compartir</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="openImageViewer()" *ngIf="extraInfo?.pictures != undefined">
+        <ion-icon name="images-outline"></ion-icon>
+        <ion-label>Imágenes</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="openTrailer()" *ngIf="extraInfo?.trailer?.embed_url != null">
+        <ion-icon name="logo-youtube"></ion-icon>
+        <ion-label>Trailer</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="fetchOE()" *ngIf="extraInfo != null">
+        <ion-icon name="musical-notes-outline"></ion-icon>
+        <ion-label>OP/ED</ion-label>
+      </ion-fab-button>
+      <ion-fab-button class="fabButton" (click)="showRelatedAnime()" *ngIf="extraInfo?.sequel != null || extraInfo?.prequel != null">
+        <ion-icon name="musical-notes-outline"></ion-icon>
+        <ion-label>Relaciones</ion-label>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+
+</ion-content>

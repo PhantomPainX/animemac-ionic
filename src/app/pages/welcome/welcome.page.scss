@@ -1,0 +1,97 @@
+ion-content {
+
+    .main__wrapper {
+        display: flex;
+        max-width: 600px;
+        margin: auto;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        .logo {
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            align-items: center;
+            margin-bottom: 30px;
+
+            img {
+                background-color: transparent;
+                width: 160px;
+                border-radius: 30px;
+            }
+
+            h1 {
+                margin: 10px 0;
+                font-weight: 700;
+            }
+        }
+
+        .card {
+            width: 100%;
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+            background: var(--ion-card-background);
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+            border-top-right-radius: 30px;
+            border-top-left-radius: 30px;
+            padding: 20px 20px 20px 20px;
+
+            .message {
+                h1 {
+                    font-weight: 700;
+                }
+            }
+
+            .buttons {
+                display: flex;
+                flex-direction: column;
+
+                ion-button {
+                    width: 100%;
+                    height: 50px;
+                    font-size: 0.8rem;
+                }
+
+                .division {
+                    display: flex;
+                    flex-direction: row;
+
+
+                    .hr {
+                        border-bottom: 1px solid #ccc;
+                        margin: 10px 0;
+                        width: 100%;
+                    }
+
+                    p {
+                        text-align: center;
+                        margin: 0px 5px 0px 5px;
+                    }
+
+                }
+
+                .registerBtn {
+                    --background: #ffffff;
+                    color: #000000;
+                }
+
+                .inviteBtn {
+                    --background: #ce3000;
+                    color: #ffffff;
+                }
+
+                .first_row {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 10px;
+                }
+                
+            }
+        }
+    }
+
+}

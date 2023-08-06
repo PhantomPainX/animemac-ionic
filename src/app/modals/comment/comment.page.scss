@@ -1,0 +1,85 @@
+ion-toolbar {
+    --padding-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+ion-content {
+    .centerInfo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+        text-align: center;
+
+        p {
+            margin: 10px 15px;
+        }
+
+        ion-icon {
+            font-size: 50px;
+            color: #ccc;
+        }
+    }
+
+    ion-chip {
+        display: flex;
+        margin: 0;
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+        justify-content: center;
+        text-align: center;
+    }
+
+    ion-card {
+        border-radius: 15px;
+        ion-card-content {
+            padding: 0 13px 16px 13px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+
+            @media(prefers-color-scheme: dark) {
+                background: #33435c;
+                ion-button {
+                    color: rgb(228, 228, 228);
+                    font-size: smaller;
+                    font-weight: normal;
+                }
+            }
+
+            @media (prefers-color-scheme: light) {
+                background: #dddddda7;
+                ion-button {
+                    color: rgb(0, 0, 0);
+                    font-size: smaller;
+                    font-weight: normal;
+                }
+            }
+        }
+
+        ion-item {
+
+            ion-avatar {
+                position: relative;
+                margin-right: 10px;
+                border: 1px solid var(--ion-color-card-border);
+
+                ion-icon {
+                    position: absolute;
+                    font-size: 14px;
+                    padding: 4px;
+                    bottom: -7px;
+                    left: 20px;
+                    background: #f0b400;
+                    color: #000;
+                    border-radius: 50px;
+                    border: 1px solid var(--ion-color-card-border);
+                }
+            }
+        }
+    }
+}

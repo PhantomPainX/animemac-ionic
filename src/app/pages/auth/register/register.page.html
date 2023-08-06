@@ -1,0 +1,112 @@
+<ion-header mode="ios" collapse="fade">
+  <ion-toolbar #toolbar>
+
+    <ion-buttons slot="end" mode="md">
+      <ion-button color="primary" (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main__wrapper">
+
+    <div class="title">
+      <h1>¡Únetenos!</h1>
+      <p>Con tu cuenta podrás ver todos los videos, guardar animes favoritos y llevar seguimiento de episodios vistos</p>
+    </div>
+
+    <div class="card">
+
+      <div class="avatar">
+        <ion-avatar class="avatar">
+          <img [src]="imageBuffer">
+          <label for="imageSelector">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </label>
+        </ion-avatar>
+      </div>
+
+      <!-- html image input -->
+      <input type="file" id="imageSelector" accept="image/*" (change)="onImageSelected($event)" hidden>
+
+      <form [formGroup]="formRegister" (ngSubmit)="register()">
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Nombre de usuario" 
+        label-placement="floating" 
+        maxlength="20" 
+        counter="true"
+        helperText="Puede contener letras, números, puntos y guiones"
+        formControlName="username"></ion-input>
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Nombres" 
+        label-placement="floating" 
+        maxlength="30" 
+        counter="true"
+        helperText="No es requerido"
+        formControlName="first_name"></ion-input>
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Apellidos" 
+        label-placement="floating" 
+        maxlength="30" 
+        counter="true"
+        helperText="No es requerido"
+        formControlName="last_name"></ion-input>
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Correo Electrónico" 
+        label-placement="floating" 
+        type="email" 
+        formControlName="email"></ion-input>
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Contraseña" 
+        label-placement="floating" 
+        type="password" 
+        helperText="Minimo 8 caracteres"
+        formControlName="password"></ion-input>
+
+        <ion-input 
+        fill="outline" 
+        shape="round" 
+        label="Confirmar Contraseña" 
+        label-placement="floating" 
+        type="password" 
+        formControlName="passwordConfirm"></ion-input>
+
+        <ion-item lines="none" class="coppa-item" style="margin-bottom: 0;">
+          <ion-checkbox formControlName="coppa">Confirmo que tengo 13 años o más</ion-checkbox>
+        </ion-item>
+
+        <ion-item lines="none" class="coppa-item">
+          <ion-checkbox formControlName="terms">
+            Aceptas Condiciones del Servicio y Política de Privacidad
+          </ion-checkbox>
+        </ion-item>
+
+        <ion-button [disabled]="!formRegister.valid" shape="round" expand="block" class="register" type="submit">Crear Cuenta</ion-button>
+      </form>
+
+      <div class="disclaimer">
+        <p><a (click)="utils.openSimpleUrl('https://animemac.net/condiciones-del-servicio/')">Condiciones del Servicio</a> y <a (click)="utils.openSimpleUrl('https://animemac.net/politica-de-privacidad/')">Política de Privacidad</a></p>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

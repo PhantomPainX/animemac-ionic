@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Download Modal</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main__wrapper">
+    <div class="info">
+      <img src="{{ episode.anime.imagen }}" alt="">
+      <div class="text">
+        <h1>Descargando</h1>
+        <p>{{ episode.anime.nombre }}</p>
+      </div>
+    </div>
+
+    <ion-progress-bar [value]="progress"></ion-progress-bar>
+  </div>
+
+</ion-content>

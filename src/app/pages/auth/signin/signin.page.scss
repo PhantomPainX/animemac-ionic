@@ -1,0 +1,181 @@
+ion-header {
+    ion-toolbar {
+        --padding-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    ion-header {
+        --background: #0b192f;
+    }
+    ion-toolbar {
+        --background: #0b192f;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    ion-header {
+        --background: #FFFFFF;
+    }
+    ion-toolbar {
+        --background: #FFFFFF;
+    }
+}
+
+ion-content {
+
+    .main__wrapper {
+
+        display: flex;
+        max-width: 600px;
+        margin: auto;
+        flex-direction: column;
+        height: 100%;
+
+        .title {
+            padding: 10px;
+            h1 {
+                margin: 0px 0px 10px 0px;
+                font-weight: 700;
+            }
+        }
+
+
+        .card {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--ion-card-background);
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+            border-top-right-radius: 30px;
+            border-top-left-radius: 30px;
+            padding: 10px;
+
+            form {
+                margin-top: 20px;
+
+                p.error {
+                    margin-top: 0;
+                    margin-bottom: 5px;
+                    text-align: center;
+                    color: #FF0000;
+                }
+
+                .dangoanimeInput {
+                    --min-height: 60px;
+                    --ion-item-background: var(--ion-color-form);
+                    border: 1px solid var(--ion-color-card-border);
+                    border-radius: 50px;
+                    margin-bottom: 10px;
+                }
+
+                ion-input {
+                    margin-bottom: 15px;
+                }
+
+                ion-button {
+                    height: 50px;
+                    font-size: 0.8rem;
+                }
+
+                .hyperlinks {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    gap: 10px;
+                    margin-bottom: 16px;
+
+                    ion-button {
+                        height: 20px;
+                        font-size: 0.8rem;
+                        border-radius: 50px;
+                        --border-radius: 50px;
+                    }
+                }
+            }
+
+            .division {
+                display: flex;
+                flex-direction: row;
+                margin: 5px 0 5px 0;
+
+                .hr {
+                    border-bottom: 1px solid #ccc;
+                    margin: 10px 0;
+                    width: 100%;
+                }
+
+                p {
+                    text-align: center;
+                    margin: 0px 5px 0px 5px;
+                }
+
+            }
+
+            .googleBtn {
+                height: 50px;
+                font-size: 0.8rem;
+                --background: #FFFFFF;
+                color: #000000;
+
+                ion-thumbnail {
+                    width: 30px;
+                    height: 30px;
+                }
+
+                ion-label {
+                    margin-left: 10px;
+                }
+            }
+
+            .biometricBtn {
+                height: 50px;
+                font-size: 0.8rem;
+                --background: #0066df;
+                color: #f3f3f3;
+                margin-bottom: 10px;
+
+                ion-thumbnail {
+                    width: 30px;
+                    height: 30px;
+                }
+
+                ion-label {
+                    margin-left: 10px;
+                }
+            }
+
+            .logo_bottom {
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                bottom: 25px;
+                right: 0;
+                width: 100%;
+
+                img {
+                    width: 40px;
+                }
+            }
+
+            .disclaimer {
+                text-align: center;
+
+                p {
+                    font-size: small;
+                    a {
+                        text-decoration: none;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}

@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Comentarios de Usuarios</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [disabled]="fetching" [(ngModel)]="commentsType" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="anime">
+        <ion-label>Animes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="episode">
+        <ion-label>Episodios</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <!-- <ion-progress-bar *ngIf="fetching" type="indeterminate" style="--background: transparent !important; border-radius: 50px;"></ion-progress-bar> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+
+  <ion-toolbar style="--background: transparent">
+    <!-- filter button -->
+    <ion-buttons slot="end" *ngIf="comments.length > 0 && !fetching">
+      <ion-button shape="round" [disabled]="fetching || comments.length < 2" (click)="openSortPopover($event)" color="primary">
+        <ion-icon slot="start" name="filter-outline"></ion-icon>
+        Orden
+      </ion-button>
+    </ion-buttons>
+
+    <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
+      <ng-template>
+        <ion-item lines="full" button (click)="sort('-created_at')" [disabled]="sortName == '-created_at'">
+          <ion-label>Más recientes</ion-label>
+          <ion-checkbox slot="end" [checked]="sortName == '-created_at'"></ion-checkbox>
+        </ion-item>
+        <ion-item lines="full" button (click)="sort('created_at')" [disabled]="sortName == 'created_at'">
+          <ion-label>Menos recientes</ion-label>
+          <ion-checkbox slot="end" [checked]="sortName == 'created_at'"></ion-checkbox>
+        </ion-item>
+      </ng-template>
+    </ion-popover>
+  </ion-toolbar>
+
+  <ion-refresher slot="fixed" (ionRefresh)="toggleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list style="background: transparent; padding: 0;" *ngIf="comments.length > 0 && !fetching">
+    <ion-card *ngFor="let comment of comments" class="animate__animated animate__fadeIn animate__faster">
+
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img src="{{ domain }}{{ comment.user.user_extra.avatar }}">
+        </ion-avatar>
+        <ion-label>
+          <h2 *ngIf="comment.user.is_active">{{ comment.user.username }}</h2>
+          <h2 *ngIf="!comment.user.is_active">{{ comment.user.username }} <span style="color: #c23400">(Baneado)</span></h2>
+          <p style="color: rgb(0, 205, 161)" *ngIf="comment.user.groups.includes('Moderator') && !comment.user.is_staff && !comment.user.is_superuser">Mod</p>
+          <p style="color: #f0b400" *ngIf="comment.user.groups.includes('VIP') && !comment.user.groups.includes('Moderator') && !comment.user.is_staff && !comment.user.is_superuser ">VIP</p>
+          <p style="color: rgb(0, 140, 255)" *ngIf="comment.user.is_staff && !comment.user.is_superuser">Admin</p>
+          <p style="color: rgb(255, 77, 0)" *ngIf="comment.user.is_superuser">Super Admin</p>
+          <p>{{ utils.dateAgo(comment.created_at) }}</p>
+        </ion-label>
+
+        <ion-buttons slot="end" *ngIf="isLogged">
+          <ion-button shape="round" *ngIf="user.is_staff || user.groups.moderator" (click)="openModeration(comment)" fill="clear" color="primary">
+            <ion-icon name="shield-half-outline"></ion-icon>
+          </ion-button>
+          <ion-button shape="round" (click)="openCommentOptions(comment)" fill="clear" color="primary">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+      </ion-item>
+
+      <ion-card-content>
+
+        <p style="color: #c23400" *ngIf="!comment.user.is_active">
+          [ Este comentario esta oculto porque el usuario ha sido baneado ]
+        </p>
+
+        <p style="color: #cd8c00" *ngIf="(comment.reports == 2 || comment.reports == 3 || comment.reports == 4) && comment.user.is_active" (click)="uncensorComment(comment)">
+          [ Comentario con {{ comment.reports }} denuncias, clic si quieres verlo igualmente ]
+        </p>
+
+        <p style="color: #c23400" *ngIf="comment.reports >= 5 && comment.user.is_active" (click)="showDeletedComment(comment)">[ Este comentario ha sido eliminado por muchas denuncias ]</p>
+
+        <p *ngIf="(comment.reports == 0 || comment.reports == 1) && comment.user.is_active">{{ comment.comment }}</p>
+      </ion-card-content>
+
+      <ion-chip (click)="openComments(comment)" *ngIf="commentsTypeRealChanged === 'anime'">{{ comment.anime_detail.nombre }}</ion-chip>
+      <ion-chip (click)="openComments(comment)" *ngIf="commentsTypeRealChanged === 'episode'">{{ comment.episode_detail.anime.nombre }} - Episodio {{ comment.episode_detail.numero }}</ion-chip>
+      
+      <div class="buttons">
+        <ion-button fill="clear" (click)="openReplies(comment)" *ngIf="comment.replies > 0">
+          <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
+          Abrir respuestas ({{ comment.replies }})
+        </ion-button>
+
+        <ion-button fill="clear" (click)="openReplies(comment)" *ngIf="comment.replies == 0">
+          <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
+          Responder
+        </ion-button>
+      </div>
+    </ion-card>
+  </ion-list>
+
+  <ion-list style="background: transparent; padding: 0;" *ngIf="comments.length == 0 && fetching">
+    <ion-card *ngFor="let item of [].constructor(10)" style="box-shadow: none;">
+      <ion-skeleton-text animated style="width: 100%; height: 180px; margin: 0;"></ion-skeleton-text>
+    </ion-card>
+  </ion-list>
+
+  <ion-infinite-scroll #InfiniteScrollComments (ionInfinite)="loadMoreComments($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="centerInfo" *ngIf="comments.length == 0">
+
+    <ion-icon name="chatbubbles-outline" *ngIf="noCommentsAvailable"></ion-icon>
+    <p *ngIf="noCommentsAvailable && commentsType === 'anime'">No hay comentarios de animes :(</p>
+    <p *ngIf="noCommentsAvailable && commentsType === 'episode'">No hay comentarios de episodios :(</p>
+  </div>
+
+</ion-content>

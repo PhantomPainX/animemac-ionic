@@ -1,0 +1,35 @@
+ion-header {
+
+    ion-toolbar {
+
+        --padding-top: 0 !important;
+        padding-top: 0 !important;
+
+        ion-searchbar {
+            padding-bottom: 15px;
+        }
+    }
+}
+
+ion-label {
+    margin: 20px 0 20px 0;
+}
+
+ion-thumbnail {
+    img {
+        border-radius: 5px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    ion-item.nextToSeeItem {
+        --background: #1e3b62;
+        border-top: 1px #2f507b solid;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    ion-item.nextToSeeItem {
+        --background: #dceafc;
+    }
+}

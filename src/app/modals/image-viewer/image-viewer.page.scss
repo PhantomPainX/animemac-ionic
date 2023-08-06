@@ -1,0 +1,16 @@
+ion-content {
+    --padding-top: 0!important;
+
+    swiper-container {
+        width: 100%;
+        height: 100%;
+
+        swiper-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+    }
+}

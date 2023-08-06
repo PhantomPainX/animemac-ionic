@@ -1,0 +1,77 @@
+// ion-tab-bar {
+// 	/* Tokens */
+// 	--_height-tab-bar: var(--height-tab-bar, 58px);
+
+// 	--_fs-icon: 1rem;
+// 	--_fs-label: clamp(10px, 2.9vw, 0.98rem);
+
+// 	--_clr-container: var(--md-sys-color-surface-container);
+
+// 	--_clr-icon-active: var(--md-sys-color-on-secondary-container);
+// 	--_clr-icon-inactive: var(--md-sys-color-on-surface-variant);
+
+// 	--_clr-label-text-active: var(--md-sys-color-on-surface);
+// 	--_clr-label-text-inactive: var(--md-sys-color-on-surface-variant);
+
+// 	--_clr-active-indicator: var(--md-sys-color-secondary-container);
+
+// 	--_bottom-padding: 10px;
+// 	--_icon-label-spacing: 4px;
+
+// 	/* Styling */
+
+// 	height: var(--_height-tab-bar);
+// 	// padding-inline: 0px;
+// 	// padding-block: 0px var(--_bottom-padding);
+// 	box-shadow: 0 0 var(--md-sys-elevation-level2) rgb(0 0 0 / 6%);
+// 	--border: none;
+// 	--background: var(--ion-tab-bar-background);
+
+
+// 	ion-tab-button {
+// 		--padding-end: 0;
+// 		--padding-start: 0;
+// 		--ripple-color: transparent;
+// 		--color: var(--_clr-label-text-inactive);
+// 		--color-selected: var(--_clr-label-text-active);
+
+// 		ion-icon {
+// 			// font-size: var(--_fs-icon);
+// 			padding-block: calc(var(--_fs-icon) * 0.45);
+// 			padding-inline: calc(var(--_fs-icon) * 1.4);
+// 			border-radius: var(--_fs-icon);
+// 			color: var(--_clr-icon-inactive);
+// 			background-color: transparent;
+// 			transition:
+// 				color 200ms 100ms ease-in-out,
+// 				background-color 200ms ease-in-out;
+// 		}
+
+// 		ion-label {
+// 			// font-size: var(--_fs-label);
+// 			font-weight: bold;
+// 			margin-top: var(--_icon-label-spacing);
+// 			margin-bottom: 0px;
+// 			transition: color 250ms ease-in-out;
+// 		}
+
+// 		md-badge {
+// 			z-index: 2;
+// 			position: absolute;
+// 			top: 8px;
+// 		}
+
+// 		&.tab-selected {
+// 			ion-icon {
+// 				color: var(--ion-color-primary-contrast);
+// 				background-color: var(--ion-color-primary);
+// 			}
+// 		}
+// 	}
+// }
+
+// // @media(prefers-color-scheme: dark) {
+// //     ion-tab-bar {
+// //         --border: 1px #464646 solid;
+// //     }
+// // }

@@ -1,0 +1,41 @@
+<ion-header>
+
+  <ion-toolbar>
+    <ion-item lines="none" style="--background: transparent;">
+      <ion-thumbnail slot="start" style="margin: 0px 8px 0px 0; --border-radius: 10px;">
+        <img src="{{ animeImage }}" />
+      </ion-thumbnail>
+      <ion-label>
+        <h1 style="font-size: larger;
+        font-weight: 600;">{{ providerName }}</h1>
+        <h2>{{ animeName }}</h2>
+        <p>Episodio {{ episode.numero }}</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" color="primary">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-segment [ngModel]="optionValue" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="local" *ngIf="localCompatible.length > 0">Local</ion-segment-button>
+    <ion-segment-button value="web" *ngIf="webCompatible.length > 0">Web</ion-segment-button>
+  </ion-segment>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="optionValue == 'local' && localCompatible" style="padding: 0;">
+    <ion-item detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of localCompatible" (click)="getVideos($event, embed)">
+      {{embed.embed}}
+    </ion-item>
+  </ion-list>
+  
+  <ion-list *ngIf="optionValue == 'web' && webCompatible" style="padding: 0;">
+    <ion-item detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of webCompatible" (click)="getVideos($event, embed)">
+      {{embed.embed}}
+    </ion-item>
+  </ion-list>
+</ion-content>

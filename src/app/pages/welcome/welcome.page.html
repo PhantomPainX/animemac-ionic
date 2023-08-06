@@ -1,0 +1,33 @@
+<ion-content scroll-y="false">
+  <div class="main__wrapper">
+    <div class="logo">
+      <img src="assets/icon/AnimeMacLogo.png" alt="logo">
+      <h1>AnimeMac</h1>
+    </div>
+
+    <div class="card">
+      <div class="message">
+        <h1>¡Bienvenido!</h1>
+        <p>Nos complace ofrecerte un espacio donde podrás sumergirte en las historias más cautivadoras y sorprendentes. Esperamos que disfrutes de la experiencia que hemos creado para ti y que encuentres en ella un lugar para explorar y deleitarte con las maravillas de esta forma de arte.
+        </p>
+      </div>
+
+      <div class="buttons">
+        <div class="first_row">
+          <ion-button expand="block" shape="round" color="primary" (click)="goToLogin()">Iniciar sesión</ion-button>
+          <ion-button class="registerBtn" expand="block" shape="round" (click)="goToRegister()">Crear Cuenta</ion-button>
+        </div>
+
+        <div class="division">
+          <div class="hr"></div>
+          <p>o</p>
+          <div class="hr"></div>
+        </div>
+
+        <div class="second_row">
+          <ion-button class="inviteBtn" expand="block" shape="round" (click)="enterAsGuest()">Entrar como Invitado</ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar #toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="/tablinks/home" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-list style="padding: 0;">
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Reproductor de Video</ion-label>
+      </ion-item-divider>
+
+      <ion-item lines="full"> 
+        <ion-label>PictureInPicture (PIP)</ion-label>
+        <ion-toggle slot="end" value="pip" [(ngModel)]="pipToggle" (ionChange)="toggle($event)"></ion-toggle>
+      </ion-item>
+
+      <ion-item lines="full">
+        <ion-label>Chromecast</ion-label>
+        <ion-toggle slot="end" value="chromecast" [(ngModel)]="chromecastToggle" (ionChange)="toggle($event)"></ion-toggle>
+      </ion-item>
+    </ion-item-group>
+
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Configuración de la aplicación</ion-label>
+      </ion-item-divider>
+
+      <ion-item lines="full"> 
+        <ion-label>Proveedores de video adicionales</ion-label>
+        <ion-toggle slot="end" value="aditionalProviders" [(ngModel)]="aditionalProvidersToggle" (ionChange)="toggle($event)"></ion-toggle>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>

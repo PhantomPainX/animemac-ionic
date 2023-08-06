@@ -1,0 +1,198 @@
+<ion-app>
+
+  <ion-menu side="start" contentId="first" swipeGesture="false">
+
+
+    <ion-header>
+      
+      <div class="red-background">
+        <ion-toolbar>
+          
+          <div class="banner">
+            
+            <div class="images">
+
+              <ion-avatar class="avatar">
+                <img src="{{ profileImage }}">
+              </ion-avatar>
+
+              <div class="social">
+                <!-- <ion-button shape="round" class="discord" fill="clear">
+                  <ion-icon size="medium" name="logo-discord"></ion-icon>
+                </ion-button> -->
+  
+                <ion-button shape="round" class="instagram" fill="clear" (click)="openSocial('instagram')">
+                  <ion-icon size="medium" name="logo-instagram"></ion-icon>
+                </ion-button>
+
+                <ion-button shape="round" class="twitter" fill="clear" (click)="openSocial('twitter')">
+                  <ion-icon size="medium" name="logo-twitter"></ion-icon>
+                </ion-button>
+              </div>
+
+            </div>
+
+            <div class="info">
+              <h3 *ngIf="logged">{{ user?.username }}</h3>
+              <p *ngIf="logged">{{ user?.email }}</p>
+
+              <h3 *ngIf="!logged">Invitado</h3>
+              <p *ngIf="!logged">¡Inicia sesión para ver los episodios!</p>
+            </div>
+          </div>
+
+        </ion-toolbar>
+      </div>
+
+    </ion-header>
+
+
+    <ion-content>
+
+      <ion-item-group>
+        <ion-item lines="full" detail="true" routerLink="/tablinks/home" (click)="closeMenu()">
+          <ion-icon slot="start" name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+        <!-- <ion-item routerLink="/tablinks/directorio" (click)="closeMenu()">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          <ion-label>Buscar</ion-label>
+        </ion-item>
+        <ion-item routerLink="/tablinks/social-comments" (click)="closeMenu()">
+          <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
+          <ion-label>Social</ion-label>
+        </ion-item> -->
+      </ion-item-group>
+
+      <ion-item-group>
+
+        <ion-item-divider>
+          <ion-label>Cuenta</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="full" detail="true" routerLink="/profile" (click)="closeMenu()" *ngIf="logged">
+          <ion-icon slot="start" name="person-outline"></ion-icon>
+          <ion-label>Perfil</ion-label>
+        </ion-item>
+        <ion-item lines="full" detail="true" routerLink="/tablinks/favorites" (click)="closeMenu()" *ngIf="logged">
+          <ion-icon slot="start" name="heart-outline"></ion-icon>
+          <ion-label>Favoritos</ion-label>
+        </ion-item>
+        <ion-item lines="full" *ngIf="logged && (user.is_staff || user.groups.moderator)" detail="true" routerLink="/admin" (click)="closeMenu()">
+          <ion-icon slot="start" name="construct-outline"></ion-icon>
+          <ion-label>Administración</ion-label>
+        </ion-item>
+
+        <ion-item lines="full" detail="true" (click)="goToSignin()" *ngIf="!logged" button>
+          <ion-icon slot="start" name="log-in-outline"></ion-icon>
+          <ion-label>Iniciar sesión</ion-label>
+        </ion-item>
+        <ion-item lines="full" detail="true" (click)="goToSignup()" *ngIf="!logged" button>
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          <ion-label>Crear cuenta</ion-label>
+        </ion-item>
+
+      </ion-item-group>
+
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>Descubre</ion-label>
+        </ion-item-divider>
+
+        <ion-accordion-group>
+
+          <ion-accordion toggleIconSlot="start" value="second" lines="full" [disabled]="staticGenres == null">
+            <ion-item slot="header">
+              <ion-label>Categorías</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-searchbar mode="ios" inputmode="text" placeholder="Busca una categoría" (ionInput)="searchCategory($event)"></ion-searchbar>
+              <ion-item detail="true" *ngFor="let genre of genres" (click)="seeMore('genres', genre.genero, 'grid', genre.id)">
+                <ion-label>{{ genre.genero }}</ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion>
+
+          <ion-accordion toggleIconSlot="start" value="third" lines="full" [disabled]="types == null">
+            <ion-item slot="header">
+              <ion-label>Tipos</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-item detail="true" *ngFor="let type of types" (click)="seeMore('types', type.tipo, 'grid', type.id)">
+                <ion-label>{{ type.tipo }}</ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion>
+
+          <ion-accordion toggleIconSlot="start" value="fourth" lines="full" [disabled]="status == null">
+            <ion-item slot="header">
+              <ion-label>Estados</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-item detail="true" *ngFor="let s of status" (click)="seeMore('status', s.estado, 'grid', s.id)">
+                <ion-label>{{ s.estado }}</ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion>
+
+          <!-- <ion-accordion toggleIconSlot="start" value="fifth" lines="full" [disabled]="languages == null">
+            <ion-item slot="header">
+              <ion-label>Lenguajes</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-item detail="true" *ngFor="let lang of languages" (click)="seeMore('languages', lang.idioma, 'grid', lang.id)">
+                <ion-label>{{ lang.idioma }}</ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion> -->
+
+          <ion-accordion toggleIconSlot="start" value="fifth" lines="full" [disabled]="staticYears == null">
+            <ion-item slot="header">
+              <ion-label>Año</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-searchbar mode="ios" inputmode="numeric" placeholder="Busca un año" (ionInput)="searchYear($event)"></ion-searchbar>
+              <ion-item detail="true" *ngFor="let year of years" (click)="seeMore('years', 'Año '+year, 'grid', year)">
+                <ion-label>{{ year }}</ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion>
+
+        </ion-accordion-group>
+
+      </ion-item-group>
+
+      <ion-item-group *ngIf="logged">
+
+        <ion-item-divider>
+          <ion-label>Opciones</ion-label>
+        </ion-item-divider>
+
+        <!-- CUANDO SEPA COMO CONFIGURAR IN-APP-PURCHASES :( -->
+
+        <!-- <ion-item lines="full" detail="true" routerLink="/purchases" (click)="closeMenu()">
+          <ion-icon slot="start" name="cash-outline"></ion-icon>
+          <ion-label>Compras</ion-label>
+        </ion-item> -->
+
+        <ion-item lines="full" detail="true" routerLink="/settings" (click)="closeMenu()">
+          <ion-icon slot="start" name="settings-outline"></ion-icon>
+          <ion-label>Ajustes</ion-label>
+        </ion-item>
+
+        <ion-item lines="full" button (click)="logout()">
+          <ion-icon slot="start" name="log-out-outline"></ion-icon>
+          <ion-label>Cerrar Sesión</ion-label>
+        </ion-item>
+      </ion-item-group>
+    </ion-content>
+
+    <ion-footer>
+
+      
+
+    </ion-footer>
+  </ion-menu>
+
+  <ion-router-outlet id="first"></ion-router-outlet>
+</ion-app>

@@ -1,0 +1,253 @@
+ion-header {
+    .logo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-top: 15px;
+        justify-content: center;
+
+        img {
+            width: 15%;
+        }
+
+        h1 {
+            margin: 0;
+            margin-left: 5px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #fff;
+        }
+    }
+
+    .header-bar {
+        display: flex;
+        // padding-top: 10px;
+        // padding-bottom: 10px;
+        gap: 7px;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            background-color: transparent;
+        }
+
+        h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    }
+
+    .logo-title {
+        line-height: 50px;
+        margin-left: 10px;
+        margin-top: 10px;
+        padding-left: 60px;
+        background: url('/assets/icon/dangoanime-48x48.png') no-repeat left center;
+    }
+
+    .chipSlide {
+        width: auto !important;
+    }
+
+    ion-toolbar {
+        .avatar_button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 0.5px solid rgb(202, 202, 202);
+
+            img {
+                border-radius: 50%;
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+}
+
+ion-content {
+
+    .animeCard {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px var(--ion-color-primary) solid;
+        background: var(--ion-card-background);
+
+        .image {
+            width: 150px;
+            height: 140px;
+            border-radius: 10px;
+
+            img {
+                border-radius: 5px;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            ion-img::part(image) {
+                border-radius: 5px;
+                object-fit: cover;
+            }
+        }
+
+        .title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-content: flex-start;
+            align-items: flex-start;
+            h4 {
+                margin: 0 0 5px 0;
+                text-align: initial;
+                font-weight: 600;
+                color: var(--color);
+            }
+
+            p {
+                text-align: initial;
+                font-size: 13px;
+                margin: 0;
+                color: var(--color);
+            }
+
+            .description {
+                margin-top: 10px;
+                font-size: 13px;
+                text-align: initial;
+                color: var(--color);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+            }
+        }
+    }
+
+    .nextToSeeCard {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        cursor: pointer;
+        background: var(--ion-card-background);
+
+        .image {
+            width: 100px;
+            height: 80px;
+            border-radius: 10px;
+
+            img {
+                border-radius: 5px;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            ion-img::part(image) {
+                border-radius: 5px;
+                object-fit: cover;
+            }
+        }
+
+        .title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
+        .info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-content: flex-start;
+            align-items: flex-start;
+            h4 {
+                margin: 0 0 5px 0;
+                text-align: initial;
+                font-weight: 600;
+                color: var(--color);
+            }
+
+            p {
+                font-size: 13px;
+                text-align: initial;
+                margin: 0;
+                color: var(--color);
+            }
+
+            .description {
+                font-size: 13px;
+                text-align: initial;
+                color: var(--color);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+            }
+        }
+
+        .playIcon {
+            display: flex;
+            align-items: flex-end;
+        }
+    }
+
+    ion-list {
+        border-radius: 20px;
+        margin: 0 10px;
+    }
+
+    @media (prefers-color-scheme: 'light') {
+        ion-list {
+            background-color: #f4f4f4;
+
+            ion-item {
+                --background: #f4f4f4;
+            }
+        }
+    }
+
+    ion-item {
+        ion-thumbnail {
+            img {
+                border-radius: 5px;
+                object-fit: cover;
+            }
+        }
+    }
+
+    swiper-container {
+        margin-left: 15px;
+        //padding: 5px 0 5px 0;
+
+        &::after {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+        }
+    }
+}

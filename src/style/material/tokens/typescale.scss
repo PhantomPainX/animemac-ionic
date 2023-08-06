@@ -1,0 +1,17 @@
+@use "sass:map";
+
+@use "@material/web/tokens/v0_172/md-sys-typescale";
+@use "@material/web/tokens/md-ref-typeface";
+
+$_default: (
+  'md-ref-typeface': md-ref-typeface.values(),
+);
+
+:root {
+  $tokens: md-sys-typescale.values($_default, false);
+
+  @each $token,
+  $value in $tokens {
+    --md-sys-typescale-#{$token}: #{$value};
+  }
+}

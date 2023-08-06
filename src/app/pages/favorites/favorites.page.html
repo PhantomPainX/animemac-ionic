@@ -1,0 +1,74 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-title>Favoritos</ion-title>
+    <!-- <ion-buttons mode="md" slot="primary">
+      <ion-button color="primary" (click)="updateFavorites()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons> -->
+
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-content fullscreen scrollEvents="true" [appHideHeader]="header"> -->
+  <ion-content fullscreen>
+
+  <ion-refresher slot="fixed" (ionRefresh)="toggleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <ion-grid class="anime-grid anime-grid-full">
+
+    <ion-row *ngIf="results.length > 0">
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" class="animate__animated animate__fadeIn" *ngFor="let result of results">
+
+        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(result.anime)">
+          <figure>
+            <img defaultImage="{{ domain }}{{ result.anime.image_thumbnail }}" lazyLoad="{{ result.anime.imagen }}">
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-card-title>{{ result.anime.nombre }}</ion-card-title>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="results.length == 0 && !noFavAvailable">
+      <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let item of [].constructor(16); let i = index">
+        <ion-card class="anime-grid-card">
+          <figure>
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </figure>
+          <ion-card-header>
+            <div class="title">
+              <ion-skeleton-text style="width: 80%; border-radius: 10px;"></ion-skeleton-text>
+              <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+  <ion-infinite-scroll #favInfiniteScroll (ionInfinite)="loadMoreFavorites($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="centerInfo" *ngIf="noFavAvailable">
+    <ion-icon name="heart"></ion-icon>
+    <p>Agrega algunos animes favoritos</p>
+  </div>
+
+
+</ion-content>
