@@ -26,6 +26,7 @@ export class VideoPlayerService {
   public exitHandler: any;
   public needSeek: boolean = false;
   public seekTime: number = 0;
+  public episodeWasMarkedAsSeen: boolean = false;
 
   public episodeTimeSeenChanged$: EventEmitter<boolean> = new EventEmitter<boolean>();
   public recentlySawVideo$: EventEmitter<any> = new EventEmitter<any>();
@@ -99,6 +100,8 @@ export class VideoPlayerService {
   async executePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
     settings: Settings, providerName: string, videoProviderDomains: any, videoProviderQuality: string) {
 
+      this.episodeWasMarkedAsSeen = false;
+
       let options: capVideoPlayerOptions = {
         mode: 'fullscreen',
         url: video.file,
@@ -156,6 +159,7 @@ export class VideoPlayerService {
               if (((info.currentTime * 100) / this.videoDuration) >= 70) { // 70%
                 console.log("Visto: "+ JSON.stringify(info));
                 if (isLogged && !episode.seen) {
+                  this.episodeWasMarkedAsSeen = true;
                   this.toggleEpisode(episode, user.token);
                 }
 
@@ -183,7 +187,9 @@ export class VideoPlayerService {
                   episode.seconds_seen.total_seconds = this.videoDuration;
                   episode.seconds_seen.episode = episode.id;
 
-                  this.episodeTimeSeenChanged$.emit(true);
+                  if (!this.episodeWasMarkedAsSeen) {
+                    this.episodeTimeSeenChanged$.emit(true);
+                  }
                 });
               });
             }
@@ -226,6 +232,7 @@ export class VideoPlayerService {
               // this.seconds = 0;
 
               if (isLogged && !episode.seen) {
+                this.episodeWasMarkedAsSeen = true;
                 this.toggleEpisode(episode, user.token); 
               }
 
@@ -237,7 +244,10 @@ export class VideoPlayerService {
                   episode.seconds_seen.seconds = this.videoDuration;
                   episode.seconds_seen.total_seconds = this.videoDuration;
                   episode.seconds_seen.episode = episode.id;
-                  this.episodeTimeSeenChanged$.emit(true);
+
+                  if (!this.episodeWasMarkedAsSeen) {
+                    this.episodeTimeSeenChanged$.emit(true);
+                  }
                 });
               });
             }

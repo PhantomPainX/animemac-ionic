@@ -338,17 +338,26 @@ export class HomePage implements OnInit {
   async openProviders(event, episode) {
 
     if (!this.platform.is('capacitor')) {
-      const modal = await this.modalCtrl.create({
-        component: WebVideoPlayerPage,
-        cssClass: 'rounded-modal',
-        breakpoints: [0, 1],
-        initialBreakpoint: 1,
-        // canDismiss: false,
-        componentProps: {
-          episode: episode
-        }
-      })
-      modal.present();
+      const loader = await this.utils.createIonicLoader("Cargando reproductor...");
+      await loader.present();
+      this.database.getAnimeDetail(episode.anime.id, this.token).then(async anime => {
+        await loader.dismiss();
+        episode.anime = anime;
+        const modal = await this.modalCtrl.create({
+          component: WebVideoPlayerPage,
+          cssClass: 'rounded-modal',
+          breakpoints: [0, 1],
+          initialBreakpoint: 1,
+          // canDismiss: false,
+          componentProps: {
+            episode: episode
+          }
+        })
+        modal.present();
+      }).catch(async () => {
+        await loader.dismiss();
+        this.utils.showToast("Ha ocurrido un error, intenta más tarde", 2, false);
+      });
     } else {
       if (!episode.anime.imagen.includes(this.domain)) {
         episode.anime.imagen = this.domain + episode.anime.imagen;
@@ -568,8 +577,10 @@ export class HomePage implements OnInit {
       });
     }
 
+    const subHeaderText = "Agregado el " + this.utils.formatDayPretty(anime.agregado) + " " + this.utils.formatDay(anime.agregado) + " de " + this.utils.formatMonthPretty(anime.agregado) + " del " + this.utils.formatYear(anime.agregado) + " a las " + this.utils.formatTimePretty(anime.agregado);
     const actionSheet = await this.actionSheetCtrl.create({
       header: anime.nombre,
+      subHeader: subHeaderText,
       buttons: buttons
     });
     await actionSheet.present();

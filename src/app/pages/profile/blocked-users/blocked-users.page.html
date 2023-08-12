@@ -40,7 +40,7 @@
       </ion-avatar>
       <ion-label>
         <h2>{{ d.blocked_user_detail.username }}</h2>
-        <p>{{ utils.formatDate(d.created_at) }}</p>
+        <p>{{ utils.formatFullDate(d.created_at) }}</p>
       </ion-label>
 
       <ion-button fill="outline" color="danger" slot="end" (click)="unblockUser(d)">

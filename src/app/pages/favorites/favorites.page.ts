@@ -204,8 +204,10 @@ export class FavoritesPage implements OnInit {
       });
     }
 
+    const subHeaderText = "Agregado el " + this.utils.formatDayPretty(anime.agregado) + " " + this.utils.formatDay(anime.agregado) + " de " + this.utils.formatMonthPretty(anime.agregado) + " del " + this.utils.formatYear(anime.agregado) + " a las " + this.utils.formatTimePretty(anime.agregado);
     const actionSheet = await this.actionSheetCtrl.create({
       header: anime.nombre,
+      subHeader: subHeaderText,
       buttons: buttons
     });
     await actionSheet.present();

@@ -201,11 +201,53 @@ export class UtilsService {
     return myMoment.fromNow();
   }
 
-  formatDate(date: string) {
+  formatFullDate(date: string) {
     //format date in DD/MM/YYYY HH:mm
     let myMoment: moment.Moment = moment(date);
     myMoment.locale('es');
     return myMoment.format('DD/MM/YYYY HH:mm:ss');
+  }
+
+  formatDate(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('DD/MM/YYYY');
+  }
+
+  formatTime(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('HH:mm');
+  }
+
+  formatDayPretty(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('dddd');
+  }
+
+  formatDay(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('D');
+  }
+
+  formatMonthPretty(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('MMMM');
+  }
+
+  formatYear(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('YYYY');
+  }
+  
+  formatTimePretty(date: string) {
+    let myMoment: moment.Moment = moment(date);
+    myMoment.locale('es');
+    return myMoment.format('LT A');
   }
 
   getFileReader(): FileReader {
