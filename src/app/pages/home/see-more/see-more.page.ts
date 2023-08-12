@@ -638,13 +638,6 @@ export class SeeMorePage implements OnInit {
     
         popover.present();
       }
-    },
-    {
-      text: 'Todos los Episodios',
-      icon: 'play',
-      handler: () => {
-        this.openEpisodesModal(episode.anime);
-      }
     }, {
       text: 'Ver Comentarios',
       icon: 'chatbubbles',
