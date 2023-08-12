@@ -20,7 +20,7 @@
     </ion-buttons>
   </ion-toolbar>
 
-  <ion-segment [ngModel]="optionValue" (ionChange)="segmentChanged($event)">
+  <ion-segment [ngModel]="optionValue" (ionChange)="segmentChanged($event)" [disabled]="!buttonsClickable">
     <ion-segment-button value="local" *ngIf="localCompatible.length > 0">Local</ion-segment-button>
     <ion-segment-button value="web" *ngIf="webCompatible.length > 0">Web</ion-segment-button>
   </ion-segment>
@@ -28,14 +28,18 @@
 
 <ion-content>
   <ion-list *ngIf="optionValue == 'local' && localCompatible" style="padding: 0;">
-    <ion-item detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of localCompatible" (click)="getVideos($event, embed)">
-      {{embed.embed}}
+    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of localCompatible" (click)="getVideos($event, embed)">
+      <ion-label>
+        <h2>{{embed.embed}}</h2>
+      </ion-label>
     </ion-item>
   </ion-list>
   
   <ion-list *ngIf="optionValue == 'web' && webCompatible" style="padding: 0;">
-    <ion-item detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of webCompatible" (click)="getVideos($event, embed)">
-      {{embed.embed}}
+    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of webCompatible" (click)="getVideos($event, embed)">
+      <ion-label>
+        <h2>{{embed.embed}}</h2>
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

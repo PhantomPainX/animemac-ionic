@@ -155,7 +155,7 @@
           <ion-item>
             <ion-label>
               <h2>Fecha del ban:</h2>
-              <p>{{ utils.formatDate(consultedUser.user_extra.ban_date) }}</p>
+              <p>{{ utils.formatFullDate(consultedUser.user_extra.ban_date) }}</p>
             </ion-label>
           </ion-item>
         </ion-item-group>
@@ -163,21 +163,21 @@
         <ion-item>
           <ion-label>
             <h2>Fecha de registro</h2>
-            <p>{{ utils.formatDate(consultedUser.date_joined) }}</p>
+            <p>{{ utils.formatFullDate(consultedUser.date_joined) }}</p>
           </ion-label>
         </ion-item>
 
         <ion-item>
           <ion-label>
             <h2>Último inicio de sesión</h2>
-            <p>{{ utils.formatDate(consultedUser.last_login) }}</p>
+            <p>{{ utils.formatFullDate(consultedUser.last_login) }}</p>
           </ion-label>
         </ion-item>
 
         <ion-item>
           <ion-label>
             <h2>Fecha de última modificación de perfil</h2>
-            <p>{{ utils.formatDate(consultedUser.user_extra.updated_at) }}</p>
+            <p>{{ utils.formatFullDate(consultedUser.user_extra.updated_at) }}</p>
           </ion-label>
         </ion-item>
       </ion-list>

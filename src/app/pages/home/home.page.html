@@ -61,8 +61,8 @@
             <p *ngIf="episode.color?.isDark" style="color: #ffffff">{{episode.anime.nombre}}</p>
             <p *ngIf="!episode.color?.isDark" style="color: #000000">{{episode.anime.nombre}}</p>
           </div>
-          <p style="padding-top: 4px; color: #ffffff" *ngIf="episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
-            <p style="padding-top: 4px; color: #000000" *ngIf="!episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+          <p style="padding-top: 4px; color: #ffffff" *ngIf="episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">{{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+            <p style="padding-top: 4px; color: #000000" *ngIf="!episode.color?.isDark && episode.seconds_seen != null && episode.seconds_seen.seconds != 0">{{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
         </div>
         <div class="playIcon">
           <ion-icon size="large" name="play-outline" *ngIf="episode.color?.isDark" style="color: #ffffff"></ion-icon>
@@ -195,7 +195,7 @@
         <h4>{{ episode.anime.nombre }}</h4>
         <h6>Episodio {{ episode.numero }}</h6>
         <p>{{ utils.dateAgo(episode.fecha) }}</p>
-        <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+        <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">{{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
       </ion-label>
 
       <ion-buttons slot="end">

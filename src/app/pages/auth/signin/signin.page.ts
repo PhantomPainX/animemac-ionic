@@ -134,7 +134,7 @@ export class SigninPage implements OnInit {
           GoogleAuth.signOut();
           this.alertCtrl.create({
             header: "Baneado por " + res.user.user_extra.ban_admin.username,
-            subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatDate(res.user.user_extra.ban_date) + ")",
+            subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
             message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
             mode: 'ios',
             translucent: true,
@@ -306,7 +306,7 @@ export class SigninPage implements OnInit {
           if (!res.user.is_active) {
             this.alertCtrl.create({
               header: "Baneado por " + res.user.user_extra.ban_admin.username,
-              subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatDate(res.user.user_extra.ban_date) + ")",
+              subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
               message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
               mode: 'ios',
               translucent: true,
@@ -512,7 +512,7 @@ export class SigninPage implements OnInit {
           if (!res.user.is_active) {
             this.alertCtrl.create({
               header: "Baneado por " + res.user.user_extra.ban_admin.username,
-              subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatDate(res.user.user_extra.ban_date) + ")",
+              subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
               message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
               mode: 'ios',
               translucent: true,

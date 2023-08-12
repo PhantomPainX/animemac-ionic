@@ -25,7 +25,9 @@
   <ion-list style="padding: 0;">
     <div *ngFor="let video of videos">
       <ion-item *ngIf="video.kind == 'video'" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button (click)="playVideo(video)">
-        {{video.label}}
+        <ion-label>
+          <h2>{{video.label}}</h2>
+        </ion-label>
       </ion-item>
     </div>
   </ion-list>

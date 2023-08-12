@@ -91,6 +91,10 @@ const routes: Routes = [
     path: 'web-video-player',
     loadChildren: () => import('./modals/web-video-player/web-video-player.module').then( m => m.WebVideoPlayerPageModule)
   },
+  {
+    path: 'seen-episodes-history',
+    loadChildren: () => import('./pages/seen-episodes-history/seen-episodes-history.module').then( m => m.SeenEpisodesHistoryPageModule)
+  },
 ];
 
 @NgModule({

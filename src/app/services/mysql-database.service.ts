@@ -57,6 +57,7 @@ export class MysqlDatabaseService {
   public amrGetAnimesByLang: boolean = false;
   public amrGetAnimesByYear: boolean = false;
   public amrCheckAndroidVersion: boolean = false;
+  public amrGetSeenEpisodesHistory: boolean = false;
 
   public recentlyLogged$: EventEmitter<boolean> = new EventEmitter<boolean>();
   public toggleSeenEpisode$: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -1314,6 +1315,37 @@ export class MysqlDatabaseService {
                 resolve(data);
                 clearInterval(interval);
                 this.amrCheckAndroidVersion = false;
+              }).catch(() => {
+                clearInterval(interval);
+              });
+            }, 3000);
+          }
+        });
+    });
+  }
+
+  public getSeenEpisodesHistory(page: number, ordering: string, token: string) {
+    return new Promise<any>((resolve) => {
+      const url = this.domain + "/api/v1/seen-episode-time/?ordering="+ordering+"&page=" + page;
+
+      let headers = {
+        Authorization: 'Token ' + token
+      }
+      fetch(url, {
+        method: 'GET',
+        headers: headers
+      })
+        .then(response => response.json())
+        .then(data => {
+          resolve(data);
+        }).catch(() => {
+          if (!this.amrGetSeenEpisodesHistory) {
+            this.amrGetSeenEpisodesHistory = true;
+            const interval = setInterval(() => {
+              this.getSeenEpisodesHistory(page, ordering, token).then(data => {
+                resolve(data);
+                clearInterval(interval);
+                this.amrGetSeenEpisodesHistory = false;
               }).catch(() => {
                 clearInterval(interval);
               });

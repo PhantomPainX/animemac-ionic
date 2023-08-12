@@ -11,6 +11,7 @@ import { VideosPopoverComponent } from '../videos-popover/videos-popover.compone
 import { DownloadService } from 'src/app/services/download/download.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Domains } from './domains';
+import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 
 @Component({
   selector: 'app-embeds-popover',
@@ -40,6 +41,8 @@ export class EmbedsPopoverComponent implements OnInit {
 
   private videoDomains = new Domains;
 
+  public buttonsClickable: boolean = false;
+
   constructor(
     public resolvers: ResolversService,
     public popoverCtrl: PopoverController,
@@ -49,21 +52,13 @@ export class EmbedsPopoverComponent implements OnInit {
     public localStorage: PreferencesService,
     public platform: Platform,
     public downloadService: DownloadService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private database: MysqlDatabaseService
   ) {
 
   }
 
-  ngOnInit() {
-
-    // se obtiene el episodio siguiente
-    for (let ep of this.episode.anime.episodios) {
-      if (ep.numero == this.episode.numero + 1) {
-        this.episode['nextEpisode'] = ep;
-      }
-    }
-
-    console.log("Episodio actualizado en embeds popover: ", this.episode);
+  async ngOnInit() {
 
     if (!this.embedRequested) {
       this.localCompatible = this.embeds.filter(embed => 
@@ -123,9 +118,27 @@ export class EmbedsPopoverComponent implements OnInit {
           this.user = await this.localStorage.getUser();
         }
 
+        if (!this.episode.anime.episodios) {
+          await this.database.getAnimeDetail(this.episode.anime.id, this.user.token).then(async (res: any) => {
+            this.episode.anime.episodios = res.episodios;
+            this.buttonsClickable = true;
+          });
+        } else {
+          this.buttonsClickable = true;
+        }
+        // se obtiene el episodio siguiente
+        for (let ep of this.episode.anime.episodios) {
+          if (ep.numero == this.episode.numero + 1) {
+            this.episode['nextEpisode'] = ep;
+          }
+        }
+    
+        console.log("Episodio actualizado en embeds popover: ", this.episode);
+
         this.deserveAd = await this.localStorage.getDeserveAd();
         this.settings = await this.localStorage.getSettings();
       });
+
     } else {
       this.webCompatible = this.embeds;
       this.optionValue = 'web';
