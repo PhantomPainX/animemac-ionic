@@ -17,10 +17,14 @@ export class VideoPlayerService {
   public capacitorVideoPlayer: any = CapacitorVideoPlayer;
   @ViewChild('toolbar', { read: ElementRef }) toolbar: ElementRef;
 
+  // [IMPORTANTE] Como es un servicio, se necesitan controlar las variables de forma manual
+  // no tiene ciclo de vida como un componente
+
   public domain: string = environment.root_url;
   public seconds: number = 0;
   public interval: any;
   public videoDuration: number = 0.0;
+  public seenSeconds: number = 0.0; // variable que guarda los segundos vistos del episodio
   public readyHandler: any;
   public endHandler: any;
   public exitHandler: any;
@@ -65,6 +69,8 @@ export class VideoPlayerService {
               handler: async () => {
                 this.needSeek = false;
                 this.seekTime = 0;
+                this.seenSeconds = 0.0;
+                this.videoDuration = 0.0;
                 this.postSeenEpisodeTime(episode.id, user.token, 0, timeSeen.total_seconds);
                 this.zone.run(() => {
                   episode.seconds_seen.seconds = 0;
@@ -80,6 +86,8 @@ export class VideoPlayerService {
               handler: async () => {
                 this.needSeek = true;
                 this.seekTime = timeSeen.seconds;
+                this.seenSeconds = timeSeen.seconds;
+                this.videoDuration = timeSeen.total_seconds;
                 this.executePlayer(video, subtitleUrl, title, smallTitle, image,
                    episode, isLogged, user, settings, providerName, videoProviderDomains, videoProviderQuality);
               }
@@ -90,6 +98,8 @@ export class VideoPlayerService {
       } else {
         this.needSeek = false;
         this.seekTime = 0;
+        this.seenSeconds = 0.0;
+        this.videoDuration = 0.0;
         this.executePlayer(video, subtitleUrl, title, smallTitle, image,
            episode, isLogged, user, settings, providerName, videoProviderDomains, videoProviderQuality);
       }
@@ -140,6 +150,7 @@ export class VideoPlayerService {
             }
           });
 
+          // Listener para cuando el usuario sale del reproductor prematuramente
           this.exitHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerExit', async (info) => {
             if (this.platform.is('android')) {
               this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
@@ -165,27 +176,29 @@ export class VideoPlayerService {
                   videoProviderDomains,
                   videoProviderQuality
                 ).then(() => {
-                  this.zone.run(() => {
-                    this.recentlySawVideo$.emit({
-                      episode: episode
-                    });
+                  this.recentlySawVideo$.emit({
+                    episode: episode
                   });
                 });
               }
 
-              this.postSeenEpisodeTime(episode.id, user.token, info.currentTime, this.videoDuration).then(() => {
+              // Esta condicion evalua si el usuario ha salido del video antes de que cargue, 
+              // para que no se guarde el tiempo visto en 0 si ya tenia segundos vistos de antes
+              if (!(info.currentTime == 0 && this.seenSeconds > 0)) {
+                this.postSeenEpisodeTime(episode.id, user.token, info.currentTime, this.videoDuration).then(() => {
 
-                this.zone.run(() => {
-                  if (episode.seconds_seen == null) {
-                    episode.seconds_seen = {};
-                  }
-                  episode.seconds_seen.seconds = info.currentTime;
-                  episode.seconds_seen.total_seconds = this.videoDuration;
-                  episode.seconds_seen.episode = episode.id;
-
-                  this.episodeTimeSeenChanged$.emit(true);
+                  this.zone.run(() => {
+                    if (episode.seconds_seen == null) {
+                      episode.seconds_seen = {};
+                    }
+                    episode.seconds_seen.seconds = info.currentTime;
+                    episode.seconds_seen.total_seconds = this.videoDuration;
+                    episode.seconds_seen.episode = episode.id;
+  
+                    this.episodeTimeSeenChanged$.emit(true);
+                  });
                 });
-              });
+              }
             }
       
             if (this.platform.is('android')) {
@@ -213,7 +226,8 @@ export class VideoPlayerService {
       
             this.removeAllListeners();
           });
-      
+          
+          // Listener para cuando se termina el video
           this.endHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerEnded', async () => {
             if (this.platform.is('android')) {
               this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
@@ -270,10 +284,8 @@ export class VideoPlayerService {
               videoProviderDomains,
               videoProviderQuality
             ).then(() => {
-              this.zone.run(() => {
-                this.recentlySawVideo$.emit({
-                  episode: episode
-                });
+              this.recentlySawVideo$.emit({
+                episode: episode
               });
             });
       

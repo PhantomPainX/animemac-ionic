@@ -70,7 +70,8 @@ export class Domains {
     ];
     private streamwish_domains: string[] = [
         'streamwish.to',
-        'embedwish.com'
+        'embedwish.com',
+        'wishembed.pro'
     ];
     private fireload_domains: string[] = [
         'fireload'

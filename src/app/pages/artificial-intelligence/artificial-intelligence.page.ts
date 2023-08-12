@@ -7,7 +7,7 @@ import { EpisodePage } from '../episode/episode.page';
 import { UtilsService } from 'src/app/services/utils.service';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { ModalController, NavController } from '@ionic/angular';
-import { webSocket } from 'rxjs/webSocket';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 
 @Component({
   selector: 'app-artificial-intelligence',
@@ -41,7 +41,7 @@ export class ArtificialIntelligencePage implements OnInit {
   public recommendations: any[] = [];
   public error = "";
 
-  private subject: any;
+  private subject: WebSocketSubject<any>;
   public waitingWsChunkResponse: boolean = false;
   public gettingWsMessage: boolean = false;
   public wsConnectionEnded: boolean = false;
