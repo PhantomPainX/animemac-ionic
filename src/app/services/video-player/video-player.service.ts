@@ -1,13 +1,13 @@
 import { ElementRef, EventEmitter, Injectable, NgZone, ViewChild } from '@angular/core';
 import { CapacitorVideoPlayer, capVideoPlayerOptions, capVideoPlayerIdOptions } from 'capacitor-video-player';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
-import { Settings } from 'src/app/classes/settings/settings/settings';
 import { AlertController, Platform } from '@ionic/angular';
 import { UtilsService } from '../utils.service';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { MysqlDatabaseService } from '../mysql-database.service';
 import { PreferencesService } from '../preferences/preferences.service';
 import { environment } from 'src/environments/environment.prod';
+import { Settings } from 'src/app/interfaces/settings';
 
 @Injectable({
   providedIn: 'root'

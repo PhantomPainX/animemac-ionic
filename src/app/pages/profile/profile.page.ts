@@ -8,6 +8,7 @@ import { ProfileService } from 'src/app/services/profile/profile.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { environment } from 'src/environments/environment.prod';
 import { DeletePage } from './delete/delete.page';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 
 @Component({
@@ -29,7 +30,7 @@ export class ProfilePage implements OnInit {
 
   constructor(public localStorage: PreferencesService, public platform: Platform, 
     public profileService: ProfileService, public utils: UtilsService, public alertCtrl: AlertController, public formBuilder: FormBuilder, 
-    public modalCtrl: ModalController, public navCtrl: NavController) {
+    public modalCtrl: ModalController, public navCtrl: NavController, private sharingService: SharingService) {
       this.formProfile = new FormGroup({
         username: new FormControl({value: '', disabled: true}, Validators.compose([
           Validators.required, 
@@ -72,12 +73,12 @@ export class ProfilePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.utils.setStatusBarStyle(true);
-    this.utils.overlayStatusbar(true);
+    // this.utils.setStatusBarStyle(true);
+    // this.utils.overlayStatusbar(true);
   }
 
   ionViewWillLeave() {
-    this.utils.resetStatusBarColorOfToolbar();
+    // this.utils.resetStatusBarColorOfToolbar();
   }
 
   allowEditProfile() {
@@ -347,7 +348,8 @@ export class ProfilePage implements OnInit {
         this.utils.showToast(response.message, 2, true);
         this.staticImage = this.image;
         await this.syncUser(false);
-        this.profileService.updatedUserExtra$.emit(true);
+        this.sharingService.emitUserExtra(true);
+        //this.profileService.updatedUserExtra$.emit(true);
       } else {
         this.image = this.staticImage;
         if (response.message == null) {

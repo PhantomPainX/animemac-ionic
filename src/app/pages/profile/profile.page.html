@@ -1,6 +1,6 @@
 <ion-header>
 
-  <div class="red-background">
+  <div class="red-background" style="background-image: url({{image}});">
 
     <ion-toolbar class="top-toolbar">
       <ion-buttons slot="start">
@@ -37,7 +37,7 @@
       <p class="title" *ngIf="!user?.is_staff && !user?.is_superuser && !user?.groups.vip && !user?.groups.moderator">Miembro</p>
     </div>
 
-    <ion-toolbar class="blur">
+    <ion-toolbar>
       <ion-segment [ngModel]="segment" (ionChange)="segmentChanged($event)">
         <ion-segment-button value="about">
           <ion-label>Información</ion-label>

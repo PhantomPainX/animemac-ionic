@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, Platform, PopoverController } from '@ionic/angular';
 import { PrivateUser } from 'src/app/classes/private-user/private-user';
-import { Settings } from 'src/app/classes/settings/settings/settings';
 import { AdsService } from 'src/app/services/ads/ads.service';
 import { PreferencesService } from 'src/app/services/preferences/preferences.service';
 import { ResolversService } from 'src/app/services/resolvers/resolvers.service';
@@ -12,6 +11,7 @@ import { DownloadService } from 'src/app/services/download/download.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Domains } from './domains';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
+import { Settings } from 'src/app/interfaces/settings';
 
 @Component({
   selector: 'app-embeds-popover',

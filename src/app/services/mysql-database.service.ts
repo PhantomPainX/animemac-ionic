@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 // import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { UtilsService } from './utils.service';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { Settings } from '../classes/settings/settings/settings';
 import { PreferencesService } from './preferences/preferences.service';
 // import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import { environment } from 'src/environments/environment.prod';
 import { EventEmitter } from '@angular/core';
+import { Settings } from '../interfaces/settings';
 
 // import { CapacitorHttp } from '@capacitor/core';
 
@@ -16,7 +16,7 @@ import { EventEmitter } from '@angular/core';
 })
 export class MysqlDatabaseService {
 
-  public settings: Settings = new Settings();
+  public settings: Settings;
 
   public domain = environment.root_url;
 

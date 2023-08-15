@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { KeysResult, Preferences } from '@capacitor/preferences';
 import { PrivateUser } from 'src/app/classes/private-user/private-user';
-import { Settings } from 'src/app/classes/settings/settings/settings';
+import { Settings } from 'src/app/interfaces/settings';
 
 @Injectable({
   providedIn: 'root'

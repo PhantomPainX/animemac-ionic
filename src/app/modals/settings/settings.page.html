@@ -34,6 +34,10 @@
         <ion-label>Proveedores de video adicionales</ion-label>
         <ion-toggle slot="end" value="aditionalProviders" [(ngModel)]="aditionalProvidersToggle" (ionChange)="toggle($event)"></ion-toggle>
       </ion-item>
+      <ion-item lines="full">
+        <ion-label>Tema oscuro</ion-label>
+        <ion-toggle slot="end" value="darkTheme" [(ngModel)]="darkThemeToggle" (ionChange)="toggle($event)"></ion-toggle>
+      </ion-item>
     </ion-item-group>
   </ion-list>
 </ion-content>

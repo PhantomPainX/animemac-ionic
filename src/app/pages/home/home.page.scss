@@ -223,13 +223,11 @@ ion-content {
         margin: 0 10px;
     }
 
-    @media (prefers-color-scheme: 'light') {
-        ion-list {
-            background-color: #f4f4f4;
+    :host-context(body.light) ion-list {
+        background-color: #f4f4f4;
 
-            ion-item {
-                --background: #f4f4f4;
-            }
+        ion-item {
+            --background: #f4f4f4;
         }
     }
 

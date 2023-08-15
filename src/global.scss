@@ -286,13 +286,13 @@ ion-card.anime-grid-card {
     }
 }
 
-@media (prefers-color-scheme: dark) {
+body.dark {
     img {
         background-color: #162b46;
     }
 }
 
-@media (prefers-color-scheme: light) {
+body.light {
     img {
         background-color: #eeeeee;
     }

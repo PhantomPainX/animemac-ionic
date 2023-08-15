@@ -32,7 +32,7 @@ ion-content {
             display: flex;
             justify-content: flex-end;
 
-            @media(prefers-color-scheme: dark) {
+            :host-context(body.dark) & {
                 background: #33435c;
                 ion-button {
                     color: rgb(228, 228, 228);
@@ -41,8 +41,8 @@ ion-content {
                 }
             }
 
-            @media (prefers-color-scheme: light) {
-                background: #efebeba6;
+            :host-context(body.light) & {
+                background: #dddddda7;
                 ion-button {
                     color: rgb(0, 0, 0);
                     font-size: smaller;
@@ -78,7 +78,7 @@ ion-content {
         margin: 0;
         box-shadow: none;
 
-        @media (prefers-color-scheme: light) {
+        :host-context(body.light) & {
             background: #efebeba6;
             border-bottom: #e3e3e3 0.5px solid;
             ion-item {

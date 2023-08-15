@@ -281,16 +281,16 @@ ion-content {
 
 }
 
-@media (prefers-color-scheme: dark) {
+:host-context(body.dark) {
     ion-header {
         --background: #0b192f;
     }
     ion-toolbar {
-        --background: #09192f;
+        --background: #0b192f;
     }
 }
 
-@media (prefers-color-scheme: light) {
+:host-context(body.light) {
     ion-header {
         --background: #FFFFFF;
     }

@@ -106,10 +106,11 @@ export class UtilsService {
     return fac.getColorAsync(url);
   }
 
-  resetStatusBarColorOfToolbar() {
+  async resetStatusBarColorOfToolbar() {
     if (this.platform.is("android")) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      if (this.getDeviceTheme() === "dark") {
+      const theme = await this.getDeviceTheme();
+      if (theme === "dark") {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#0d1c35" });
       } else {
@@ -119,10 +120,11 @@ export class UtilsService {
     }
   }
 
-  setDefaultStatusBarColor() {
+  async setDefaultStatusBarColor() {
     if (this.platform.is("android")) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      if (this.getDeviceTheme() === "dark") {
+      const theme = await this.getDeviceTheme();
+      if (theme === "dark") {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#0b192f" });
       } else {
@@ -176,8 +178,9 @@ export class UtilsService {
   }
 
 
-  getDeviceTheme() {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  async getDeviceTheme() {
+    const settings = await this.preferences.getSettings();
+    if (settings.darkTheme) {
       return "dark";
     } else {
       return "light";

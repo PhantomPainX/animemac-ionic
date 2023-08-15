@@ -11,18 +11,19 @@ import { NavigationExtras, NavigationStart, Router } from '@angular/router';
 import { UtilsService } from './services/utils.service';
 import { PrivateUser } from './classes/private-user/private-user';
 import { PreferencesService } from './services/preferences/preferences.service';
-
 import { Browser } from '@capacitor/browser';
 import { MysqlDatabaseService } from './services/mysql-database.service';
 import { environment } from 'src/environments/environment.prod';
 import { Subscription } from 'rxjs';
 import { AppLauncher, CanOpenURLResult } from '@capacitor/app-launcher';
 import { register } from 'swiper/element/bundle';
-import { Settings } from './classes/settings/settings/settings';
 import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { SigninPage } from './pages/auth/signin/signin.page';
 import { ProfileService } from './services/profile/profile.service';
 import { RegisterPage } from './pages/auth/register/register.page';
+import { Settings } from './interfaces/settings';
+import { ThemeService } from './services/theme/theme.service';
+import { SharingService } from './core/services/sharing/sharing.service';
 
 @Pipe({ name: 'safe' })
 export class SafePipe implements PipeTransform {
@@ -60,11 +61,12 @@ export class AppComponent {
   public timeOnApp: number = 0;
   private recentlyLoggedSubscription: Subscription;
   private updatedUserExtraSubscription: Subscription;
+  private themeChangedSubscription: Subscription;
 
   constructor(public platform: Platform, public toastCtrl: ToastController, public modalCtrl: ModalController, 
     public screenOrientation: ScreenOrientation, public router: Router, public utils: UtilsService, public navCtrl: NavController, 
     public menu: MenuController, public localStorage: PreferencesService, public database: MysqlDatabaseService, public alertCtrl: AlertController, 
-    public profileService: ProfileService) {
+    public profileService: ProfileService, private themeService: ThemeService, private sharingService: SharingService) {
 
       // Detectar si el usuario refresca la página
 
@@ -81,7 +83,7 @@ export class AppComponent {
         }
       });
 
-      this.updatedUserExtraSubscription = this.profileService.updatedUserExtra$.subscribe(async (updated) => {
+      this.updatedUserExtraSubscription = this.sharingService.getUserExtra().subscribe(async (updated) => {
         if (updated) {
           const oldImage = this.fixImage(this.profileImage);
           const temp_user = await this.localStorage.getUser();
@@ -115,6 +117,9 @@ export class AppComponent {
     if (this.recentlyLoggedSubscription) {
       this.recentlyLoggedSubscription.unsubscribe();
     }
+    if (this.themeChangedSubscription) {
+      this.themeChangedSubscription.unsubscribe();
+    }
   }
 
   // Ve si es la primera vez que se abre la aplicación y si el usuario esta logeado o es invitado
@@ -134,14 +139,20 @@ export class AppComponent {
 
       const localSettings = await this.localStorage.getSettings();
       if (localSettings === null) {
-        let settings = new Settings();
-        settings.chromecastEnabled = true;
-        settings.pipEnabled = true;
-        settings.aditionalProviders = true;
+        let settings: Settings = {
+          chromecastEnabled: true,
+          pipEnabled: true,
+          aditionalProviders: true,
+          darkTheme: false
+        };
         this.localStorage.setSettings(settings);
       } else {
         if (localSettings.aditionalProviders === undefined) {
           localSettings.aditionalProviders = true;
+          this.localStorage.setSettings(localSettings);
+        }
+        if (localSettings.darkTheme === undefined) {
+          localSettings.darkTheme = false;
           this.localStorage.setSettings(localSettings);
         }
       }
@@ -287,15 +298,27 @@ export class AppComponent {
   }
 
   addColorSchemeListener() {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async event => {
-      const newColorScheme = event.matches ? "dark" : "light";
-      
-      if (newColorScheme === 'dark') {
-        StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#141414' });
+    this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(async (darkTheme) => {
+      if (darkTheme) {
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+        if (this.platform.is('android')) {
+          StatusBar.setStyle({ style: Style.Dark });
+          StatusBar.setBackgroundColor({ color: '#141414' });
+        }
       } else {
-        StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: '#ffffff' });
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        if (this.platform.is('android')) {
+          StatusBar.setStyle({ style: Style.Light });
+          StatusBar.setBackgroundColor({ color: '#ffffff' });
+        }
+      }
+    });
+    this.localStorage.getSettings().then(settings => {
+      if (settings) {
+        this.themeService.themeChanged$.emit(settings.darkTheme);
+        console.log("settings.darkTheme", settings.darkTheme);
       }
     });
   }

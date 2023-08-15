@@ -20,6 +20,7 @@ import { RegisterPage } from '../auth/register/register.page';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { VideoPlayerService } from 'src/app/services/video-player/video-player.service';
 import { WebVideoPlayerPage } from 'src/app/modals/web-video-player/web-video-player.page';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 //import { ResolversService } from 'src/app/services/resolvers/resolvers.service';
 
 
@@ -88,6 +89,7 @@ export class HomePage implements OnInit {
     public iab: InAppBrowser,
     public profileService: ProfileService,
     public videoPlayerService: VideoPlayerService,
+    private sharingService: SharingService
     //private resolvers: ResolversService
     ) {
 
@@ -185,7 +187,8 @@ export class HomePage implements OnInit {
         });
       }
 
-      this.updatedUserExtraSubscription = this.profileService.updatedUserExtra$.subscribe(async (updated) => {
+      this.updatedUserExtraSubscription = this.sharingService.getUserExtra().subscribe(async (updated) => {
+        console.log("updatedUserExtraSubscription: ", updated)
         if (updated) {
           const oldImage = this.fixImage(this.profileImage);
           const temp_user = await this.localStorage.getUser();

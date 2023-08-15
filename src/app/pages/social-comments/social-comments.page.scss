@@ -23,7 +23,7 @@ ion-content {
             justify-content: flex-end;
             // margin-top: 10px;
 
-            @media(prefers-color-scheme: dark) {
+            :host-context(body.dark) & {
                 background: #162b46;
                 ion-button {
                     color: rgb(228, 228, 228);
@@ -32,7 +32,7 @@ ion-content {
                 }
             }
 
-            @media (prefers-color-scheme: light) {
+            :host-context(body.light) & {
                 background: #dddddda7;
                 ion-button {
                     color: rgb(0, 0, 0);

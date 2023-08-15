@@ -30,6 +30,7 @@ import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { LocationStrategy } from '@angular/common';
+import { SharingService } from './core/services/sharing/sharing.service';
 
 
 export class CustomHammerConfig extends HammerGestureConfig {
@@ -68,6 +69,7 @@ sessionStorage.setItem = function () {
     HTTP,
     File,
     InAppBrowser,
+    SharingService,
     // InAppPurchase2,
     { 
       provide: RouteReuseStrategy, 
