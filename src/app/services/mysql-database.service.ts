@@ -6,8 +6,8 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { PreferencesService } from './preferences/preferences.service';
 // import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import { environment } from 'src/environments/environment.prod';
-import { EventEmitter } from '@angular/core';
 import { Settings } from '../interfaces/settings';
+import { SharingService } from '../core/services/sharing/sharing.service';
 
 // import { CapacitorHttp } from '@capacitor/core';
 
@@ -59,12 +59,11 @@ export class MysqlDatabaseService {
   public amrCheckAndroidVersion: boolean = false;
   public amrGetSeenEpisodesHistory: boolean = false;
 
-  public recentlyLogged$: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public toggleSeenEpisode$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     public utils: UtilsService,
-    public localStorage: PreferencesService
+    public localStorage: PreferencesService,
+    private sharingService: SharingService
   ) { }
 
   getCookie(name) {
@@ -872,13 +871,13 @@ export class MysqlDatabaseService {
       }).then(async response => {
         if (response.status == 201) {
           resolve(true);
-          this.toggleSeenEpisode$.emit(true);
+          this.sharingService.emitSeenEpisodeChange(true);
         } else if (response.status == 200) {
           resolve(true)
-          this.toggleSeenEpisode$.emit(true);
+          this.sharingService.emitSeenEpisodeChange(true);
         } else if (response.status == 204) {
           resolve(false);
-          this.toggleSeenEpisode$.emit(false);
+          this.sharingService.emitSeenEpisodeChange(true);
 
         } else if (response.status == 403) {
           const data = await response.json();

@@ -19,6 +19,7 @@ import { CommentsService } from '../services/comments/comments.service';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { ProfileService } from '../services/profile/profile.service';
 import { UserGroups } from '../classes/user-groups/user-groups';
+import { SharingService } from '../core/services/sharing/sharing.service';
 
 export type TabSchema = {
   routerPath: string;
@@ -70,9 +71,10 @@ export class TablinksPage implements OnInit {
   constructor(public localStorage: PreferencesService, public platform: Platform,
     public routerOutlet: IonRouterOutlet, public alertCtrl: AlertController, public utils: UtilsService,
     public navCtrl: NavController, public fMessagingServer: ServerService, public commentsService: CommentsService, 
-    public modalCtrl: ModalController, public profileService: ProfileService, public database: MysqlDatabaseService) {
+    public modalCtrl: ModalController, public profileService: ProfileService, public database: MysqlDatabaseService,
+    private sharingService: SharingService) {
 
-      this.recentlyLoggedSubscription = this.database.recentlyLogged$.subscribe(async (logged) => {
+      this.recentlyLoggedSubscription = this.sharingService.getRecentlyLogged().subscribe(async (logged) => {
         if (logged) {
           this.loggedVerification();
         }

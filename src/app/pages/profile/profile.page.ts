@@ -226,6 +226,7 @@ export class ProfilePage implements OnInit {
       this.formProfile.controls.email.setValue(this.user.email);
 
       this.user = await this.localStorage.getUser();
+      this.sharingService.emitUserExtraChange(true);
 
       if (showToast) {
         await this.utils.showToast('Cuenta sincronizada', 1, true);
@@ -348,7 +349,7 @@ export class ProfilePage implements OnInit {
         this.utils.showToast(response.message, 2, true);
         this.staticImage = this.image;
         await this.syncUser(false);
-        this.sharingService.emitUserExtra(true);
+        this.sharingService.emitUserExtraChange(true);
         //this.profileService.updatedUserExtra$.emit(true);
       } else {
         this.image = this.staticImage;

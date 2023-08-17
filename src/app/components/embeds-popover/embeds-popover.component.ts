@@ -142,6 +142,7 @@ export class EmbedsPopoverComponent implements OnInit {
     } else {
       this.webCompatible = this.embeds;
       this.optionValue = 'web';
+      this.buttonsClickable = true;
     }
   }
 

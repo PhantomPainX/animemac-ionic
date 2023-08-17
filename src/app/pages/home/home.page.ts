@@ -153,34 +153,19 @@ export class HomePage implements OnInit {
         this.token = this.user.token;
         this.profileImage = this.fixImage(this.user.user_extra.avatar);
         this.obtainNextToSee();
-        // document.addEventListener('itemInserted', this.func, false);
-        this.episodeTimeSeenChangedSubscription = this.videoPlayerService.episodeTimeSeenChanged$.subscribe(async () => {
-          this.zone.run(() => {
-            this.obtainNextToSee();
-          });
-        });
-        this.toggleSeenEpisodeSubscription = this.database.toggleSeenEpisode$.subscribe(async () => {
-          this.zone.run(() => {
-            this.obtainNextToSee();
-          });
+        this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
+          this.obtainNextToSee();
         });
       } else {
-        this.recentlyLoggedSubscription = this.database.recentlyLogged$.subscribe(async (logged) => {
+        this.recentlyLoggedSubscription = this.sharingService.getRecentlyLogged().subscribe(async (logged) => {
           this.isLogged = logged;
           if (this.isLogged) {
             this.user = await this.localStorage.getUser();
             this.token = this.user.token;
             this.profileImage = this.fixImage(this.user.user_extra.avatar);
             this.obtainNextToSee();
-            this.episodeTimeSeenChangedSubscription = this.videoPlayerService.episodeTimeSeenChanged$.subscribe(async () => {
-              this.zone.run(() => {
-                this.obtainNextToSee();
-              });
-            });
-            this.toggleSeenEpisodeSubscription = this.database.toggleSeenEpisode$.subscribe(async () => {
-              this.zone.run(() => {
-                this.obtainNextToSee();
-              });
+            this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
+              this.obtainNextToSee();
             });
             this.recentlyLoggedSubscription.unsubscribe();
           }
@@ -188,7 +173,6 @@ export class HomePage implements OnInit {
       }
 
       this.updatedUserExtraSubscription = this.sharingService.getUserExtra().subscribe(async (updated) => {
-        console.log("updatedUserExtraSubscription: ", updated)
         if (updated) {
           const oldImage = this.fixImage(this.profileImage);
           const temp_user = await this.localStorage.getUser();

@@ -115,7 +115,7 @@ export class UtilsService {
         StatusBar.setBackgroundColor({ color: "#0d1c35" });
       } else {
         StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: "#FFFFFF" });
+        StatusBar.setBackgroundColor({ color: "#f9f9f9" });
       }
     }
   }

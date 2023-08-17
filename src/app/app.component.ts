@@ -77,7 +77,7 @@ export class AppComponent {
       //   }
       // });
 
-      this.recentlyLoggedSubscription = this.database.recentlyLogged$.subscribe(async (logged) => {
+      this.recentlyLoggedSubscription = this.sharingService.getRecentlyLogged().subscribe(async (logged) => {
         if (logged) {
           this.loggedVerification();
         }
@@ -298,26 +298,26 @@ export class AppComponent {
   }
 
   addColorSchemeListener() {
-    this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(async (darkTheme) => {
+    this.themeChangedSubscription = this.sharingService.getThemeChanged().subscribe(async (darkTheme) => {
       if (darkTheme) {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         if (this.platform.is('android')) {
           StatusBar.setStyle({ style: Style.Dark });
-          StatusBar.setBackgroundColor({ color: '#141414' });
+          StatusBar.setBackgroundColor({ color: '#0d1c35' });
         }
       } else {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         if (this.platform.is('android')) {
           StatusBar.setStyle({ style: Style.Light });
-          StatusBar.setBackgroundColor({ color: '#ffffff' });
+          StatusBar.setBackgroundColor({ color: '#f9f9f9' });
         }
       }
     });
     this.localStorage.getSettings().then(settings => {
       if (settings) {
-        this.themeService.themeChanged$.emit(settings.darkTheme);
+        this.sharingService.emitThemeChanged(settings.darkTheme);
         console.log("settings.darkTheme", settings.darkTheme);
       }
     });

@@ -8,39 +8,37 @@ import { MysqlDatabaseService } from '../mysql-database.service';
 import { PreferencesService } from '../preferences/preferences.service';
 import { environment } from 'src/environments/environment.prod';
 import { Settings } from 'src/app/interfaces/settings';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VideoPlayerService {
 
-  public capacitorVideoPlayer: any = CapacitorVideoPlayer;
-  @ViewChild('toolbar', { read: ElementRef }) toolbar: ElementRef;
+  private capacitorVideoPlayer: any = CapacitorVideoPlayer;
+  @ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 
   // [IMPORTANTE] Como es un servicio, se necesitan controlar las variables de forma manual
   // no tiene ciclo de vida como un componente
 
-  public domain: string = environment.root_url;
-  public seconds: number = 0;
-  public interval: any;
-  public videoDuration: number = 0.0;
-  public seenSeconds: number = 0.0; // variable que guarda los segundos vistos del episodio
-  public readyHandler: any;
-  public endHandler: any;
-  public exitHandler: any;
-  public needSeek: boolean = false;
-  public seekTime: number = 0;
-  public episodeWasMarkedAsSeen: boolean = false;
+  private domain: string = environment.root_url;
+  private seconds: number = 0;
+  private interval: any;
+  private videoDuration: number = 0.0;
+  private seenSeconds: number = 0.0; // variable que guarda los segundos vistos del episodio
+  private readyHandler: any;
+  private endHandler: any;
+  private exitHandler: any;
+  private needSeek: boolean = false;
+  private seekTime: number = 0;
+  private episodeWasMarkedAsSeen: boolean = false;
 
-  public episodeTimeSeenChanged$: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public recentlySawVideo$: EventEmitter<any> = new EventEmitter<any>();
-
-  constructor(public screenOrientation: ScreenOrientation, public platform: Platform, public utils: UtilsService, 
-    public database: MysqlDatabaseService, public localStorage: PreferencesService, 
-    public zone: NgZone, public alertCtrl: AlertController) {
+  constructor(private screenOrientation: ScreenOrientation, private platform: Platform, private utils: UtilsService, 
+    private database: MysqlDatabaseService, private localStorage: PreferencesService, 
+    private zone: NgZone, private alertCtrl: AlertController, private sharingService: SharingService) {
   }
 
-  async toggleEpisode(episode: any, token: string) {
+  private async toggleEpisode(episode: any, token: string) {
 
     this.database.toggleSeenEpisode(token, episode.id).then((added) => {
       if (added) {
@@ -51,7 +49,7 @@ export class VideoPlayerService {
     });
   }
 
-  async nativePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
+  public async nativePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
     settings: Settings, providerName: string, videoProviderDomains: any, videoProviderQuality: string) {
 
       const loader = await this.utils.createIonicLoader("Por favor espera...");
@@ -107,7 +105,7 @@ export class VideoPlayerService {
   
   }
 
-  async executePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
+  private async executePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
     settings: Settings, providerName: string, videoProviderDomains: any, videoProviderQuality: string) {
 
       this.episodeWasMarkedAsSeen = false;
@@ -119,7 +117,7 @@ export class VideoPlayerService {
         headers: video.headers,
         title: title,
         smallTitle: smallTitle,
-        accentColor: "#f0b400",
+        accentColor: "#64fada",
         chromecast: settings.chromecastEnabled,
         artwork: image,
         pipEnabled: settings.pipEnabled
@@ -180,7 +178,10 @@ export class VideoPlayerService {
                   videoProviderDomains,
                   videoProviderQuality
                 ).then(() => {
-                  this.recentlySawVideo$.emit({
+                  // this.recentlySawVideo$.emit({
+                  //   episode: episode
+                  // });
+                  this.sharingService.emitAutoplayPreferencesChanged({
                     episode: episode
                   });
                 });
@@ -200,7 +201,7 @@ export class VideoPlayerService {
                     episode.seconds_seen.episode = episode.id;
 
                     if (!this.episodeWasMarkedAsSeen) {
-                      this.episodeTimeSeenChanged$.emit(true);
+                      this.sharingService.emitEpisodeTimeSeenChanged(true);
                     }
                   });
                 });
@@ -260,7 +261,7 @@ export class VideoPlayerService {
                   episode.seconds_seen.episode = episode.id;
 
                   if (!this.episodeWasMarkedAsSeen) {
-                    this.episodeTimeSeenChanged$.emit(true);
+                    this.sharingService.emitEpisodeTimeSeenChanged(true);
                   }
                 });
               });
@@ -294,7 +295,10 @@ export class VideoPlayerService {
               videoProviderDomains,
               videoProviderQuality
             ).then(() => {
-              this.recentlySawVideo$.emit({
+              // this.recentlySawVideo$.emit({
+              //   episode: episode
+              // });
+              this.sharingService.emitAutoplayPreferencesChanged({
                 episode: episode
               });
             });
@@ -314,13 +318,46 @@ export class VideoPlayerService {
 
   }
 
-  removeAllListeners() {
+  public playRadio() {
+    let options: capVideoPlayerOptions = {
+      mode: 'fullscreen',
+      url: 'https://thisisamazing.tv/live.m3u8',
+      playerId: 'player32',
+      title: 'Music Live Radio',
+      smallTitle: 'thisisamazing.tv',
+      accentColor: "#64fada",
+      chromecast: true,
+      artwork: 'https://img.freepik.com/premium-photo/music-mind-music-abstract-art-created-with-generative-ai-technology_545448-15311.jpg',
+      pipEnabled: true
+    }
+    this.capacitorVideoPlayer.initPlayer(options).then(() => {
+      this.capacitorVideoPlayer.play({playerId: 'player32'}).then(async () => {
+        if (this.platform.is('android')) {
+          this.screenOrientation.unlock();
+        }
+
+        this.exitHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerExit', () => {
+          if (this.platform.is('android')) {
+            this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          }
+        });
+
+        this.endHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerEnded', () => {
+          if (this.platform.is('android')) {
+            this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          }
+        });
+      });
+    });
+  }
+
+  private removeAllListeners() {
     this.readyHandler.remove();
     this.exitHandler.remove();
     this.endHandler.remove();
   }
 
-  getSeenEpisodeTime(episode: number, token: string) {
+  private getSeenEpisodeTime(episode: number, token: string) {
     return new Promise<any>((resolve, reject) => {
       const url = this.domain + '/api/v1/seen-episode-time/?episode=' + episode;
       fetch(url, {
@@ -341,7 +378,7 @@ export class VideoPlayerService {
     });
   }
 
-  postSeenEpisodeTime(episode: number, token: string, seconds: number, total_seconds: number) {
+  private postSeenEpisodeTime(episode: number, token: string, seconds: number, total_seconds: number) {
     return new Promise<any>((resolve, reject) => {
       const url = this.domain + '/api/v1/seen-episode-time/';
       fetch(url, {

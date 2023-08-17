@@ -6,10 +6,10 @@ import { EventEmitter } from '@angular/core';
 })
 export class ThemeService {
 
-  public themeChanged$: EventEmitter<any> = new EventEmitter<any>();
+  // public themeChanged$: EventEmitter<any> = new EventEmitter<any>();
   constructor() { }
 
-  public changeTheme(darkTheme: boolean) {
-    this.themeChanged$.emit(darkTheme);
-  }
+  // public changeTheme(darkTheme: boolean) {
+  //   this.themeChanged$.emit(darkTheme);
+  // }
 }

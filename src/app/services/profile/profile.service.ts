@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { PrivateUser } from 'src/app/classes/private-user/private-user';
 import { environment } from 'src/environments/environment.prod';
 import { UtilsService } from '../utils.service';
@@ -14,7 +14,6 @@ export class ProfileService {
   public amrDeleteUserData: boolean = false;
   public amrUpdateUserExtra: boolean = false;
 
-  public updatedUserExtra$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(public utils: UtilsService) { }
 

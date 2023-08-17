@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { NativeBiometric, BiometricOptions } from "@capgo/capacitor-native-biometric";
 import { environment } from 'src/environments/environment.prod';
 import { ForgotPasswordPage } from '../forgot-password/forgot-password.page';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Component({
   selector: 'app-signin',
@@ -45,7 +46,8 @@ export class SigninPage implements OnInit {
     public platform: Platform,
     public modalCtrl: ModalController,
     public localStorage: PreferencesService,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController,
+    private sharingService: SharingService) {
 
     this.formLogin = this.formBuilder.group({
       email: ['', [
@@ -213,7 +215,7 @@ export class SigninPage implements OnInit {
                       this.localStorage.setLogged(true);
                       this.localStorage.setGuest(false);
 
-                      this.database.recentlyLogged$.emit(true);
+                      this.sharingService.emitRecentlyLoggedChange(true);
                       this.modalCtrl.dismiss({ success: true });
                     } else {
                       const modal = await this.modalCtrl.create({
@@ -229,7 +231,7 @@ export class SigninPage implements OnInit {
                         this.localStorage.setLogged(true);
                         this.localStorage.setGuest(false);
 
-                        this.database.recentlyLogged$.emit(true);
+                        this.sharingService.emitRecentlyLoggedChange(true);
                         this.modalCtrl.dismiss({ success: true });
                       }
                     }
@@ -257,7 +259,7 @@ export class SigninPage implements OnInit {
             this.localStorage.setLogged(true);
             this.localStorage.setGuest(false);
 
-            this.database.recentlyLogged$.emit(true);
+            this.sharingService.emitRecentlyLoggedChange(true);
             this.modalCtrl.dismiss({ success: true });
           } else {
             const modal = await this.modalCtrl.create({
@@ -273,7 +275,7 @@ export class SigninPage implements OnInit {
               this.localStorage.setLogged(true);
               this.localStorage.setGuest(false);
 
-              this.database.recentlyLogged$.emit(true);
+              this.sharingService.emitRecentlyLoggedChange(true);
               this.modalCtrl.dismiss({ success: true });
             }
           }
@@ -386,7 +388,7 @@ export class SigninPage implements OnInit {
                           this.setUserBioCredentials(this.formLogin.value.email, this.formLogin.value.password);
                         }
 
-                        this.database.recentlyLogged$.emit(true);
+                        this.sharingService.emitRecentlyLoggedChange(true);
                         this.modalCtrl.dismiss({ success: true });
                       } else {
                         const modal = await this.modalCtrl.create({
@@ -405,7 +407,7 @@ export class SigninPage implements OnInit {
                             this.setUserBioCredentials(this.formLogin.value.email, this.formLogin.value.password);
                           }
 
-                          this.database.recentlyLogged$.emit(true);
+                          this.sharingService.emitRecentlyLoggedChange(true);
                           this.modalCtrl.dismiss({ success: true });
                         }
                       }
@@ -435,7 +437,7 @@ export class SigninPage implements OnInit {
                 this.setUserBioCredentials(this.formLogin.value.email, this.formLogin.value.password);
               }
 
-              this.database.recentlyLogged$.emit(true);
+              this.sharingService.emitRecentlyLoggedChange(true);
               this.modalCtrl.dismiss({ success: true });
             } else {
               const modal = await this.modalCtrl.create({
@@ -454,7 +456,7 @@ export class SigninPage implements OnInit {
                   this.setUserBioCredentials(this.formLogin.value.email, this.formLogin.value.password);
                 }
 
-                this.database.recentlyLogged$.emit(true);
+                this.sharingService.emitRecentlyLoggedChange(true);
                 this.modalCtrl.dismiss({ success: true });
               }
             }
@@ -589,7 +591,7 @@ export class SigninPage implements OnInit {
                         this.localStorage.setLogged(true);
                         this.localStorage.setGuest(false);
 
-                        this.database.recentlyLogged$.emit(true);
+                        this.sharingService.emitRecentlyLoggedChange(true);
                         this.modalCtrl.dismiss({ success: true });
                       } else {
                         const modal = await this.modalCtrl.create({
@@ -605,7 +607,7 @@ export class SigninPage implements OnInit {
                           this.localStorage.setLogged(true);
                           this.localStorage.setGuest(false);
 
-                          this.database.recentlyLogged$.emit(true);
+                          this.sharingService.emitRecentlyLoggedChange(true);
                           this.modalCtrl.dismiss({ success: true });
                         }
                       }
@@ -632,7 +634,7 @@ export class SigninPage implements OnInit {
               this.localStorage.setLogged(true);
               this.localStorage.setGuest(false);
 
-              this.database.recentlyLogged$.emit(true);
+              this.sharingService.emitRecentlyLoggedChange(true);
               this.modalCtrl.dismiss({ success: true });
             } else {
               const modal = await this.modalCtrl.create({
@@ -648,7 +650,7 @@ export class SigninPage implements OnInit {
                 this.localStorage.setLogged(true);
                 this.localStorage.setGuest(false);
 
-                this.database.recentlyLogged$.emit(true);
+                this.sharingService.emitRecentlyLoggedChange(true);
                 this.modalCtrl.dismiss({ success: true });
               }
             }

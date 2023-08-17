@@ -13,6 +13,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 
 import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { environment } from 'src/environments/environment.prod';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Component({
   selector: 'app-register',
@@ -35,7 +36,8 @@ export class RegisterPage implements OnInit {
     public modalCtrl: ModalController,
     public localStorage: PreferencesService,
     public profileService: ProfileService,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController,
+    private sharingService: SharingService) {
 
     this.formRegister = this.formBuilder.group({
       username: ['', [
@@ -197,7 +199,7 @@ export class RegisterPage implements OnInit {
               this.localStorage.setGuest(false);
               this.setUserBioCredentials(this.formRegister.value.email, this.formRegister.value.password);
   
-              this.database.recentlyLogged$.emit(true);
+              this.sharingService.emitRecentlyLoggedChange(true);
               this.modalCtrl.dismiss({ success: true });
               
             } else {

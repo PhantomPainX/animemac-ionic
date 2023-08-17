@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NavController, Platform } from '@ionic/angular';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 import { Settings } from 'src/app/interfaces/settings';
 import { PreferencesService } from 'src/app/services/preferences/preferences.service';
-import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-settings',
@@ -20,7 +20,7 @@ export class SettingsPage implements OnInit {
   @ViewChild('toolbar', { read: ElementRef }) toolbar: ElementRef;
 
   constructor(public navCtrl: NavController, public platform: Platform, public localStorage: PreferencesService, 
-    private themeService: ThemeService) {
+    private sharingService: SharingService) {
     
   }
 
@@ -69,7 +69,7 @@ export class SettingsPage implements OnInit {
     } else if (value == 'darkTheme') {
       settings.darkTheme = checked;
       this.darkThemeToggle = checked;
-      this.themeService.changeTheme(checked);
+      this.sharingService.emitThemeChanged(checked);
     }
 
     this.localStorage.setSettings(settings);

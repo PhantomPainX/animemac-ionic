@@ -16,6 +16,7 @@ import { WebVideoPlayerPage } from 'src/app/modals/web-video-player/web-video-pl
 import { VideoPlayerService } from 'src/app/services/video-player/video-player.service';
 import { AutoplayService } from 'src/app/services/autoplay/autoplay.service';
 import { Domains } from 'src/app/components/embeds-popover/domains';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Component({
   selector: 'app-episode',
@@ -61,7 +62,7 @@ export class EpisodePage implements OnInit {
     public utils: UtilsService, public platform: Platform, public localStorage: PreferencesService, 
     public admob: AdsService, public differs:  KeyValueDiffers, public actionSheetCtrl: ActionSheetController, 
     private videoPlayerService: VideoPlayerService, private toastCtrl: ToastController, 
-    private autoplayService: AutoplayService) {
+    private autoplayService: AutoplayService, private sharingService: SharingService) {
     this.mediaUrl = this.database.animeMedia;
   }
 
@@ -69,7 +70,7 @@ export class EpisodePage implements OnInit {
 
     this.platform.ready().then(async () => {
 
-      this.recentlySawVideoSubscription = this.videoPlayerService.recentlySawVideo$.subscribe(async (data) => {
+      this.recentlySawVideoSubscription = this.sharingService.getAutoplayPreferences().subscribe((data) => {
         console.log("sub receltrysawvideo: ", data);
 
         if (data.episode.nextEpisode && this.autoplay) {
@@ -121,7 +122,7 @@ export class EpisodePage implements OnInit {
             this.objDiffer[elt] = this.differs.find(elt).create();
           });
           
-          this.toggleSeenEpisodeSubscription = this.database.toggleSeenEpisode$.subscribe(() => {
+          this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(() => {
             //hay que esperar 1 ms para que se actualice el episodio
             setTimeout(() => {
               this.checkNextToSeeEpisode();
@@ -430,7 +431,10 @@ export class EpisodePage implements OnInit {
 
   testAutoPlay() {
     this.anime.episodios[0].nextEpisode = this.anime.episodios[1];
-    this.videoPlayerService.recentlySawVideo$.emit({
+    // this.videoPlayerService.recentlySawVideo$.emit({
+    //   episode: this.anime.episodios[0],
+    // });
+    this.sharingService.emitAutoplayPreferencesChanged({
       episode: this.anime.episodios[0],
     });
   }

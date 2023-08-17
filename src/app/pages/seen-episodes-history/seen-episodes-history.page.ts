@@ -10,6 +10,7 @@ import { EpisodePage } from '../episode/episode.page';
 import { WebVideoPlayerPage } from 'src/app/modals/web-video-player/web-video-player.page';
 import { VideoPlayerService } from 'src/app/services/video-player/video-player.service';
 import { Subscription } from 'rxjs';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Component({
   selector: 'app-seen-episodes-history',
@@ -46,7 +47,8 @@ export class SeenEpisodesHistoryPage implements OnInit {
     private navCtrl: NavController,
     private localStorage: PreferencesService,
     private videoPlayerService: VideoPlayerService,
-    public zone: NgZone
+    public zone: NgZone,
+    private sharingService: SharingService
   ) { }
 
   ngOnInit() {
@@ -56,10 +58,8 @@ export class SeenEpisodesHistoryPage implements OnInit {
         const user = await this.localStorage.getUser();
         this.token = user.token;
 
-        this.episodeTimeSeenChangedSubscription = this.videoPlayerService.episodeTimeSeenChanged$.subscribe(async () => {
-          this.zone.run(() => {
-            this.getResults(this.sortName);
-          });
+        this.episodeTimeSeenChangedSubscription = this.sharingService.getEpisodeTimeSeen().subscribe(async () => {
+          this.getResults(this.sortName);
         });
       } else {
         this.navCtrl.navigateRoot('/signin');
@@ -71,28 +71,20 @@ export class SeenEpisodesHistoryPage implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.episodeTimeSeenChangedSubscription) {
-      this.episodeTimeSeenChangedSubscription.unsubscribe();
-    }
+    // if (this.episodeTimeSeenChangedSubscription) {
+    //   this.episodeTimeSeenChangedSubscription.unsubscribe();
+    // }
   }
 
   private async getResults(ordering: string) : Promise<void> {
 
     await this.database.getSeenEpisodesHistory(1, ordering, this.token).then(data => {
       this.results = data.results;
-      console.log(this.results);
       this.totalResults = data.count;
       this.pagination = {
         'actualPage': 1,
         'hasNextPage': data.next != null,
       }
-      // this.results = [];
-      // console.log(this.results);
-      // this.totalResults = 0;
-      // this.pagination = {
-      //   'actualPage': 1,
-      //   'hasNextPage': false,
-      // }
     }); // no hay catch porque los errores se controlan en el servicio
 
     if (this.results.length == 0) {
