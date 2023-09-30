@@ -91,6 +91,10 @@ export class DetailPage implements OnInit {
   // Subscriptions
   public activatedRouteSubscription: Subscription;
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+  public allowedUserInLiteVersion: boolean = false;
+
   constructor(
     public modalCtrl: ModalController,
     public database: MysqlDatabaseService,
@@ -115,6 +119,8 @@ export class DetailPage implements OnInit {
     if (this.isLogged) {
       this.user = await this.localStorage.getUser();
       this.token = this.user.token;
+
+      this.allowedUserInLiteVersion = this.user.is_staff || this.user.is_superuser || this.user.groups.moderator || this.user.groups.vip;
 
       await this.database.checkFavoriteAnime(this.user.token, this.animeid).then(data => {
         if (data.length > 0) {
@@ -357,6 +363,8 @@ export class DetailPage implements OnInit {
           episode: episode,
           animeImage: this.anime.imagen,
           animeName: this.anime.nombre,
+          liteVersion: this.liteVersion,
+          allowedUserInLiteVersion: this.allowedUserInLiteVersion
         }
       });
   

@@ -557,7 +557,6 @@ export class RepliesPage implements OnInit {
             await loader.present();
             await this.moderation.banUser(this.user.token, user.id, inputs.reason).then(async (res) => {
               loader.dismiss();
-              console.log(res);
               this.utils.showToast('Usuario baneado correctamente', 1, true);
               user.is_active = res.banned_user.is_active;
               user.user_extra = res.banned_user.user_extra;

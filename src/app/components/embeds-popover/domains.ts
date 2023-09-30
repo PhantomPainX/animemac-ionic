@@ -66,12 +66,12 @@ export class Domains {
         'streamhide.to', // no funka
         'louishide.com', // no funka
         'playhide.online',
+        'wishembed.pro',
         'ahvsh.com' // no funka
     ];
     private streamwish_domains: string[] = [
         'streamwish.to',
         'embedwish.com',
-        'wishembed.pro'
     ];
     private fireload_domains: string[] = [
         'fireload'

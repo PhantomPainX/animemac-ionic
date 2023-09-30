@@ -41,6 +41,14 @@ export class UtilsService {
     return await toast.present();
   }
 
+  async persistentToast(message: string) : Promise<HTMLIonToastElement> {
+    const toast: HTMLIonToastElement = await this.toastCtrl.create({
+      message: message,
+      mode: "ios",
+    });
+    return toast;
+  }
+
   async showIconToast(message: string, icon: string, seconds: number) {
     const toast: HTMLIonToastElement = await this.toastCtrl.create({
       message: message,
@@ -107,7 +115,7 @@ export class UtilsService {
   }
 
   async resetStatusBarColorOfToolbar() {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
       const theme = await this.getDeviceTheme();
       if (theme === "dark") {
@@ -121,7 +129,7 @@ export class UtilsService {
   }
 
   async setDefaultStatusBarColor() {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
       const theme = await this.getDeviceTheme();
       if (theme === "dark") {
@@ -135,7 +143,7 @@ export class UtilsService {
   }
 
   setStatusBarColor(color: string, style: Style) {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
       StatusBar.setStyle({ style: style });
       StatusBar.setBackgroundColor({ color: color });
@@ -143,19 +151,19 @@ export class UtilsService {
   }
 
   hideStatusbar() {
-    if (this.platform.is('android')) {
+    if (this.platform.is('android') && this.platform.is('capacitor')) {
       StatusBar.hide();
     }
   }
 
   overlayStatusbar(overlay: boolean) {
-    if (this.platform.is('android')) {
+    if (this.platform.is('android') && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: overlay });
     }
   }
 
   setStatusBarStyle(dark: boolean) {
-    if (this.platform.is('android')) {
+    if (this.platform.is('android') && this.platform.is('capacitor')) {
       if (dark) {
         StatusBar.setStyle({ style: Style.Dark });
       } else {
@@ -353,7 +361,7 @@ export class UtilsService {
     this.alertCtrl.create({
       header: "Estas usando una versión antigua de la aplicación",
       subHeader: "Actualizala para poder seguir usándola",
-      message: `Puedes descargar la versión actual (${newVersion}) en ${downloadUrl}`,
+      message: `Versión más actual: ${newVersion}`,
       mode: 'ios',
       translucent: true,
       backdropDismiss: false,

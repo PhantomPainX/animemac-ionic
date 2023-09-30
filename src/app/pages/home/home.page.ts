@@ -74,6 +74,10 @@ export class HomePage implements OnInit {
   // Subscriptions
   public routerSubscription: Subscription;
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+  public allowedUserInLiteVersion: boolean = false;
+
   constructor(public database: MysqlDatabaseService,
     public navCtrl: NavController,
     public popoverCtrl: PopoverController,
@@ -152,6 +156,8 @@ export class HomePage implements OnInit {
         this.user = await this.localStorage.getUser();
         this.token = this.user.token;
         this.profileImage = this.fixImage(this.user.user_extra.avatar);
+        // Usuarios que pueden ver videos usando la versión lite de la aplicación
+        this.allowedUserInLiteVersion = this.user.is_staff || this.user.is_superuser || this.user.groups.moderator || this.user.groups.vip;
         this.obtainNextToSee();
         this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
           this.obtainNextToSee();
@@ -163,6 +169,7 @@ export class HomePage implements OnInit {
             this.user = await this.localStorage.getUser();
             this.token = this.user.token;
             this.profileImage = this.fixImage(this.user.user_extra.avatar);
+            this.allowedUserInLiteVersion = this.user.is_staff || this.user.is_superuser || this.user.groups.moderator || this.user.groups.vip;
             this.obtainNextToSee();
             this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
               this.obtainNextToSee();
@@ -346,6 +353,7 @@ export class HomePage implements OnInit {
         this.utils.showToast("Ha ocurrido un error, intenta más tarde", 2, false);
       });
     } else {
+
       if (!episode.anime.imagen.includes(this.domain)) {
         episode.anime.imagen = this.domain + episode.anime.imagen;
       }
@@ -356,7 +364,9 @@ export class HomePage implements OnInit {
         componentProps: {
           episode: episode,
           animeImage: episode.anime.imagen,
-          animeName: episode.anime.nombre
+          animeName: episode.anime.nombre,
+          liteVersion: this.liteVersion,
+          allowedUserInLiteVersion: this.allowedUserInLiteVersion
         }
       });
       await popover.present();
@@ -590,18 +600,23 @@ export class HomePage implements OnInit {
           this.utils.showToast("No disponible en la web, descarga la aplicación", 1, false);
           return;
         }
-        const popover = await this.popoverCtrl.create({
-          component: ProvidersPopoverComponent,
-          cssClass: "custom-popover",
-          componentProps: {
-            download: true,
-            episode: episode,
-            animeImage: episode.anime.imagen,
-            animeName: episode.anime.nombre
-          }
-        });
-    
-        popover.present();
+
+        if (!this.liteVersion || this.allowedUserInLiteVersion) {
+          const popover = await this.popoverCtrl.create({
+            component: ProvidersPopoverComponent,
+            cssClass: "custom-popover",
+            componentProps: {
+              download: true,
+              episode: episode,
+              animeImage: episode.anime.imagen,
+              animeName: episode.anime.nombre
+            }
+          });
+      
+          popover.present();
+        } else {
+          this.utils.showToast("No disponible en la versión lite de la aplicación", 1, false);
+        }
       }
     }, {
       text: 'Ver Comentarios',

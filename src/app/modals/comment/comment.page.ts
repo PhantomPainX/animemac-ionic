@@ -430,7 +430,6 @@ export class CommentPage implements OnInit {
   }
 
   async openReplies(comment) {
-    console.log(comment);
     const modal = await this.modalCtrl.create({
       component: RepliesPage,
       cssClass: 'rounded-modal',

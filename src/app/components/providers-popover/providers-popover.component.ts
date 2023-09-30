@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, Platform, PopoverController } from '@ionic/angular';
+import { AlertController, ModalController, Platform, PopoverController, ToastController } from '@ionic/angular';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { PreferencesService } from 'src/app/services/preferences/preferences.service';
 import { AnimefenixService } from 'src/app/services/providers/animefenix/animefenix.service';
@@ -8,6 +8,8 @@ import { AnimeuiService } from 'src/app/services/providers/animeui/animeui.servi
 import { environment } from 'src/environments/environment.prod';
 import { EmbedsPopoverComponent } from '../embeds-popover/embeds-popover.component';
 import { AnimemeowService } from 'src/app/services/providers/animemeow/animemeow.service';
+import { Browser } from '@capacitor/browser';
+import { FullVersionInfoPage } from 'src/app/modals/full-version-info/full-version-info.page';
 
 @Component({
   selector: 'app-providers-popover',
@@ -21,8 +23,12 @@ export class ProvidersPopoverComponent implements OnInit {
   @Input() embedRequested: boolean;
   @Input() animeImage: string;
   @Input() animeName: string;
+  @Input() liteVersion: boolean;
+  @Input() allowedUserInLiteVersion: boolean;
   public isLogged: boolean = false;
   public domain: string = environment.root_url;
+
+  private liteToast = null;
 
   // Providers
 
@@ -55,7 +61,8 @@ export class ProvidersPopoverComponent implements OnInit {
 
   constructor(public database: MysqlDatabaseService, public popoverCtrl: PopoverController, public alertCtrl: AlertController, 
     public animeui: AnimeuiService, public localStorage: PreferencesService, public platform: Platform, 
-    public animefenix: AnimefenixService, public animeflv: AnimeflvService, public animemeow: AnimemeowService) { }
+    public animefenix: AnimefenixService, public animeflv: AnimeflvService, public animemeow: AnimemeowService, 
+    private toastCtrl: ToastController, private modalCtrl: ModalController) { }
 
   ngOnInit() {
 
@@ -68,108 +75,174 @@ export class ProvidersPopoverComponent implements OnInit {
       const settings = await this.localStorage.getSettings();
       this.aditionalProviders = settings.aditionalProviders;
 
-      this.getAnimeMacEmbeds();
+      // Si la version de la aplicación no es lite o si es lite pero el usuario tiene acceso a ver videos ondemand
+      if (!this.liteVersion || this.allowedUserInLiteVersion) {
+        this.getAnimeMacEmbeds();
     
-      if (this.aditionalProviders) {
-        this.getAnimeUiEmbeds();
-        this.getAnimefenixEmbeds();
-        this.getAnimeflvEmbeds();
-        this.getAnimemeowEmbeds();
+        if (this.aditionalProviders) {
+          // this.getAnimeUiEmbeds();
+          this.getAnimefenixEmbeds();
+          this.getAnimeflvEmbeds();
+          this.getAnimemeowEmbeds();
+        }
+      } else {
+        this.fetchingAnimemac = false;
+        this.animemacAvailable = true;
+        this.fetchingAnimeui = false;
+        this.animeuiAvailable = true;
+        this.fetchingAnimefenix = false;
+        this.animefenixAvailable = true;
+        this.fetchingAnimeflv = false;
+        this.animeflvAvailable = true;
+        this.fetchingAnimemeow = false;
+        this.animemeowAvailable = true;
+
+        this.liteToast = await this.toastCtrl.create({
+          message: "Recuerda que en la versión Lite no puedes ver videos dentro de la aplicación",
+          mode: "ios",
+          position: "bottom",
+          layout: "stacked",
+          buttons: [
+            {
+              text: "Más información",
+              role: "action",
+              side: "end",
+              handler: () => {
+                this.openFullVersionInfoModal();
+              }
+            },
+          ]
+        });
+
+        this.liteToast.present();
       }
     });
   }
 
+  ngOnDestroy() {
+    if (this.liteToast && this.liteVersion) {
+      this.liteToast.dismiss();
+    }
+  }
+
   async openEmbedsPopover(event, provider) {
 
-    if (!this.isLogged && !this.embedRequested) {
-      const alert = await this.alertCtrl.create({
-        header: 'Acceso Restringido',
-        message: 'Para poder ver los videos debes iniciar sesión',
-        mode: 'ios',
-        translucent: true,
-        buttons: [
-          {
-            text: 'Aceptar',
-            role: 'cancel'
-          }
-        ]
-      });
-      await alert.present();
-      return;
-    }
+    // Si la version de la aplicación no es lite o si es lite pero el usuario tiene acceso a ver videos ondemand
+    if (!this.liteVersion || this.allowedUserInLiteVersion) {
+      if (!this.isLogged && !this.embedRequested) {
+        const alert = await this.alertCtrl.create({
+          header: 'Acceso Restringido',
+          message: 'Para poder ver los videos debes iniciar sesión',
+          mode: 'ios',
+          translucent: true,
+          buttons: [
+            {
+              text: 'Aceptar',
+              role: 'cancel'
+            }
+          ]
+        });
+        await alert.present();
+        return;
+      }
 
-    if (provider == "animemac") {
-      var componentProps = {
-        download: this.download,
-        embedRequested: this.embedRequested,
-        animeName: this.animeName,
-        animeImage: this.animeImage,
-        episode: this.episode,
-        embeds: this.animemacEmbeds,
-        providerName: 'AnimeMac'
-      }
-    } else if (provider == "animeui") {
-      var componentProps = {
-        download: this.download,
-        embedRequested: this.embedRequested,
-        animeName: this.animeName,
-        animeImage: this.animeImage,
-        episode: this.episode,
-        embeds: this.animeuiEmbeds,
-        providerName: 'AnimeUI'
-      }
-    } else if (provider == "animefenix") {
-      var componentProps = {
-        download: this.download,
-        embedRequested: this.embedRequested,
-        animeName: this.animeName,
-        animeImage: this.animeImage,
-        episode: this.episode,
-        embeds: this.animefenixEmbeds,
-        providerName: 'AnimeFenix'
-      }
-    } else if (provider == "animeflv") {
-      var componentProps = {
-        download: this.download,
-        embedRequested: this.embedRequested,
-        animeName: this.animeName,
-        animeImage: this.animeImage,
-        episode: this.episode,
-        embeds: this.animeflvEmbeds,
-        providerName: 'AnimeFLV'
-      }
-    } else if (provider == "animemeow") {
-      var componentProps = {
-        download: this.download,
-        embedRequested: this.embedRequested,
-        animeName: this.animeName,
-        animeImage: this.animeImage,
-        episode: this.episode,
-        embeds: this.animemeowEmbeds,
-        providerName: 'AnimeMeow'
-      }
-    }
-
-    const popover = await this.popoverCtrl.create({
-      component: EmbedsPopoverComponent,
-      cssClass: "custom-popover",
-      event: event,
-      componentProps: componentProps
-    });
-    await popover.present();
-    await popover.onDidDismiss().then(async (data) => {
-      if (data.data) {
-        if (data.data.openedVideo) {
-          this.popoverCtrl.dismiss();
-        } else if (data.data.embedReady) {
-          this.popoverCtrl.dismiss({
-            embedReady: data.data.embedReady,
-            embedUrl: data.data.embedUrl,
-            embedName: data.data.embedName
-          });
+      if (provider == "animemac") {
+        var componentProps = {
+          download: this.download,
+          embedRequested: this.embedRequested,
+          animeName: this.animeName,
+          animeImage: this.animeImage,
+          episode: this.episode,
+          embeds: this.animemacEmbeds,
+          providerName: 'AnimeMac'
+        }
+      } else if (provider == "animeui") {
+        var componentProps = {
+          download: this.download,
+          embedRequested: this.embedRequested,
+          animeName: this.animeName,
+          animeImage: this.animeImage,
+          episode: this.episode,
+          embeds: this.animeuiEmbeds,
+          providerName: 'AnimeUI'
+        }
+      } else if (provider == "animefenix") {
+        var componentProps = {
+          download: this.download,
+          embedRequested: this.embedRequested,
+          animeName: this.animeName,
+          animeImage: this.animeImage,
+          episode: this.episode,
+          embeds: this.animefenixEmbeds,
+          providerName: 'AnimeFenix'
+        }
+      } else if (provider == "animeflv") {
+        var componentProps = {
+          download: this.download,
+          embedRequested: this.embedRequested,
+          animeName: this.animeName,
+          animeImage: this.animeImage,
+          episode: this.episode,
+          embeds: this.animeflvEmbeds,
+          providerName: 'AnimeFLV'
+        }
+      } else if (provider == "animemeow") {
+        var componentProps = {
+          download: this.download,
+          embedRequested: this.embedRequested,
+          animeName: this.animeName,
+          animeImage: this.animeImage,
+          episode: this.episode,
+          embeds: this.animemeowEmbeds,
+          providerName: 'AnimeMeow'
         }
       }
-    });
+
+      const popover = await this.popoverCtrl.create({
+        component: EmbedsPopoverComponent,
+        cssClass: "custom-popover",
+        event: event,
+        componentProps: componentProps
+      });
+      await popover.present();
+      await popover.onDidDismiss().then(async (data) => {
+        if (data.data) {
+          if (data.data.openedVideo) {
+            this.popoverCtrl.dismiss();
+          } else if (data.data.embedReady) {
+            this.popoverCtrl.dismiss({
+              embedReady: data.data.embedReady,
+              embedUrl: data.data.embedUrl,
+              embedName: data.data.embedName
+            });
+          }
+        }
+      });
+    } else {
+      let url = "";
+      switch (provider) {
+        case "animemac":
+          url = this.domain + "/ver/" + this.episode.slug;
+          break;
+        case "animeui":
+          url = "https://animeui.com/directory?title=" + this.animeName;
+          break;
+        case "animefenix":
+          url = "https://animefenix.tv/animes?q=" + this.animeName;
+          break;
+        case "animeflv":
+          url = "https://www3.animeflv.net/browse?q=" + this.animeName;
+          break;
+        case "animemeow":
+          url = "https://animemeow.xyz/directorio/?q=" + this.animeName;
+          break;
+        default:
+          break;
+      }
+
+      url = url.replace(/ /g, "+");
+      Browser.open({ url: url });
+    }
   }
 
   async getAnimeMacEmbeds() {
@@ -240,6 +313,16 @@ export class ProvidersPopoverComponent implements OnInit {
 
   dismiss() {
     this.popoverCtrl.dismiss();
+  }
+
+  private async openFullVersionInfoModal() {
+    const modal = await this.modalCtrl.create({
+      component: FullVersionInfoPage,
+      cssClass: 'rounded-modal',
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+    })
+    modal.present();
   }
 
 }

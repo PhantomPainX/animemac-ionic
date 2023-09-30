@@ -346,7 +346,6 @@ export class MysqlDatabaseService {
         .then(data => {
           resolve(data);
         }).catch(() => {
-          console.log("error");
           if (!this.amrGetNextToSee) {
             this.amrGetNextToSee = true;
             const interval = setInterval(() => {

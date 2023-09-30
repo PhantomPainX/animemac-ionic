@@ -6,7 +6,7 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button shape="round" (click)="openAiPopover($event)" [disabled]="gettingData || gettingWsMessage">
+      <ion-button shape="round" (click)="openAiPopover($event)" [disabled]="gettingData || sendingWsChunk">
         <ion-icon name="hardware-chip-outline"></ion-icon>
       </ion-button>
       <ion-popover #aiPopover [isOpen]="isAiPopoverOpened" (didDismiss)="isAiPopoverOpened = false">
@@ -43,7 +43,7 @@
   <div class="main__wrapper">
 
     <!--Titulo-->
-    <div class="titles animate__animated animate__fadeIn animate__faster" *ngIf="!gettingData">
+    <div class="titles animate__animated animate__fadeIn animate__faster">
       <div class="text">
         <h1>
           {{ title }}
@@ -59,14 +59,15 @@
     </div>
 
     <!--Resumenes-->
-    <div class="resume animate__animated animate__fadeIn animate__faster" *ngIf="(type == 'resume_no_spoilers' || type == 'resume') && !gettingData">
+    <div class="resume animate__animated animate__fadeIn animate__faster">
       <p *ngIf="!waitingWsChunkResponse">{{ resume }}</p>
-      <ion-spinner style="margin-top: 16px;" name="dots" *ngIf="waitingWsChunkResponse"></ion-spinner>
+      <ion-spinner style="margin-top: 16px;" name="dots" *ngIf="gettingData || waitingWsChunkResponse"></ion-spinner>
       <p class="animate__animated animate__fadeIn animate__faster" *ngIf="wsConnectionEnded">La conexión con el servidor de websockets ha terminado.</p>
+      <p class="animate__animated animate__fadeIn animate__faster" *ngIf="error != ''">{{ error }}</p>
     </div>
 
     <!--Curiosidades-->
-    <div class="" mode="ios" *ngIf="type == 'interesting_facts' && !gettingData">
+    <div class="animate__animated animate__fadeIn animate__faster" mode="ios" *ngIf="type == 'interesting_facts' && !gettingData">
       <ion-card style="margin: 15px 0" *ngFor="let fact of interestingFacts; let i = index">
         <ion-card-header>
           <ion-card-subtitle>Curiosidad #{{i+1}}</ion-card-subtitle>
@@ -80,7 +81,7 @@
     </div>
 
     <!--Personajes-->
-    <div class="characters" mode="ios" *ngIf="type == 'characters' && !gettingData">
+    <div class="characters animate__animated animate__fadeIn animate__faster" mode="ios" *ngIf="type == 'characters' && !gettingData">
       <ion-card style="margin: 15px 0" *ngFor="let char of characters; let i = index">
         <ion-card-header>
           <div class="text">
@@ -106,7 +107,7 @@
     </div>
 
     <!--Staff-->
-    <div class="staff" mode="ios" *ngIf="type == 'staff' && !gettingData">
+    <div class="staff animate__animated animate__fadeIn animate__faster" mode="ios" *ngIf="type == 'staff' && !gettingData">
       <ion-card style="margin: 15px 0" *ngFor="let char of staff; let i = index">
         <ion-card-header>
           <ion-card-title>{{ char.nombre }}</ion-card-title>
@@ -125,13 +126,13 @@
     </div>
 
     <!--Episodios Relevantes-->
-    <div class="" mode="ios" *ngIf="type == 'relevant_episodes' && !gettingData">
+    <div class="animate__animated animate__fadeIn animate__faster" mode="ios" *ngIf="type == 'relevant_episodes' && !gettingData">
       <ion-card style="margin: 15px 0" *ngFor="let ep of relevantEpisodes; let i = index">
         <ion-card-header>
-          <ion-card-subtitle>Episodio relevante #{{i+1}}</ion-card-subtitle>
-          <ion-card-title>{{ ep.nombre }}</ion-card-title>
-          <p>Numero: {{ ep.numero }}</p>
-          <p>Minuto más interesante: {{ ep.minuto_mas_interesante }}</p>
+          <div class="text">
+            <ion-card-title>{{ ep.nombre }}</ion-card-title>
+            <p>Minuto más interesante: {{ ep.minuto_mas_interesante }}</p>
+          </div>
         </ion-card-header>
       
         <ion-card-content>
@@ -145,7 +146,7 @@
     </div>
 
     <!--Recomendaciones-->
-    <div class="" mode="ios" *ngIf="type == 'recommendations' && !gettingData">
+    <div class="animate__animated animate__fadeIn animate__faster" mode="ios" *ngIf="type == 'recommendations' && !gettingData">
       <ion-card style="margin: 15px 0" *ngFor="let re of recommendations; let i = index">
         <ion-card-header>
           <ion-card-title>{{ re.nombre }}</ion-card-title>
@@ -163,8 +164,7 @@
       </ion-card>
     </div>
 
-    <p class="animate__animated animate__fadeIn animate__faster" *ngIf="error != ''">{{ error }}</p>
-    <!--Loader-->
+    <!-- <p class="animate__animated animate__fadeIn animate__faster" *ngIf="error != ''">{{ error }}</p>
     <div class="loader animate__animated animate__fadeIn animate__faster" *ngIf="gettingData">
         <div class="image">
           <img src="assets/icon/wave.gif" alt="">
@@ -176,7 +176,7 @@
           <p *ngIf="showFact">Sabías que...</p>
           <p *ngIf="showFact" class="animate__animated animate__fadeIn animate__faster">{{ fact }}</p>
         </div>
-    </div>
+    </div> -->
 
   </div>
 

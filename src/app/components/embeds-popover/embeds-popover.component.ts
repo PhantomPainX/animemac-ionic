@@ -5,7 +5,7 @@ import { AdsService } from 'src/app/services/ads/ads.service';
 import { PreferencesService } from 'src/app/services/preferences/preferences.service';
 import { ResolversService } from 'src/app/services/resolvers/resolvers.service';
 import { VideoPlayerService } from 'src/app/services/video-player/video-player.service';
-import { Browser } from '@capacitor/browser';
+import { Browser, OpenOptions } from '@capacitor/browser';
 import { VideosPopoverComponent } from '../videos-popover/videos-popover.component';
 import { DownloadService } from 'src/app/services/download/download.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -132,8 +132,6 @@ export class EmbedsPopoverComponent implements OnInit {
             this.episode['nextEpisode'] = ep;
           }
         }
-    
-        console.log("Episodio actualizado en embeds popover: ", this.episode);
 
         this.deserveAd = await this.localStorage.getDeserveAd();
         this.settings = await this.localStorage.getSettings();
@@ -661,7 +659,11 @@ export class EmbedsPopoverComponent implements OnInit {
               text: 'Abrir',
               handler: () => {
                 // window.open(embed.url, '_system', 'location=yes');
-                Browser.open({ url: embed.url });
+                const openOptions: OpenOptions = {
+                  url: embed.url,
+                  presentationStyle: 'popover',
+                }
+                Browser.open(openOptions);
               }
             }
           ]
@@ -715,7 +717,11 @@ export class EmbedsPopoverComponent implements OnInit {
         }, {
           text: 'Abrir',
           handler: () => {
-            Browser.open({ url: embedUrl });
+            const openOptions: OpenOptions = {
+              url: embedUrl,
+              presentationStyle: 'popover',
+            }
+            Browser.open(openOptions);
           }
         }
       ]

@@ -58,6 +58,10 @@ export class EpisodePage implements OnInit {
 
   private videoDomains = new Domains;
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+  public allowedUserInLiteVersion: boolean = false;
+
   constructor(public database: MysqlDatabaseService, public modalCtrl: ModalController, public popoverCtrl: PopoverController, 
     public utils: UtilsService, public platform: Platform, public localStorage: PreferencesService, 
     public admob: AdsService, public differs:  KeyValueDiffers, public actionSheetCtrl: ActionSheetController, 
@@ -71,7 +75,6 @@ export class EpisodePage implements OnInit {
     this.platform.ready().then(async () => {
 
       this.recentlySawVideoSubscription = this.sharingService.getAutoplayPreferences().subscribe((data) => {
-        console.log("sub receltrysawvideo: ", data);
 
         if (data.episode.nextEpisode && this.autoplay) {
           this.autoplayAlgorithm(data.episode.nextEpisode);
@@ -89,6 +92,7 @@ export class EpisodePage implements OnInit {
         //   this.admob.fireInterstitialAd();
         // }
 
+        this.allowedUserInLiteVersion = this.user.is_staff || this.user.is_superuser || this.user.groups.moderator || this.user.groups.vip;
         this.checkingEpisodes = true;
         this.anime.episodios.forEach(episode => {
           episode.seen = false;
@@ -229,7 +233,9 @@ export class EpisodePage implements OnInit {
         componentProps: {
           episode: episode,
           animeImage: this.anime.imagen,
-          animeName: this.anime.nombre
+          animeName: this.anime.nombre,
+          liteVersion: this.liteVersion,
+          allowedUserInLiteVersion: this.allowedUserInLiteVersion
         }
       });
   
@@ -365,7 +371,12 @@ export class EpisodePage implements OnInit {
           this.utils.showToast("No disponible en la web, descarga la aplicación", 1, false);
           return;
         }
-        this.openProvidersDownload(episode);
+
+        if (!this.liteVersion || this.allowedUserInLiteVersion) {
+          this.openProvidersDownload(episode);
+        } else {
+          this.utils.showToast("No disponible en la versión lite de la aplicación", 1, false);
+        }
       }
     },
     {
@@ -465,7 +476,6 @@ export class EpisodePage implements OnInit {
       if (seconds === 0) {
         clearInterval(interval);
         toast.dismiss();
-        console.log("Empieza la logica para abrir el video")
 
         const loader = await this.utils.createIonicLoader('Cargando episodio');
         loader.present();
@@ -482,7 +492,6 @@ export class EpisodePage implements OnInit {
 
             // Si no hay embeds del proveedor preferido, se obtienen los embeds de alguno de los demas proveedores
             if (embeds.length == 0) {
-              console.log("No hay embeds del proveedor preferido");
               await this.autoplayService.getEmbeds(nextEpisode, null, this.anime.nombre, nextEpisode.numero).then((data: any) => {
                 embeds = data;
               });

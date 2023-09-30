@@ -26,6 +26,21 @@
     </swiper-slide>
   </swiper-container>
 
+  <swiper-container 
+  slidesPerView="1"
+  [spaceBetween]="30"
+  zoom="true"
+  loop="true"
+  effect="coverflow"
+  [coverflowEffect]="{ slideShadows: false }"
+  *ngIf="mode == 'normal'">
+    <swiper-slide *ngFor="let picture of pictures">
+      <div class="swiper-zoom-container">
+        <img class="animate__animated animate__fadeIn animate__faster" [src]="picture">
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
   <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed" activated="true" >
     <ion-fab-button class="add-fab">
       <ion-icon name="add" size="large"></ion-icon>

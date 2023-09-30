@@ -18,7 +18,7 @@
       </ion-popover>
 
       <ion-button shape="round" (click)="openAiPopover($event)" [disabled]="anime == null || !isLogged">
-        <ion-icon slot="icon-only" name="hardware-chip-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="sparkles-outline"></ion-icon>
       </ion-button>
       <ion-popover #aiPopover [isOpen]="isAiPopoverOpened" (didDismiss)="isAiPopoverOpened = false">
         <ng-template>
@@ -209,7 +209,7 @@
         <ion-label>OP/ED</ion-label>
       </ion-fab-button>
       <ion-fab-button class="fabButton" (click)="showRelatedAnime()" *ngIf="extraInfo?.sequel != null || extraInfo?.prequel != null">
-        <ion-icon name="musical-notes-outline"></ion-icon>
+        <ion-icon name="git-network-outline"></ion-icon>
         <ion-label>Relaciones</ion-label>
       </ion-fab-button>
     </ion-fab-list>

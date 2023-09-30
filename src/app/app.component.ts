@@ -24,6 +24,10 @@ import { RegisterPage } from './pages/auth/register/register.page';
 import { Settings } from './interfaces/settings';
 import { ThemeService } from './services/theme/theme.service';
 import { SharingService } from './core/services/sharing/sharing.service';
+import { FullVersionInfoPage } from './modals/full-version-info/full-version-info.page';
+
+import { AppUpdate, AppUpdateAvailability, AppUpdateInfo, FlexibleUpdateInstallStatus, AppUpdateResult, AppUpdateResultCode } from '@capawesome/capacitor-app-update';
+import { App } from '@capacitor/app';
 
 @Pipe({ name: 'safe' })
 export class SafePipe implements PipeTransform {
@@ -58,10 +62,16 @@ export class AppComponent {
   public staticYears: any[] = null;
   public years: any[] = null;
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+
   public timeOnApp: number = 0;
   private recentlyLoggedSubscription: Subscription;
   private updatedUserExtraSubscription: Subscription;
   private themeChangedSubscription: Subscription;
+
+  public updateAvailable: boolean = false;
+  private appUpdateInterval: any;
 
   constructor(public platform: Platform, public toastCtrl: ToastController, public modalCtrl: ModalController, 
     public screenOrientation: ScreenOrientation, public router: Router, public utils: UtilsService, public navCtrl: NavController, 
@@ -100,11 +110,23 @@ export class AppComponent {
   ngOnInit() {
 
     this.platform.ready().then(() => {
-      this.utils.setDefaultStatusBarColor();
+      if (this.platform.is('capacitor')) {
+        this.utils.setDefaultStatusBarColor();
+      }
       this.changeToPortraitOrientation();
       this.addColorSchemeListener();
       this.addNetworkListener();
       this.checkUserStatus();
+
+      if (this.liteVersion) {
+        if (this.platform.is('android') && this.platform.is('capacitor')) {
+          this.checkAppUpdate();
+
+          this.appUpdateInterval = setInterval(() => {
+            this.checkAppUpdate();
+          }, 5400000); // 1 hora 30 min
+        }
+      }
     });
   }
 
@@ -119,6 +141,10 @@ export class AppComponent {
     }
     if (this.themeChangedSubscription) {
       this.themeChangedSubscription.unsubscribe();
+    }
+
+    if (this.liteVersion) {
+      this.appUpdateInterval.clearInterval();
     }
   }
 
@@ -192,7 +218,6 @@ export class AppComponent {
       this.localStorage.setUserFirstTime(false);
 
       const biometricCompatible = await this.localStorage.biometricCompatible();
-      console.log("biometricCompatible", biometricCompatible);
       if (biometricCompatible === null) {
         if (this.platform.is('capacitor')) {
           const bioResult = await NativeBiometric.isAvailable();
@@ -302,14 +327,14 @@ export class AppComponent {
       if (darkTheme) {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
-        if (this.platform.is('android')) {
+        if (this.platform.is('android') && this.platform.is('capacitor')) {
           StatusBar.setStyle({ style: Style.Dark });
           StatusBar.setBackgroundColor({ color: '#0d1c35' });
         }
       } else {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
-        if (this.platform.is('android')) {
+        if (this.platform.is('android') && this.platform.is('capacitor')) {
           StatusBar.setStyle({ style: Style.Light });
           StatusBar.setBackgroundColor({ color: '#f9f9f9' });
         }
@@ -318,7 +343,6 @@ export class AppComponent {
     this.localStorage.getSettings().then(settings => {
       if (settings) {
         this.sharingService.emitThemeChanged(settings.darkTheme);
-        console.log("settings.darkTheme", settings.darkTheme);
       }
     });
   }
@@ -463,4 +487,69 @@ export class AppComponent {
     return url;
   }
 
+  public async openFullVersionInfoModal() {
+    const modal = await this.modalCtrl.create({
+      component: FullVersionInfoPage,
+      cssClass: 'rounded-modal',
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+    })
+    modal.present();
+  }
+
+  private checkAppUpdate() {
+    AppUpdate.getAppUpdateInfo().then((updateInfo) => {
+      console.log('updateInfo -> ' + JSON.stringify(updateInfo))
+      if (updateInfo.updateAvailability === AppUpdateAvailability.UPDATE_AVAILABLE) {
+        this.updateAvailable = true;
+        this.showUpdateToast(updateInfo);
+      }
+    });
+  }
+
+  private async showUpdateToast(updateInfo: AppUpdateInfo) {
+    const toast = await this.toastCtrl.create({
+      header: 'Actualización disponible',
+      message: 'Hay una nueva versión disponible, ¿Deseas actualizar?',
+      mode: 'ios',
+      position: 'bottom',
+      layout: 'stacked',
+      buttons: [
+        {
+          text: 'Actualizar',
+          handler: () => {
+            if (this.platform.is('android')) {
+              if (updateInfo.immediateUpdateAllowed) {
+                this.beginUpdate(1);
+              } else {
+                this.beginUpdate(2);
+              }
+            } else if (this.platform.is('ios')) {
+              if (updateInfo.minimumOsVersion === '13.0') {
+                this.beginUpdate(2);
+              } else {
+                this.utils.showToast('Actualiza tu sistema operativo para poder actualizar la aplicación.', 2, false);
+              }
+            }
+          }
+        },
+        {
+          text: 'Más tarde',
+          role: 'cancel',
+          handler: () => {
+            this.utils.showToast('Te recordaremos en un rato más. Recuerda que en el menú lateral puedes actualizar la aplicación cuando quieras.', 3, false);
+          }
+        }
+      ]
+    });
+    toast.present();
+  }
+
+  public beginUpdate(process: number) {
+    if (process === 1) {
+      AppUpdate.performImmediateUpdate();
+    } else if (process === 2) {
+      AppUpdate.openAppStore();
+    }
+  }
 }

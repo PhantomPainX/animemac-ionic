@@ -3,6 +3,7 @@ import { NavController, Platform } from '@ionic/angular';
 import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 import { Settings } from 'src/app/interfaces/settings';
 import { PreferencesService } from 'src/app/services/preferences/preferences.service';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-settings',
@@ -19,6 +20,9 @@ export class SettingsPage implements OnInit {
 
   @ViewChild('toolbar', { read: ElementRef }) toolbar: ElementRef;
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+
   constructor(public navCtrl: NavController, public platform: Platform, public localStorage: PreferencesService, 
     private sharingService: SharingService) {
     
@@ -32,14 +36,12 @@ export class SettingsPage implements OnInit {
       // }
 
       const settings = await this.localStorage.getSettings();
-      console.log(settings);
       if (settings.darkTheme == undefined) {
         settings.darkTheme = false;
         await this.localStorage.setSettings(settings);
       } 
 
       this.pipToggle = settings.pipEnabled;
-      console.log("pip:", this.pipToggle);
       this.chromecastToggle = settings.chromecastEnabled;
       this.aditionalProvidersToggle = settings.aditionalProviders;
       this.darkThemeToggle = settings.darkTheme;

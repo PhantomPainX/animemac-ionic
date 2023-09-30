@@ -1,0 +1,94 @@
+<ion-header mode="ios" collapse="fade">
+  <ion-toolbar>
+    <ion-buttons slot="end" mode="md">
+      <ion-button color="primary" (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="logo_container">
+    <img src="assets/icon/LogoAnimeMacSquare.png" alt="logo">
+    
+    <div class="title">
+      <h1>AnimeMac</h1>
+      <p>Versión completa</p>
+    </div>
+  </div>
+
+  <div class="features">
+    
+    <div class="feature">
+      <div class="icon">
+        <ion-icon name="play-outline" color="primary"></ion-icon>
+      </div>
+      
+      <div class="content">
+        <div class="title">
+          Videos On-Demand
+        </div>
+        <div class="description">
+          Reproduce tus animes favoritos en cualquier momento y lugar con nuestro reproductor de video.
+        </div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="icon">
+        <ion-icon name="download-outline" color="primary"></ion-icon>
+      </div>
+      
+      <div class="content">
+        <div class="title">
+          Descargas ilimitadas
+        </div>
+        <div class="description">
+          Descarga todos los episodios que quieras y disfruta de ellos sin conexión a internet.
+        </div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="icon">
+        <ion-icon name="happy-outline" color="primary"></ion-icon>
+      </div>
+      
+      <div class="content">
+        <div class="title">
+          Sin publicidad
+        </div>
+        <div class="description">
+          Disfruta de episodios completos sin interrupciones.
+        </div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="icon">
+        <ion-icon name="sparkles-outline" color="primary"></ion-icon>
+      </div>
+      
+      <div class="content">
+        <div class="title">
+          Seguimiento completo
+        </div>
+        <div class="description">
+          Lleva un seguimiento de los episodios que has visto y los que te faltan por ver.
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <div class="footer_container">
+    <ion-button color="primary" expand="block" shape="round" (click)="openInfoUrl()">
+      <ion-icon slot="start" name="information-outline"></ion-icon>
+      <ion-label>Más información</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

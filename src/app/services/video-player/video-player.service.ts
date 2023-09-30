@@ -400,5 +400,38 @@ export class VideoPlayerService {
         });
     });
   }
+
+  public playLocalVideo(videoUri: string, title: string, smallTitle: string) {
+    let options: capVideoPlayerOptions = {
+      mode: 'fullscreen',
+      url: videoUri,
+      playerId: 'player473',
+      title: title,
+      smallTitle: smallTitle,
+      accentColor: "#64fada",
+      chromecast: true,
+      artwork: '',
+      pipEnabled: true
+    }
+    this.capacitorVideoPlayer.initPlayer(options).then(() => {
+      this.capacitorVideoPlayer.play({playerId: 'player473'}).then(async () => {
+        if (this.platform.is('android')) {
+          this.screenOrientation.unlock();
+        }
+
+        this.exitHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerExit', () => {
+          if (this.platform.is('android')) {
+            this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          }
+        });
+
+        this.endHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerEnded', () => {
+          if (this.platform.is('android')) {
+            this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          }
+        });
+      });
+    });
+  }
   
 }

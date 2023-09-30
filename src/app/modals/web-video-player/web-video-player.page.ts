@@ -22,7 +22,6 @@ export class WebVideoPlayerPage implements OnInit {
 
   ngOnInit() {
     // this.openURL();
-    console.log(this.episode);
     //order this.episode.anime.episodios by numero from lowest to highest
     this.episode.anime.episodios.sort((a: { numero: number; }, b: { numero: number; }) => (a.numero > b.numero) ? 1 : -1);
     this.selectedEp = this.episode;

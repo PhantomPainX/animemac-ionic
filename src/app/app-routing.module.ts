@@ -95,6 +95,14 @@ const routes: Routes = [
     path: 'seen-episodes-history',
     loadChildren: () => import('./pages/seen-episodes-history/seen-episodes-history.module').then( m => m.SeenEpisodesHistoryPageModule)
   },
+  {
+    path: 'full-version-info',
+    loadChildren: () => import('./modals/full-version-info/full-version-info.module').then( m => m.FullVersionInfoPageModule)
+  },
+  {
+    path: 'app-update',
+    loadChildren: () => import('./tests-pages/app-update/app-update.module').then( m => m.AppUpdatePageModule)
+  },
 ];
 
 @NgModule({

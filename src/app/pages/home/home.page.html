@@ -15,7 +15,11 @@
 
     <div class="header-bar" align-title=”center”>
         <img style="width: 40px; border-radius: 10px;" src="assets/icon/AnimeMacLogo.png">
-        <h4>AnimeMac</h4>
+        <h4>
+          AnimeMac
+          <span class="lite" *ngIf="liteVersion">lite</span>
+          <span class="full" *ngIf="!liteVersion">full</span>
+        </h4>
     </div>
     
     <ion-buttons slot="start">
@@ -45,7 +49,7 @@
   [breakpoints]="nextToSeeSwiperBreakpoints"
    class="animate__animated animate__fadeIn" style="margin-left: 15px;" *ngIf="nextToSee != undefined">
     <swiper-slide *ngFor="let episode of nextToSee" (click)="openProviders($event, episode)" (press)="openEpisodeOptions(episode)">
-      <div class="nextToSeeCard ion-activatable ripple-parent rounded-rectangle" style="background: {{episode.color?.hex}}">
+      <div class="nextToSeeCard ion-activatable ripple-parent rounded-rectangle" [style.background]="episode.color?.hex">
         <ion-ripple-effect></ion-ripple-effect>
 
         <div class="image">

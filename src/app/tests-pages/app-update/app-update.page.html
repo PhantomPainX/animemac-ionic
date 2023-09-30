@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>App Update Plugin Test</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <h4 style="text-align: center;">{{ infoUpdateText }}</h4>
+        <p style="text-align: center;" *ngIf="updateAvailable">Versión de código de la actualización: {{ codeVersionAvailable }}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid [fixed]="true">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" fill="outline" (click)="checkForUpdate()" [disabled]="!updateAvailable" (click)="beginProcess(1)">Método actualización inmediata</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" fill="outline" (click)="checkForUpdate()" [disabled]="!updateAvailable" (click)="beginProcess(2)">Método abrir tienda</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

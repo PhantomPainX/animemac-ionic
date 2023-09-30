@@ -41,6 +41,10 @@ export class SeeMorePage implements OnInit {
   public isSortPopoverOpened: boolean = false;
   public sortName: string = '-agregado';
 
+  // Is lite version
+  public liteVersion: boolean = environment.liteVersion;
+  public allowedUserInLiteVersion: boolean = false;
+
   constructor(public modalCtrl: ModalController,
     public database: MysqlDatabaseService,
     public popoverCtrl: PopoverController,
@@ -73,6 +77,7 @@ export class SeeMorePage implements OnInit {
       if (this.isLogged) {
         const user = await this.localStorage.getUser();
         this.token = user.token;
+        this.allowedUserInLiteVersion = user.is_staff || user.is_superuser || user.groups.moderator || user.groups.vip;
 
         // if (!user.is_staff && !user.groups.vip && !user.groups.moderator) {
         //   this.admob.fireInterstitialAd();
@@ -488,7 +493,9 @@ export class SeeMorePage implements OnInit {
         componentProps: {
           episode: episode,
           animeImage: episode.anime.imagen,
-          animeName: episode.anime.nombre
+          animeName: episode.anime.nombre,
+          liteVersion: this.liteVersion,
+          allowedUserInLiteVersion: this.allowedUserInLiteVersion
         }
       });
   
@@ -636,18 +643,23 @@ export class SeeMorePage implements OnInit {
           this.utils.showToast("No disponible en la web, descarga la aplicación", 1, false);
           return;
         }
-        const popover = await this.popoverCtrl.create({
-          component: ProvidersPopoverComponent,
-          cssClass: "custom-popover",
-          componentProps: {
-            download: true,
-            episode: episode,
-            animeImage: episode.anime.imagen,
-            animeName: episode.anime.nombre
-          }
-        });
-    
-        popover.present();
+
+        if (!this.liteVersion || this.allowedUserInLiteVersion) {
+          const popover = await this.popoverCtrl.create({
+            component: ProvidersPopoverComponent,
+            cssClass: "custom-popover",
+            componentProps: {
+              download: true,
+              episode: episode,
+              animeImage: episode.anime.imagen,
+              animeName: episode.anime.nombre
+            }
+          });
+      
+          popover.present();
+        } else {
+          this.utils.showToast("No disponible en la versión lite de la aplicación", 2, false);
+        }
       }
     }, {
       text: 'Ver Comentarios',

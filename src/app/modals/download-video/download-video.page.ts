@@ -31,8 +31,6 @@ export class DownloadVideoPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log("Video file: "+ this.video.file);
-    console.log("Video headers: "+ this.video.headers);
     this.downloadVideo();
   }
 
@@ -41,8 +39,6 @@ export class DownloadVideoPage implements OnInit {
     const random_name = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const directory = this.file.tempDirectory;
     const videoPath = directory + random_name + '.mp4';
-    console.log("iOS Download Directory: " + directory);
-
 
     const toast = await this.toastCtrl.create({
       message: 'Descargando ' + this.episode.anime.nombre + ' - Episodio ' + this.episode.numero+ ' ('+(this.progress*100)+'%)',
@@ -62,7 +58,6 @@ export class DownloadVideoPage implements OnInit {
     await this.http.downloadFile(this.video.file, {}, this.video.headers, videoPath, (progressData) => {
       this.progress = (Math.round((100 * progressData.transferred) / progressData.total)) / 100;
       toast.message = 'Descargando ' + this.episode.anime.nombre + ' - Episodio ' + this.episode.numero+ ' ('+(this.progress*100)+'%)';
-      console.log("Progress: " + this.progress);
       this.changeDetectorRef.detectChanges();
     });
 

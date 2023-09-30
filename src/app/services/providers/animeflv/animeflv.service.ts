@@ -16,13 +16,17 @@ export class AnimeflvService {
 
     return new Promise<any>(async (resolve, reject) => {
 
-      const animeflv_url = "https://animeflv.sh";
+      const animeflv_url = "https://animeflv.ws";
 
       const isLogged = await this.localStorage.getLogged();
       let name = anime_name.replace(/ /g, "+").toLowerCase();
 
       const options = {
-        url: "https://animeflv.sh/browse?q=" + name,
+        url: "https://animeflv.ws/browse?q=" + name,
+        // url: "https://animemac.net/api/cors/",
+        // data: {
+        //   url: "https://animeflv.ws/browse?q=" + name,
+        // },
         readTimeout: 10000,
         connectTimeout: 10000
       }
@@ -31,6 +35,7 @@ export class AnimeflvService {
         const content = response.data;
         const parser = new DOMParser();
         const html = parser.parseFromString(content, "text/html");
+        
         const anime_links = html.querySelectorAll("article.Anime.alt.B");
         let anime_link = "";
         for (let link of anime_links) {
@@ -41,7 +46,7 @@ export class AnimeflvService {
           }
         }
 
-        const episode_link = anime_link.replace("sh/anime", "sh") + "-" + ep_number;
+        const episode_link = anime_link.replace("ws/anime", "ws") + "-" + ep_number;
         const ep_request_options = {
           url: episode_link,
           readTimeout: 10000,

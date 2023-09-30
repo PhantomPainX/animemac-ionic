@@ -16,19 +16,6 @@ export class ResolversService {
   constructor(public utils: UtilsService, public iAb: InAppBrowser) {
   }
 
-
-  async checkVideoAvailability(raw_url: string, referer: string) {
-    const loader = await this.utils.createIonicLoader("Validando...");
-    await loader.present();
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        loader.dismiss();
-        resolve(true);
-      }, 2000);
-    });
-  }
-
   async fembedResolver(url_orig: string) {
     const loader = await this.utils.createIonicLoader("Cargando videos...");
     await loader.present();

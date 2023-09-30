@@ -20,6 +20,7 @@ import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { ProfileService } from '../services/profile/profile.service';
 import { UserGroups } from '../classes/user-groups/user-groups';
 import { SharingService } from '../core/services/sharing/sharing.service';
+import { environment } from 'src/environments/environment.prod';
 
 export type TabSchema = {
   routerPath: string;
@@ -46,6 +47,8 @@ export class TablinksPage implements OnInit {
   private recentlyLoggedSubscription: Subscription;
 
   public loginInterval: any;
+
+  private liteVersion: boolean = environment.liteVersion;
 
   public tabs: TabSchema[] = [
     {
@@ -112,13 +115,15 @@ export class TablinksPage implements OnInit {
     this.platform.ready().then(async () => {
       // Android App Check Correct Version
       if (this.platform.is('android')) {
-        this.database.checkAndroidVersion().then((res) => {
-          if (res) {
-            if (!res.success) {
-              this.utils.outdatedAppAlert(res.version, res.direct_download_link);
+        if (!this.liteVersion) {
+          this.database.checkAndroidVersion().then((res) => {
+            if (res) {
+              if (!res.success) {
+                this.utils.outdatedAppAlert(res.version, res.direct_download_link);
+              }
             }
-          }
-        });
+          });
+        }
       }
 
       this.loggedVerification();

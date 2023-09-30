@@ -9,7 +9,7 @@
 
 <ion-content fullscreen>
   <ion-list style="padding: 0;">
-    <ion-item-group>
+    <ion-item-group *ngIf="!liteVersion">
       <ion-item-divider>
         <ion-label>Reproductor de Video</ion-label>
       </ion-item-divider>
@@ -30,7 +30,7 @@
         <ion-label>Configuración de la aplicación</ion-label>
       </ion-item-divider>
 
-      <ion-item lines="full"> 
+      <ion-item lines="full" *ngIf="!liteVersion"> 
         <ion-label>Proveedores de video adicionales</ion-label>
         <ion-toggle slot="end" value="aditionalProviders" [(ngModel)]="aditionalProvidersToggle" (ionChange)="toggle($event)"></ion-toggle>
       </ion-item>
