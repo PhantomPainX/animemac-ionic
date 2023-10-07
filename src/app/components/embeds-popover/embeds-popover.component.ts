@@ -12,6 +12,8 @@ import { UtilsService } from 'src/app/services/utils.service';
 import { Domains } from './domains';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { Settings } from 'src/app/interfaces/settings';
+import { Subscription } from 'rxjs';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 
 @Component({
   selector: 'app-embeds-popover',
@@ -43,6 +45,11 @@ export class EmbedsPopoverComponent implements OnInit {
 
   public buttonsClickable: boolean = false;
 
+  public loader: HTMLIonLoadingElement;
+  private loaderText: string = "Cargando...";
+
+  private videoPlaybackStartedSubscription: Subscription;
+
   constructor(
     public resolvers: ResolversService,
     public popoverCtrl: PopoverController,
@@ -53,7 +60,8 @@ export class EmbedsPopoverComponent implements OnInit {
     public platform: Platform,
     public downloadService: DownloadService,
     public utils: UtilsService,
-    private database: MysqlDatabaseService
+    private database: MysqlDatabaseService,
+    private sharingService: SharingService
   ) {
 
   }
@@ -137,10 +145,22 @@ export class EmbedsPopoverComponent implements OnInit {
         this.settings = await this.localStorage.getSettings();
       });
 
+      this.videoPlaybackStartedSubscription = this.sharingService.getVideoPlaybackStarted().subscribe((started) => {
+        if (started) {
+          this.popoverCtrl.dismiss({openedVideo: true});
+        }
+      });
+
     } else {
       this.webCompatible = this.embeds;
       this.optionValue = 'web';
       this.buttonsClickable = true;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.videoPlaybackStartedSubscription) {
+      this.videoPlaybackStartedSubscription.unsubscribe();
     }
   }
 
@@ -159,10 +179,12 @@ export class EmbedsPopoverComponent implements OnInit {
       } else {
         this.downloadService.downloadVideo(this.episode, video);
       }
+      this.loader.dismiss();
       return;
     } else {
       if (isDownloading) {
         this.utils.showToast("Hay una descarga en curso, no puedes ni descargar ni reproducir otro video", 2, false);
+        this.loader.dismiss();
         return;
       }
     }
@@ -182,15 +204,13 @@ export class EmbedsPopoverComponent implements OnInit {
           //   }
           // });
         } else {
-          this.popoverCtrl.dismiss({openedVideo: true});
           this.players.nativePlayer(video, subtitleUrl, this.animeName, "Episodio " + this.episode.numero, this.animeImage,
-           this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+           this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default", this.loader);
         }
   
       } else {
-        this.popoverCtrl.dismiss({openedVideo: true});
         this.players.nativePlayer(video, subtitleUrl, this.animeName, "Episodio " + this.episode.numero, this.animeImage,
-         this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+         this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default", this.loader);
       }
 
     } else {
@@ -205,446 +225,23 @@ export class EmbedsPopoverComponent implements OnInit {
         //   }
         // });
       } else {
-        this.popoverCtrl.dismiss({openedVideo: true});
         this.players.nativePlayer(video, subtitleUrl, this.animeName, "Episodio " + this.episode.numero, this.animeImage,
-         this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+         this.episode, this.isLogged, this.user, this.settings, this.providerName.toLocaleLowerCase(), videoProviderDomains, "default", this.loader);
       }
     }
   }
 
-  async getVideos(event, embed: any) {
+  async getVideos(event, embed: any, compatible: string) {
+
     if (this.embedRequested) {
       this.popoverCtrl.dismiss({
         embedReady: true,
         embedUrl: embed.url,
         embedName: embed.embed,
       });
-
     } else {
-      if (this.videoDomains.getOkruDomains().some(domain => embed.url.includes(domain))) {
-      
-        await this.resolvers.okruResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getOkruDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getOkruDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-        //Murio Fembed :(
-  
-      // } else if (embed.url.includes('fembed') || embed.url.includes('embedsito')) {
-      //   await this.resolvers.fembedResolver(embed.url).then(async data => {
-      //     const videos: any = data;
-      //     if (videos.length > 1) {
-      //       const popover = await this.popoverCtrl.create({
-      //         component: VideosPopoverComponent,
-      //         cssClass: "custom-popover",
-      //         event: event,
-      //         componentProps: {
-      //           download: this.download,
-      //           videos: videos,
-      //           episode: this.episode,
-      //           title: this.animeName,
-      //           smallTitle: "Episodio " + this.episode.numero,
-      //           image: this.animeImage,
-      //           embedName: embed.embed
-      //         }
-      //       });
-      //       await popover.present();
-      //       await popover.onDidDismiss().then(data => {
-      //         if (data.data) {
-      //           if (data.data.openedVideo) {
-      //             this.popoverCtrl.dismiss({openedVideo: true});
-      //           }
-      //         }
-      //       });
-      //     } else {
-      //       this.openSingleVideo(videos[0], "");
-      //     }
-    
-      //   }, async error => {
-      //     console.log(error);
-      //     const alert = await this.alertCtrl.create({
-      //       header: 'No se pudieron obtener los videos',
-      //       message: 'Hubo un error al obtener los videos. ¿Deseas abrirlos en tu navegador?',
-      //       mode: 'ios',
-      //       translucent: true,
-      //       buttons: [
-      //         {
-      //           text: 'Cancelar',
-      //           role: 'cancel',
-      //           cssClass: 'secondary'
-      //         }, {
-      //           text: 'Abrir',
-      //           handler: () => {
-      //             //window.open(embed.url, '_system', 'location=yes');
-      //             Browser.open({ url: embed.url });
-      //           }
-      //         }
-      //       ]
-      //     });
-      //     await alert.present();
-      //   });
-  
-      } else if (this.videoDomains.getUqloadDomains().some(domain => embed.url.includes(domain))) {
-        await this.resolvers.uqloadResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getUqloadDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getUqloadDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getYouruploadDomains().some(domain => embed.url.includes(domain))) {
-        await this.resolvers.youruploadResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getYouruploadDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getYouruploadDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getMailruDomains().some(domain => embed.url.includes(domain))) {
-        await this.resolvers.mailRuResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMailruDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getMailruDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (embed.url.includes('animefenix')) {
-  
-        await this.resolvers.aFenixResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, ['animefenix']);
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, ['animefenix']);
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getAnimeuiDomains().some(d => embed.url.includes(d)) && !this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.animeuiResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getAnimeuiDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getAnimeuiDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getStreamtapeDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.streamtapeResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamtapeDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamtapeDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getJwplayerDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.jwplayerResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          const videosLength = videos.filter(video => video.kind == "video").length;
-  
-          if (videosLength > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getJwplayerDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getJwplayerDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getIronhentaiDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.ironhentaiResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          const videosLength = videos.filter(video => video.kind == "video").length;
-  
-          if (videosLength > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getIronhentaiDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getIronhentaiDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getAnimepelixDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.animepelixResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          const videosLength = videos.filter(video => video.kind == "video").length;
-  
-          if (videosLength > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getAnimepelixDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getAnimepelixDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-    
-      // } else if (this.videoDomains.getStreamsbDomains().some(d => embed.url.includes(d))) {
-  
-      //   await this.resolvers.streamsbResolver(embed.url).then(async data => {
-      //     const videos: any = data;
-  
-      //     const videosLength = videos.filter(video => video.kind == "video").length;
-  
-      //     if (videosLength > 1) {
-      //       this.openVideoPopover(event, videos, embed.embed);
-      //     } else {
-      //       const captions = videos.filter(video => video.kind == "captions");
-      //       let caption = "";
-      //       if (captions.length > 0) {
-      //         caption = captions[0].file;
-      //       }
-      //       this.openSingleVideo(videos[0], caption);
-      //     }
-      //   }, () => {
-      //     this.openAlert(embed.url);
-      //   });
-  
-      } else if (this.videoDomains.getMp4uploadDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.mp4uploadResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          const videosLength = videos.filter(video => video.kind == "video").length;
-  
-          if (videosLength > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMp4uploadDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getMp4uploadDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getStreamhideDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.streamhideResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamhideDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamhideDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
 
-      } else if (this.videoDomains.getStreamwishDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.streamhideResolverOld(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamwishDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamwishDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getSendvidDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.sendvidResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getSendvidDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getSendvidDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getMixdropDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.mixdropResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMixdropDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getMixdropDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (this.videoDomains.getVoeDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.voeResolver(embed.url).then(async data => {
-          const videos: any = data;
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getVoeDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getVoeDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-
-      } else if (this.videoDomains.getStreamhubDomains().some(d => embed.url.includes(d))) {
-  
-        await this.resolvers.streamhubResolver(embed.url).then(async data => {
-          const videos: any = data;
-  
-          if (videos.length > 1) {
-            this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamhubDomains());
-          } else {
-            const captions = videos.filter(video => video.kind == "captions");
-            let caption = "";
-            if (captions.length > 0) {
-              caption = captions[0].file;
-            }
-            this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamhubDomains());
-          }
-        }, () => {
-          this.openAlert(embed.url);
-        });
-  
-      } else if (((embed.url.includes('.mp4') || this.videoDomains.getFireloadDomains().some(d => embed.url.includes(d))) && (!this.videoDomains.getMp4uploadDomains().some(d => embed.url.includes(d)) && !this.videoDomains.getBurstcloudDomains().some(d => embed.url.includes(d)))) || this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
-        const video = {
-          file: embed.url,
-          headers: {
-            Referer: embed.url
-          }
-        }
-
-        let videoDomains = [];
-        if (this.videoDomains.getFireloadDomains().some(d => embed.url.includes(d))) {
-          videoDomains = this.videoDomains.getFireloadDomains();
-        } else if (this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
-          videoDomains = this.videoDomains.getIpfsDomains();
-        } else {
-          videoDomains = ['.mp4'];
-        }
-
-        this.openSingleVideo(video, "", videoDomains);
-  
-      } else {
+      if (compatible === 'web') {
         const alert = await this.alertCtrl.create({
           header: 'Esta fuente no soporta la reproducción local',
           message: 'Solo puedes abrirlo en tu navegador, es posible que hayan anuncios.',
@@ -668,7 +265,437 @@ export class EmbedsPopoverComponent implements OnInit {
             }
           ]
         });
-        await alert.present();
+        alert.present();
+
+      } else if (compatible === 'local') {
+    
+        this.loader = await this.utils.createIonicLoader(this.loaderText);
+        this.loader.present();
+
+        if (this.videoDomains.getOkruDomains().some(domain => embed.url.includes(domain))) {
+        
+          await this.resolvers.okruResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getOkruDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getOkruDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+          //Murio Fembed :(
+    
+        // } else if (embed.url.includes('fembed') || embed.url.includes('embedsito')) {
+        //   await this.resolvers.fembedResolver(embed.url).then(async data => {
+        //     const videos: any = data;
+        //     if (videos.length > 1) {
+        //       const popover = await this.popoverCtrl.create({
+        //         component: VideosPopoverComponent,
+        //         cssClass: "custom-popover",
+        //         event: event,
+        //         componentProps: {
+        //           download: this.download,
+        //           videos: videos,
+        //           episode: this.episode,
+        //           title: this.animeName,
+        //           smallTitle: "Episodio " + this.episode.numero,
+        //           image: this.animeImage,
+        //           embedName: embed.embed
+        //         }
+        //       });
+        //       await popover.present();
+        //       await popover.onDidDismiss().then(data => {
+        //         if (data.data) {
+        //           if (data.data.openedVideo) {
+        //             this.popoverCtrl.dismiss({openedVideo: true});
+        //           }
+        //         }
+        //       });
+        //     } else {
+        //       this.openSingleVideo(videos[0], "");
+        //     }
+      
+        //   }, async error => {
+        //     console.log(error);
+        //     const alert = await this.alertCtrl.create({
+        //       header: 'No se pudieron obtener los videos',
+        //       message: 'Hubo un error al obtener los videos. ¿Deseas abrirlos en tu navegador?',
+        //       mode: 'ios',
+        //       translucent: true,
+        //       buttons: [
+        //         {
+        //           text: 'Cancelar',
+        //           role: 'cancel',
+        //           cssClass: 'secondary'
+        //         }, {
+        //           text: 'Abrir',
+        //           handler: () => {
+        //             //window.open(embed.url, '_system', 'location=yes');
+        //             Browser.open({ url: embed.url });
+        //           }
+        //         }
+        //       ]
+        //     });
+        //     await alert.present();
+        //   });
+    
+        } else if (this.videoDomains.getUqloadDomains().some(domain => embed.url.includes(domain))) {
+          await this.resolvers.uqloadResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getUqloadDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getUqloadDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getYouruploadDomains().some(domain => embed.url.includes(domain))) {
+          await this.resolvers.youruploadResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getYouruploadDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getYouruploadDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getMailruDomains().some(domain => embed.url.includes(domain))) {
+          await this.resolvers.mailRuResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMailruDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getMailruDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (embed.url.includes('animefenix')) {
+    
+          await this.resolvers.aFenixResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, ['animefenix']);
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, ['animefenix']);
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getAnimeuiDomains().some(d => embed.url.includes(d)) && !this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.animeuiResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getAnimeuiDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getAnimeuiDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getStreamtapeDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.streamtapeResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamtapeDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamtapeDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getJwplayerDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.jwplayerResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            const videosLength = videos.filter(video => video.kind == "video").length;
+    
+            if (videosLength > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getJwplayerDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getJwplayerDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getIronhentaiDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.ironhentaiResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            const videosLength = videos.filter(video => video.kind == "video").length;
+    
+            if (videosLength > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getIronhentaiDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getIronhentaiDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getAnimepelixDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.animepelixResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            const videosLength = videos.filter(video => video.kind == "video").length;
+    
+            if (videosLength > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getAnimepelixDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getAnimepelixDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+      
+        // } else if (this.videoDomains.getStreamsbDomains().some(d => embed.url.includes(d))) {
+    
+        //   await this.resolvers.streamsbResolver(embed.url).then(async data => {
+        //     const videos: any = data;
+    
+        //     const videosLength = videos.filter(video => video.kind == "video").length;
+    
+        //     if (videosLength > 1) {
+        //       this.openVideoPopover(event, videos, embed.embed);
+        //     } else {
+        //       const captions = videos.filter(video => video.kind == "captions");
+        //       let caption = "";
+        //       if (captions.length > 0) {
+        //         caption = captions[0].file;
+        //       }
+        //       this.openSingleVideo(videos[0], caption);
+        //     }
+        //   }, () => {
+        //     this.openAlert(embed.url);
+        //   });
+    
+        } else if (this.videoDomains.getMp4uploadDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.mp4uploadResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            const videosLength = videos.filter(video => video.kind == "video").length;
+    
+            if (videosLength > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMp4uploadDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getMp4uploadDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getStreamhideDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.streamhideResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamhideDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamhideDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+
+        } else if (this.videoDomains.getStreamwishDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.streamhideResolverOld(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamwishDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamwishDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getSendvidDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.sendvidResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getSendvidDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getSendvidDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getMixdropDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.mixdropResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getMixdropDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getMixdropDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (this.videoDomains.getVoeDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.voeResolver(embed.url).then(async data => {
+            const videos: any = data;
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getVoeDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getVoeDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+
+        } else if (this.videoDomains.getStreamhubDomains().some(d => embed.url.includes(d))) {
+    
+          await this.resolvers.streamhubResolver(embed.url).then(async data => {
+            const videos: any = data;
+    
+            if (videos.length > 1) {
+              this.openVideoPopover(event, videos, embed.embed, this.videoDomains.getStreamhubDomains());
+            } else {
+              const captions = videos.filter(video => video.kind == "captions");
+              let caption = "";
+              if (captions.length > 0) {
+                caption = captions[0].file;
+              }
+              this.openSingleVideo(videos[0], caption, this.videoDomains.getStreamhubDomains());
+            }
+          }, () => {
+            this.openAlert(embed.url);
+          });
+    
+        } else if (((embed.url.includes('.mp4') || this.videoDomains.getFireloadDomains().some(d => embed.url.includes(d))) && (!this.videoDomains.getMp4uploadDomains().some(d => embed.url.includes(d)) && !this.videoDomains.getBurstcloudDomains().some(d => embed.url.includes(d)))) || this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
+          const video = {
+            file: embed.url,
+            headers: {
+              Referer: embed.url
+            }
+          }
+
+          let videoDomains = [];
+          if (this.videoDomains.getFireloadDomains().some(d => embed.url.includes(d))) {
+            videoDomains = this.videoDomains.getFireloadDomains();
+          } else if (this.videoDomains.getIpfsDomains().some(d => embed.url.includes(d))) {
+            videoDomains = this.videoDomains.getIpfsDomains();
+          } else {
+            videoDomains = ['.mp4'];
+          }
+
+          this.openSingleVideo(video, "", videoDomains);
+    
+        }
       }
     }
   }
@@ -678,6 +705,8 @@ export class EmbedsPopoverComponent implements OnInit {
   }
 
   async openVideoPopover(event: any, videos: any, embedName: string, videoProviderDomains: string[]) {
+    this.loader.dismiss();
+    this.videoPlaybackStartedSubscription.unsubscribe();
     const popover = await this.popoverCtrl.create({
       component: VideosPopoverComponent,
       event: event,
@@ -690,7 +719,8 @@ export class EmbedsPopoverComponent implements OnInit {
         image: this.animeImage,
         embedName: embedName,
         providerName: this.providerName.toLocaleLowerCase(),
-        videoProviderDomains: videoProviderDomains
+        videoProviderDomains: videoProviderDomains,
+        loader: this.loader
       }
     });
     await popover.present();
@@ -704,6 +734,7 @@ export class EmbedsPopoverComponent implements OnInit {
   }
 
   async openAlert(embedUrl: string) {
+    this.loader.dismiss();
     const alert = await this.alertCtrl.create({
       header: 'No se pudieron obtener los videos',
       message: 'Hubo un error al obtener los videos. ¿Deseas abrirlos en tu navegador?',

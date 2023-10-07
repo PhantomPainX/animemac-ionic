@@ -298,7 +298,7 @@ export class AutoplayService {
   }
 
   async openVideoPopover(event: any, videos: any, embedName: string, videoProviderDomains: string[], 
-    episode: any, animeName: string, animeImage: string, providerName: string) {
+    episode: any, animeName: string, animeImage: string, providerName: string, loader: HTMLIonLoadingElement) {
     const popover = await this.popoverCtrl.create({
       component: VideosPopoverComponent,
       event: event,
@@ -311,7 +311,8 @@ export class AutoplayService {
         image: animeImage,
         embedName: embedName,
         providerName: providerName.toLocaleLowerCase(),
-        videoProviderDomains: videoProviderDomains
+        videoProviderDomains: videoProviderDomains,
+        loader: loader
       }
     });
     await popover.present();
@@ -325,7 +326,7 @@ export class AutoplayService {
   }
 
   async openSingleVideo(video: any, subtitleUrl: string, videoProviderDomains: string[], user: PrivateUser, episode: any, 
-    deserveAd: boolean, animeName: string, animeImage: string, isLogged: boolean, settings: any, providerName: string) {
+    deserveAd: boolean, animeName: string, animeImage: string, isLogged: boolean, settings: any, providerName: string, loader: HTMLIonLoadingElement) {
 
     if (user) {
       if (!user.is_staff && !user.groups.vip && !user.groups.moderator) {
@@ -343,12 +344,12 @@ export class AutoplayService {
           // });
         } else {
           this.players.nativePlayer(video, subtitleUrl, animeName, "Episodio " + episode.numero, animeImage,
-           episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+           episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default", loader);
         }
   
       } else {
         this.players.nativePlayer(video, subtitleUrl, animeName, "Episodio " + episode.numero, animeImage,
-         episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+         episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default", loader);
       }
 
     } else {
@@ -364,7 +365,7 @@ export class AutoplayService {
         // });
       } else {
         this.players.nativePlayer(video, subtitleUrl, animeName, "Episodio " + episode.numero, animeImage,
-         episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default");
+         episode, isLogged, user, settings, providerName.toLocaleLowerCase(), videoProviderDomains, "default", loader);
       }
     }
   }

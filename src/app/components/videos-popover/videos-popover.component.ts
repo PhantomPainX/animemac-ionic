@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Platform, PopoverController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
 import { PrivateUser } from 'src/app/classes/private-user/private-user';
+import { SharingService } from 'src/app/core/services/sharing/sharing.service';
 import { Settings } from 'src/app/interfaces/settings';
 import { AdsService } from 'src/app/services/ads/ads.service';
 import { DownloadService } from 'src/app/services/download/download.service';
@@ -24,6 +26,7 @@ export class VideosPopoverComponent implements OnInit {
   @Input() embedName: string;
   @Input() providerName: string;
   @Input() videoProviderDomains: string[];
+  @Input() loader: HTMLIonLoadingElement;
 
   public settings: Settings;
 
@@ -32,9 +35,11 @@ export class VideosPopoverComponent implements OnInit {
   public isLogged: boolean = false;
   public user: PrivateUser;
 
+  private videoPlaybackStartedSubscription: Subscription;
+
   constructor(public players: VideoPlayerService, public popoverCtrl: PopoverController, 
     public ads: AdsService, public localStorage: PreferencesService, public platform: Platform, 
-    public downloadService: DownloadService, public utils: UtilsService) { }
+    public downloadService: DownloadService, public utils: UtilsService, private sharingService: SharingService) { }
 
   ngOnInit() {
     this.platform.ready().then(async () => {
@@ -45,7 +50,19 @@ export class VideosPopoverComponent implements OnInit {
 
       this.deserveAd = await this.localStorage.getDeserveAd();
       this.settings = await this.localStorage.getSettings();
+
+      this.videoPlaybackStartedSubscription = this.sharingService.getVideoPlaybackStarted().subscribe((started) => {
+        if (started) {
+          this.popoverCtrl.dismiss({openedVideo: true});
+        }
+      });
     });
+  }
+
+  ngOnDestroy() {
+    if (this.videoPlaybackStartedSubscription) {
+      this.videoPlaybackStartedSubscription.unsubscribe();
+    }
   }
 
   async playVideo(video: any) {
@@ -71,6 +88,9 @@ export class VideosPopoverComponent implements OnInit {
       caption = captions[0].file;
     }
 
+    this.loader = await this.utils.createIonicLoader("Cargando...");
+    this.loader.present();
+
     if (this.user) {
       if (!this.user.is_staff && !this.user.groups.vip && !this.user.groups.moderator) {
         if (this.deserveAd) {
@@ -84,13 +104,11 @@ export class VideosPopoverComponent implements OnInit {
           //   }
           // });
         } else {
-          this.popoverCtrl.dismiss({openedVideo: true});
-          this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label);
+          this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label, this.loader);
         }
   
       } else {
-        this.popoverCtrl.dismiss({openedVideo: true});
-        this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label);
+        this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label, this.loader);
       }
 
     } else {
@@ -105,8 +123,7 @@ export class VideosPopoverComponent implements OnInit {
           //   }
           // });
         } else {
-          this.popoverCtrl.dismiss({openedVideo: true});
-          this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label);
+          this.players.nativePlayer(video, caption, this.title, this.smallTitle, this.image, this.episode, this.isLogged, this.user, this.settings, this.providerName, this.videoProviderDomains, video.label, this.loader);
         }
     }
   }

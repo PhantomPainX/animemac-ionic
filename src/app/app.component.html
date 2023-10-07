@@ -1,6 +1,6 @@
 <ion-app>
 
-  <ion-menu side="start" contentId="first" swipeGesture="false">
+  <ion-menu type="push" side="start" contentId="first" swipeGesture="false">
 
 
     <ion-header>
@@ -17,9 +17,9 @@
               </ion-avatar>
 
               <div class="social">
-                <!-- <ion-button shape="round" class="discord" fill="clear">
+                <ion-button shape="round" class="discord" fill="clear" (click)="openSocial('discord')">
                   <ion-icon size="medium" name="logo-discord"></ion-icon>
-                </ion-button> -->
+                </ion-button>
   
                 <ion-button shape="round" class="instagram" fill="clear" (click)="openSocial('instagram')">
                   <ion-icon size="medium" name="logo-instagram"></ion-icon>
@@ -174,7 +174,7 @@
 
       </ion-item-group>
 
-      <ion-item-group *ngIf="logged">
+      <ion-item-group>
 
         <ion-item-divider>
           <ion-label>Opciones</ion-label>
@@ -192,7 +192,7 @@
           <ion-label>Ajustes</ion-label>
         </ion-item>
 
-        <ion-item lines="full" button (click)="logout()">
+        <ion-item lines="full" button (click)="logout()" *ngIf="logged">
           <ion-icon slot="start" name="log-out-outline"></ion-icon>
           <ion-label>Cerrar Sesión</ion-label>
         </ion-item>

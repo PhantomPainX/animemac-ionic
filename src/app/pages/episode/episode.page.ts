@@ -117,6 +117,13 @@ export class EpisodePage implements OnInit {
             return b.numero - a.numero;
           });
           this.searchedEpisode = this.anime.episodios;
+
+          for (let episode of this.searchedEpisode) {
+            if (episode.seconds_seen != null && episode.seconds_seen.seconds != 0) {
+              episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
+            }
+          }
+
           this.currentEpisodes = this.searchedEpisode.length;
 
           this.checkNextToSeeEpisode();
@@ -289,6 +296,11 @@ export class EpisodePage implements OnInit {
       this.disableInfiniteScroll();
     } else {
       this.searchedEpisode.push(...this.anime.episodios.slice(this.currentEpisodes, this.currentEpisodes + 20));
+      for (let episode of this.searchedEpisode) {
+        if (episode.seconds_seen != null && episode.seconds_seen.seconds != 0) {
+          episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
+        }
+      }
       this.currentEpisodes = this.searchedEpisode.length;
       event.target.complete();
     }
@@ -451,7 +463,7 @@ export class EpisodePage implements OnInit {
   }
 
   async autoplayAlgorithm(nextEpisode: any) {
-    let seconds = 10;
+    let seconds = 5;
 
     let toast = await this.toastCtrl.create({
       message: `El siguiente episodio empezará en ${seconds} segundos`,
@@ -472,12 +484,12 @@ export class EpisodePage implements OnInit {
 
     const interval = setInterval(async () => {
       seconds--;
-      toast.message = `El siguiente episodio empezará en ${seconds} segundos`;
+      toast.message = `El siguiente episodio comenzará en ${seconds} segundos`;
       if (seconds === 0) {
         clearInterval(interval);
         toast.dismiss();
 
-        const loader = await this.utils.createIonicLoader('Cargando episodio');
+        const loader = await this.utils.createIonicLoader('Cargando...');
         loader.present();
         const autoplayPreferences = await this.localStorage.getAutoplayPreferences(this.anime.id);
         if (autoplayPreferences) {
@@ -497,10 +509,10 @@ export class EpisodePage implements OnInit {
               });
             }
 
-            loader.dismiss();
             // Si no hay embeds de ningun proveedor, se muestra un toast y se cancela el autoplay
             if (embeds.length === 0) {
               this.utils.showToast("No se encontraron videos para el próximo episodio", 1, false);
+              loader.dismiss();
               return;
             } else {
               console.log(embeds);
@@ -534,9 +546,11 @@ export class EpisodePage implements OnInit {
 
                 if (videosLength == 0) {
                   this.utils.showToast("No se encontraron videos automáticamente, seleccionalo manualmente por favor", 1, false);
+                  loader.dismiss();
                 } else if (videosLength > 1) {
+                  loader.dismiss();
                   this.autoplayService.openVideoPopover(event, videos, selectedEmbed[0].embed, videoDomainsNames, nextEpisode, this.anime.nombre, 
-                    this.anime.imagen, autoplayPreferences.providerName);
+                    this.anime.imagen, autoplayPreferences.providerName, loader);
                 } else {
                   const captions = videos.filter(video => video.kind == "captions");
                   let caption = "";
@@ -547,7 +561,7 @@ export class EpisodePage implements OnInit {
                   const settings = await this.localStorage.getSettings();
                   const deserveAd = await this.localStorage.getDeserveAd();
                   this.autoplayService.openSingleVideo(videos[0], caption, videoDomainsNames, this.user, nextEpisode, deserveAd, this.anime.nombre, 
-                    this.anime.imagen, this.isLogged, settings, autoplayPreferences.providerName);
+                    this.anime.imagen, this.isLogged, settings, autoplayPreferences.providerName, loader);
                 }
                 
               }).catch(error => {
@@ -556,6 +570,9 @@ export class EpisodePage implements OnInit {
               });
             }
 
+          } else {
+            loader.dismiss();
+            this.utils.showToast("No hay una configuración preferida para autoplay (providerName)", 2, false);
           }
         } else {
           loader.dismiss();

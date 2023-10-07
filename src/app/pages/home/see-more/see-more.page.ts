@@ -168,6 +168,13 @@ export class SeeMorePage implements OnInit {
     } else if (this.type == "latest-episodes") {
       await this.database.getLatestEpisodes(page, this.token).then(data => {
         this.results = data.results;
+
+        for (let episode of this.results) {
+          if (episode.seconds_seen != null && episode.seconds_seen.seconds != 0) {
+            episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
+          }
+        }
+
         this.totalResults = data.count;
         this.pagination = {
           'actualPage': page,
@@ -352,6 +359,13 @@ export class SeeMorePage implements OnInit {
 
         this.database.getLatestEpisodes(this.pagination.actualPage + 1, this.token).then(data => {
           this.results = this.results.concat(data.results);
+
+          for (let episode of this.results) {
+            if (episode.seconds_seen != null && episode.seconds_seen.seconds != 0) {
+              episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
+            }
+          }
+
           this.pagination = {
             'actualPage': this.pagination.actualPage + 1,
             'hasNextPage': data.next != null,

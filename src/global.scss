@@ -286,15 +286,30 @@ ion-card.anime-grid-card {
     }
 }
 
+ion-progress-bar.episode_progress {
+    border-radius: 10px;
+    height: 7px;
+}
+
 body.dark {
     img {
-        background-color: #162b46;
+        background-color: #113644;
+    }
+
+    ion-progress-bar.episode_progress {
+        --background: rgba(255, 255, 255, 0.2);
+        --progress-background: rgba(255, 255, 255, 0.3);
     }
 }
 
 body.light {
     img {
         background-color: #eeeeee;
+    }
+
+    ion-progress-bar.episode_progress {
+        --background: rgba(0, 0, 0, 0.2);
+        --progress-background: rgba(0, 0, 0, 0.3);
     }
 }
 

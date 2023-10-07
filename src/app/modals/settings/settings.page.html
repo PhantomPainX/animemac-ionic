@@ -34,9 +34,17 @@
         <ion-label>Proveedores de video adicionales</ion-label>
         <ion-toggle slot="end" value="aditionalProviders" [(ngModel)]="aditionalProvidersToggle" (ionChange)="toggle($event)"></ion-toggle>
       </ion-item>
-      <ion-item lines="full">
+      <!-- <ion-item lines="full">
         <ion-label>Tema oscuro</ion-label>
         <ion-toggle slot="end" value="darkTheme" [(ngModel)]="darkThemeToggle" (ionChange)="toggle($event)"></ion-toggle>
+      </ion-item> -->
+
+      <ion-item>
+        <ion-select mode="ios" aria-label="Apariencia" label="Apariencia" interface="popover" placeholder="Selecciona una opción" [(ngModel)]="theme" (ionChange)="changeTheme($event)">
+          <ion-select-option value="system">Usar tema del dispositivo</ion-select-option>
+          <ion-select-option value="dark">Tema oscuro</ion-select-option>
+          <ion-select-option value="light">Tema claro</ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-item-group>
   </ion-list>

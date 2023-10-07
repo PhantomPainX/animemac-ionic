@@ -17,9 +17,6 @@ export class ResolversService {
   }
 
   async fembedResolver(url_orig: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     let url = url_orig.replace("fembed.com", "vanfem.com").replace("/v/", "/api/source/");
 
     return new Promise((resolve, reject) => {
@@ -38,7 +35,6 @@ export class ResolversService {
         var videos = [];
         if (!Array.isArray(mVideos)) {
           reject("No se encontraron videos");
-          loader.dismiss();
           return false;
         }
 
@@ -53,20 +49,16 @@ export class ResolversService {
           });
         }
         console.log("FEMBED VIDEOS: " + JSON.stringify(videos));
-        loader.dismiss();
         resolve(videos);
 
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
       });
     });
   }
 
   async uqloadResolver(urlxd: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     return new Promise((resolve, reject) => {
 
       const options: HttpOptions = {
@@ -100,19 +92,14 @@ export class ResolversService {
           },
           'kind': "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async youruploadResolver(url: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     return new Promise(async (resolve, reject) => {
 
       const options: HttpOptions = {
@@ -140,7 +127,6 @@ export class ResolversService {
         const array = scriptWithVideo.split('\'');
         let vid = array.filter(item => item.includes(".mp4"));
         if (vid.length == 0) {
-          loader.dismiss();
           reject("No se encontraron videos");
           return;
         }
@@ -152,19 +138,14 @@ export class ResolversService {
           },
           'kind': "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async okruResolver(url: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     return new Promise((resolve, reject) => {
 
       const options: HttpOptions = {
@@ -207,19 +188,14 @@ export class ResolversService {
         });
 
         const document = videos;
-        loader.dismiss();
         resolve(document);
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async mailRuResolver(url: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     return new Promise((resolve, reject) => {
 
       let urlFix = url.replace('https://my.mail.ru/video/embed/', '');
@@ -247,19 +223,14 @@ export class ResolversService {
         });
 
         const document = videos;
-        loader.dismiss();
         resolve(document);
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async aFenixResolver(url: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
-
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
         url: url,
@@ -296,11 +267,9 @@ export class ResolversService {
 
             //check if there is at least one "file" in document
             if (document.some(video => video.file)) {
-              loader.dismiss();
               resolve(document);
               return;
             } else {
-              loader.dismiss();
               reject("No videos found");
               return;
             }
@@ -308,10 +277,8 @@ export class ResolversService {
         });
 
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
-      }).finally(() => {
-        loader.dismiss();
       });
     });
   }
@@ -327,9 +294,6 @@ export class ResolversService {
     // console.log("user-agent" + navigator.userAgent);
 
     const final_url = (new URL(url).origin + "/375664356a494546326c4b797c7c6e756577776778623171737/" + hex_id).toLowerCase();
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
 
@@ -390,23 +354,17 @@ export class ResolversService {
           });
   
           const document = videos;
-          loader.dismiss();
           resolve(document);
         }).catch(err => {
-          loader.dismiss();
           reject(err);
         });
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async streamsbResolver2(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
 
@@ -436,7 +394,6 @@ export class ResolversService {
         });
 
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
@@ -476,8 +433,6 @@ export class ResolversService {
   }
 
   async mp4uploadResolver(url: string) {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -515,20 +470,15 @@ export class ResolversService {
         console.log("MP4UPLOAD: " + JSON.stringify(videos));
 
         const document = videos;
-        loader.dismiss();
         resolve(document);
 
       }).catch(err => {
-        loader.dismiss();
         reject(err);
       });
     });
   }
 
   async animeuiResolver(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -579,17 +529,15 @@ export class ResolversService {
 
           const document = videos;
           console.log("ANIMEUI: " + JSON.stringify(document));
-          loader.dismiss();
           resolve(document);
           
         }).catch(err => {
           reject(err);
-          loader.dismiss();
         });
 
 
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
       });
     });
@@ -597,9 +545,6 @@ export class ResolversService {
   }
 
   async streamtapeResolver(url: string): Promise<any> {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -646,11 +591,9 @@ export class ResolversService {
           },
           kind: "video"
         }];
-        loader.dismiss();
         resolve(document);
 
       }).catch(error => {
-        loader.dismiss();
         reject(error);
       });
 
@@ -659,9 +602,6 @@ export class ResolversService {
   }
 
   async jwplayerResolver(url: string): Promise<any> {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -719,11 +659,9 @@ export class ResolversService {
           reject("No se encontraron videos");
         }
 
-        loader.dismiss();
         resolve(document);
 
       }).catch(error => {
-        loader.dismiss();
         reject(error);
       });
 
@@ -732,9 +670,6 @@ export class ResolversService {
   }
 
   async ironhentaiResolver(url: string): Promise<any> {
-      
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -784,7 +719,6 @@ export class ResolversService {
               // get the id
               const video = iframeSrc.split("id=")[1];
 
-              loader.dismiss();
               resolve([{
                 label: "HD",
                 file: video,
@@ -808,7 +742,6 @@ export class ResolversService {
           }
           if (apiUrl == "") {
             reject("No se encontraron videos");
-            loader.dismiss();
           }
 
           const options: HttpOptions = {
@@ -855,28 +788,23 @@ export class ResolversService {
 
             if (videos.length == 0) {
               reject("No se encontraron videos");
-              loader.dismiss();
               return;
             }
 
-            loader.dismiss();
             console.log(videos);
             resolve(videos);
 
           }).catch(error => {
-            loader.dismiss();
             console.log("ERROR 3: " + error);
             reject(error);
           });
 
         }).catch(error => {
-          loader.dismiss();
           console.log("ERROR 2: " + error);
           reject(error);
         });
 
       }).catch(error => {
-        loader.dismiss();
         console.log("ERROR 1: " + error);
         reject(error);
       });
@@ -884,9 +812,6 @@ export class ResolversService {
   }
 
   async animepelixResolver(url: string): Promise<any> {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -920,7 +845,6 @@ export class ResolversService {
         }
 
         if (mVideo == "") {
-          loader.dismiss();
           reject("No se encontraron videos");
           console.log("No se encontraron videos");
           return;
@@ -934,10 +858,8 @@ export class ResolversService {
           },
           kind: "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(error => {
-        loader.dismiss();
         console.log("ERROR 1 animepelix: " + error);
         reject(error);
       });
@@ -946,9 +868,6 @@ export class ResolversService {
   }
 
   async streamhideResolver(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -992,19 +911,15 @@ export class ResolversService {
           });
         }
         const document = videos;
-        loader.dismiss();
         resolve(document);
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
       });
     });
   }
 
   async streamhideResolverOld(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -1062,26 +977,21 @@ export class ResolversService {
           console.log("STREAMWISH XDDDDD");
 
           const document = videos;
-          loader.dismiss();
           resolve(document);
           
         }).catch(err => {
           reject(err);
-          loader.dismiss();
         });
 
 
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
       });
     });
   }
 
   async sendvidResolver(url: string): Promise<any> {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -1109,10 +1019,8 @@ export class ResolversService {
           },
           kind: "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(error => {
-        loader.dismiss();
         reject(error);
       });
 
@@ -1120,9 +1028,6 @@ export class ResolversService {
   }
 
   async mixdropResolver(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -1173,26 +1078,21 @@ export class ResolversService {
           });
 
           const document = videos;
-          loader.dismiss();
           resolve(document);
           
         }).catch(err => {
           reject(err);
-          loader.dismiss();
         });
 
 
       }).catch(err => {
-        loader.dismiss(); 
+        
         reject(err);
       });
     });
   }
 
   async voeResolver(url: string): Promise<any> {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise<any>(async (resolve, reject) => {
 
@@ -1233,10 +1133,8 @@ export class ResolversService {
           },
           kind: "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(error => {
-        loader.dismiss();
         reject(error);
       });
 
@@ -1244,9 +1142,6 @@ export class ResolversService {
   }
 
   async streamhubResolver(url: string) {
-
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     return new Promise((resolve, reject) => {
       const options: HttpOptions = {
@@ -1305,25 +1200,20 @@ export class ResolversService {
           console.log("STREAMHUB XDDDDD");
 
           const document = videos;
-          loader.dismiss();
           resolve(document);
           
         }).catch(err => {
           reject(err);
-          loader.dismiss();
         });
 
 
       }).catch(err => {
-        loader.dismiss(); 
         reject(err);
       });
     });
   }
 
   async doodResolver(url: string): Promise<any> {
-    const loader = await this.utils.createIonicLoader("Cargando videos...");
-    await loader.present();
 
     const url_path = new URL(url).pathname;
     const final_url = ("https://dood.yt" + url_path).replace("/d/", "/e/");
@@ -1383,10 +1273,8 @@ export class ResolversService {
           },
           kind: "video"
         }];
-        loader.dismiss();
         resolve(document);
       }).catch(error => {
-        loader.dismiss();
         reject(error);
       });
 

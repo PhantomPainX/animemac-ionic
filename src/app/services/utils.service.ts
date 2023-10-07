@@ -117,13 +117,15 @@ export class UtilsService {
   async resetStatusBarColorOfToolbar() {
     if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      const theme = await this.getDeviceTheme();
-      if (theme === "dark") {
+      const theme = await this.getAppTheme();
+      if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#0d1c35" });
-      } else {
+      } else if (theme.light) {
         StatusBar.setStyle({ style: Style.Light });
         StatusBar.setBackgroundColor({ color: "#f9f9f9" });
+      } else if (theme.system) {
+
       }
     }
   }
@@ -131,13 +133,15 @@ export class UtilsService {
   async setDefaultStatusBarColor() {
     if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      const theme = await this.getDeviceTheme();
-      if (theme === "dark") {
+      const theme = await this.getAppTheme();
+      if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#0b192f" });
-      } else {
+      } else if (theme.light) {
         StatusBar.setStyle({ style: Style.Light });
         StatusBar.setBackgroundColor({ color: "#FFFFFF" });
+      } else if (theme.system) {
+
       }
     }
   }
@@ -185,14 +189,17 @@ export class UtilsService {
     });
   }
 
-
-  async getDeviceTheme() {
-    const settings = await this.preferences.getSettings();
-    if (settings.darkTheme) {
+  async getDeviceSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return "dark";
     } else {
       return "light";
     }
+  }
+
+  async getAppTheme() {
+    const settings = await this.preferences.getSettings();
+    return settings.theme;
   }
 
   getStatusBarHeight(): Promise<number> {
@@ -323,7 +330,7 @@ export class UtilsService {
     this.alertCtrl.create({
       header: "Lo sentimos, fuiste baneado",
       subHeader: "Si deseas ver el motivo, intenta iniciar sesión nuevamente",
-      message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
+      message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@animemac.net",
       mode: 'ios',
       translucent: true,
       backdropDismiss: false,

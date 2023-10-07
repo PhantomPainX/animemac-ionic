@@ -105,12 +105,14 @@
         <ion-label *ngIf="episode.ep_nombre">
           <h2>({{episode.numero}}) | T{{episode.temporada}} {{episode.ep_nombre}}</h2>
           <p>{{ utils.dateAgo(episode.fecha) }}</p>
-          <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+          <!-- <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p> -->
+          <ion-progress-bar *ngIf="episode.progress" style="margin-top: 5px" class="episode_progress" [value]="episode.progress"></ion-progress-bar>
         </ion-label>
         <ion-label *ngIf="!episode.ep_nombre">
           <h2>Episodio {{episode.numero}}</h2>
           <p>{{ utils.dateAgo(episode.fecha) }}</p>
-          <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p>
+          <!-- <p style="padding-top: 4px" *ngIf="episode.seconds_seen != null && episode.seconds_seen.seconds != 0">Visto {{utils.formatSeconds(episode.seconds_seen.seconds)}} de {{utils.formatSeconds(episode.seconds_seen.total_seconds)}}</p> -->
+          <ion-progress-bar *ngIf="episode.progress" style="margin-top: 5px" class="episode_progress" [value]="episode.progress"></ion-progress-bar>
         </ion-label>
       </ion-item>
     </ion-list>

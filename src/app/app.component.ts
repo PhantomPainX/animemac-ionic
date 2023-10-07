@@ -73,6 +73,8 @@ export class AppComponent {
   public updateAvailable: boolean = false;
   private appUpdateInterval: any;
 
+  private systemColorSchemeListener: any;
+
   constructor(public platform: Platform, public toastCtrl: ToastController, public modalCtrl: ModalController, 
     public screenOrientation: ScreenOrientation, public router: Router, public utils: UtilsService, public navCtrl: NavController, 
     public menu: MenuController, public localStorage: PreferencesService, public database: MysqlDatabaseService, public alertCtrl: AlertController, 
@@ -131,7 +133,9 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
-    window.removeEventListener('change', () => { console.log('removed listener 13') });
+    if (this.systemColorSchemeListener) {
+      this.systemColorSchemeListener.removeEventListener('change', this.systemThemeHandler.bind(this));
+    }
     Network.removeAllListeners();
     if (this.updatedUserExtraSubscription) {
       this.updatedUserExtraSubscription.unsubscribe();
@@ -169,7 +173,11 @@ export class AppComponent {
           chromecastEnabled: true,
           pipEnabled: true,
           aditionalProviders: true,
-          darkTheme: false
+          theme: {
+            dark: false,
+            light: false,
+            system: true
+          }
         };
         this.localStorage.setSettings(settings);
       } else {
@@ -177,8 +185,12 @@ export class AppComponent {
           localSettings.aditionalProviders = true;
           this.localStorage.setSettings(localSettings);
         }
-        if (localSettings.darkTheme === undefined) {
-          localSettings.darkTheme = false;
+        if (localSettings.theme === undefined) {
+          localSettings.theme = {
+            dark: false,
+            light: false,
+            system: true
+          }
           this.localStorage.setSettings(localSettings);
         }
       }
@@ -258,6 +270,16 @@ export class AppComponent {
           this.localStorage.setBiometricCompatible(false);
         }
       }
+
+      const localSettings = await this.localStorage.getSettings();
+      if (localSettings.theme === undefined) {
+        localSettings.theme = {
+          dark: false,
+          light: false,
+          system: true
+        }
+        this.localStorage.setSettings(localSettings);
+      }
     }
 
     if (localLogged || localGuest) {
@@ -323,28 +345,66 @@ export class AppComponent {
   }
 
   addColorSchemeListener() {
-    this.themeChangedSubscription = this.sharingService.getThemeChanged().subscribe(async (darkTheme) => {
-      if (darkTheme) {
-        document.body.classList.remove('light');
-        document.body.classList.add('dark');
-        if (this.platform.is('android') && this.platform.is('capacitor')) {
-          StatusBar.setStyle({ style: Style.Dark });
-          StatusBar.setBackgroundColor({ color: '#0d1c35' });
-        }
-      } else {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
-        if (this.platform.is('android') && this.platform.is('capacitor')) {
-          StatusBar.setStyle({ style: Style.Light });
-          StatusBar.setBackgroundColor({ color: '#f9f9f9' });
-        }
+    this.themeChangedSubscription = this.sharingService.getThemeChanged().subscribe(async (theme) => {
+      if (this.systemColorSchemeListener) {
+        this.systemColorSchemeListener.removeEventListener('change', this.systemThemeHandler.bind(this));
+      }
+
+      if (theme.dark) {
+        this.setTheme('dark');
+      } else if (theme.light) {
+        this.setTheme('light');
+      } else if (theme.system) {
+        this.utils.getDeviceSystemTheme().then(systemTheme => {
+          if (systemTheme === 'dark') {
+            this.setTheme('dark');
+          } else if (systemTheme === 'light') {
+            this.setTheme('light');
+          }
+        });
+        this.addSystemThemeListener();
       }
     });
     this.localStorage.getSettings().then(settings => {
       if (settings) {
-        this.sharingService.emitThemeChanged(settings.darkTheme);
+        this.sharingService.emitThemeChanged(settings.theme);
       }
     });
+  }
+
+  setTheme(theme: string) {
+    if (theme === 'dark') {
+      document.body.classList.remove('light');
+      document.body.classList.add('dark');
+      if (this.platform.is('android') && this.platform.is('capacitor')) {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#0d1c35' });
+      }
+    } else if (theme === 'light') {
+      document.body.classList.remove('dark');
+      document.body.classList.add('light');
+      if (this.platform.is('android') && this.platform.is('capacitor')) {
+        StatusBar.setStyle({ style: Style.Light });
+        StatusBar.setBackgroundColor({ color: '#f9f9f9' });
+      }
+    }
+  }
+
+  addSystemThemeListener() {
+    this.systemColorSchemeListener = window.matchMedia('(prefers-color-scheme: dark)');
+    this.systemColorSchemeListener.addEventListener('change', this.systemThemeHandler.bind(this));
+  }
+
+  async systemThemeHandler(event) {
+    const appTheme = await this.utils.getAppTheme();
+    if (appTheme.system) {
+      const newColorScheme = event.matches ? "dark" : "light";
+      if (newColorScheme === 'dark') {
+        this.setTheme('dark');
+      } else {
+        this.setTheme('light');
+      }
+    }
   }
 
   async showIndeterminatedToast(message: string) {

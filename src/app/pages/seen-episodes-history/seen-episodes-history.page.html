@@ -59,8 +59,9 @@
       <ion-label>
         <h4>{{ episode.episode_data.anime.nombre }}</h4>
         <h5>Episodio {{ episode.episode_data.numero }}</h5>
-        <p>Visto {{ utils.dateAgo(episode.updated_at) }}</p>
-        <p style="padding-top: 4px" *ngIf="episode.seconds != 0">{{utils.formatSeconds(episode.seconds)}} de {{utils.formatSeconds(episode.total_seconds)}}</p>
+        <p>{{ utils.dateAgo(episode.updated_at) }}</p>
+        <!-- <p style="padding-top: 4px" *ngIf="episode.seconds != 0">{{utils.formatSeconds(episode.seconds)}} de {{utils.formatSeconds(episode.total_seconds)}}</p> -->
+        <ion-progress-bar *ngIf="episode.progress" style="margin-top: 5px" class="episode_progress" [value]="episode.progress"></ion-progress-bar>
       </ion-label>
 
       <ion-buttons slot="end">

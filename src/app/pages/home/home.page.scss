@@ -230,6 +230,13 @@ ion-content {
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
             }
+
+            ion-progress-bar.episode_progress_black {
+                border-radius: 10px;
+                height: 7px;
+                --background: rgba(0, 0, 0, 0.2) !important;
+                --progress-background: rgba(0, 0, 0, 0.3) !important;
+            }
         }
 
         .playIcon {

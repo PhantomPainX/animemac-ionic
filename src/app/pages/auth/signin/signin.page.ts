@@ -112,7 +112,7 @@ export class SigninPage implements OnInit {
           if (age < 13) {
             this.alertCtrl.create({
               header: "Lo sentimos",
-              message: "Debes tener 13 años o más para poder usar la aplicación de DangoAnime",
+              message: "Debes tener 13 años o más para poder usar AnimeMac",
               mode: 'ios',
               translucent: true,
               buttons: [
@@ -137,7 +137,7 @@ export class SigninPage implements OnInit {
           this.alertCtrl.create({
             header: "Baneado por " + res.user.user_extra.ban_admin.username,
             subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
-            message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
+            message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@animemac.net",
             mode: 'ios',
             translucent: true,
             buttons: [
@@ -188,7 +188,7 @@ export class SigninPage implements OnInit {
         if (!user.user_extra.thirteen_age_coppa_compliant) {
           const alert = await this.alertCtrl.create({
             header: "¿Tienes 13 años o más?",
-            message: "Necesitamos que confirmes que tienes 13 años o más para poder usar la aplicación de DangoAnime",
+            message: "Necesitamos que confirmes que tienes 13 años o más para poder usar AnimeMac",
             mode: 'ios',
             translucent: true,
             buttons: [
@@ -196,7 +196,7 @@ export class SigninPage implements OnInit {
                 text: "No",
                 role: "cancel",
                 handler: () => {
-                  this.utils.showToast("Debes tener 13 años o más para poder usar la aplicación de DangoAnime", 2, true);
+                  this.utils.showToast("Debes tener 13 años o más para poder usar AnimeMac", 2, true);
                 }
               },
               {
@@ -309,7 +309,7 @@ export class SigninPage implements OnInit {
             this.alertCtrl.create({
               header: "Baneado por " + res.user.user_extra.ban_admin.username,
               subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
-              message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
+              message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@animemac.net",
               mode: 'ios',
               translucent: true,
               buttons: [
@@ -360,7 +360,7 @@ export class SigninPage implements OnInit {
           if (!user.user_extra.thirteen_age_coppa_compliant) {
             const alert = await this.alertCtrl.create({
               header: "¿Tienes 13 años o más?",
-              message: "Necesitamos que confirmes que tienes 13 años o más para poder usar la aplicación de DangoAnime",
+              message: "Necesitamos que confirmes que tienes 13 años o más para poder usar AnimeMac",
               mode: 'ios',
               translucent: true,
               buttons: [
@@ -368,7 +368,7 @@ export class SigninPage implements OnInit {
                   text: "No",
                   role: "cancel",
                   handler: async () => {
-                    await this.utils.showToast("Debes tener 13 años o más para poder usar la aplicación de DangoAnime", 2, true);
+                    await this.utils.showToast("Debes tener 13 años o más para poder usar AnimeMac", 2, true);
                   }
                 },
                 {
@@ -515,7 +515,7 @@ export class SigninPage implements OnInit {
             this.alertCtrl.create({
               header: "Baneado por " + res.user.user_extra.ban_admin.username,
               subHeader: "Motivo: " + res.user.user_extra.ban_reason + " (" + this.utils.formatFullDate(res.user.user_extra.ban_date) + ")",
-              message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@dangoanime.com",
+              message: "Si crees que esto es un error, contacta con nosotros a través del correo electrónico contacto@animemac.net",
               mode: 'ios',
               translucent: true,
               buttons: [
@@ -566,7 +566,7 @@ export class SigninPage implements OnInit {
           if (!user.user_extra.thirteen_age_coppa_compliant) {
             const alert = await this.alertCtrl.create({
               header: "¿Tienes 13 años o más?",
-              message: "Necesitamos que confirmes que tienes 13 años o más para poder usar la aplicación de DangoAnime",
+              message: "Necesitamos que confirmes que tienes 13 años o más para poder usar AnimeMac",
               mode: 'ios',
               translucent: true,
               buttons: [
@@ -574,7 +574,7 @@ export class SigninPage implements OnInit {
                   text: "No",
                   role: "cancel",
                   handler: async () => {
-                    await this.utils.showToast("Debes tener 13 años o más para poder usar la aplicación de DangoAnime", 2, true);
+                    await this.utils.showToast("Debes tener 13 años o más para poder usar AnimeMac", 2, true);
                   }
                 },
                 {

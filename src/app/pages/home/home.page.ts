@@ -162,6 +162,9 @@ export class HomePage implements OnInit {
         this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
           this.obtainNextToSee();
         });
+        this.episodeTimeSeenChangedSubscription = this.sharingService.getEpisodeTimeSeen().subscribe(async () => {
+          this.obtainNextToSee();
+        });
       } else {
         this.recentlyLoggedSubscription = this.sharingService.getRecentlyLogged().subscribe(async (logged) => {
           this.isLogged = logged;
@@ -172,6 +175,9 @@ export class HomePage implements OnInit {
             this.allowedUserInLiteVersion = this.user.is_staff || this.user.is_superuser || this.user.groups.moderator || this.user.groups.vip;
             this.obtainNextToSee();
             this.toggleSeenEpisodeSubscription = this.sharingService.getSeenEpisode().subscribe(async () => {
+              this.obtainNextToSee();
+            });
+            this.episodeTimeSeenChangedSubscription = this.sharingService.getEpisodeTimeSeen().subscribe(async () => {
               this.obtainNextToSee();
             });
             this.recentlyLoggedSubscription.unsubscribe();
@@ -277,6 +283,11 @@ export class HomePage implements OnInit {
             await this.utils.getMainColorFromRemoteImg(d.anime.imagen).then(color => {
               d.color = color;
             });
+
+            if (d.seconds_seen != null && d.seconds_seen.seconds != 0) {
+              // calcular el % de progreso respecto a seconds y total_seconds
+              d.progress = d.seconds_seen.seconds / d.seconds_seen.total_seconds;
+            }
           }
   
           this.nextToSee = dataClean;
@@ -293,6 +304,12 @@ export class HomePage implements OnInit {
     this.latestEpisodes = undefined;
     await this.database.getLatestEpisodes(1, this.token).then(data => {
       this.latestEpisodes = data.results.slice(0, 10);
+
+      for (let episode of this.latestEpisodes) {
+        if (episode.seconds_seen != null && episode.seconds_seen.seconds != 0) {
+          episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
+        }
+      }
     });
   }
 

@@ -28,7 +28,7 @@
 
 <ion-content>
   <ion-list *ngIf="optionValue == 'local' && localCompatible" style="padding: 0;">
-    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of localCompatible" (click)="getVideos($event, embed)">
+    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of localCompatible" (click)="getVideos($event, embed, 'local')">
       <ion-label>
         <h2>{{embed.embed}}</h2>
       </ion-label>
@@ -36,7 +36,7 @@
   </ion-list>
   
   <ion-list *ngIf="optionValue == 'web' && webCompatible" style="padding: 0;">
-    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of webCompatible" (click)="getVideos($event, embed)">
+    <ion-item [disabled]="!buttonsClickable" detail="true" class="animate__animated animate__fadeIn animate__faster" lines="full" button *ngFor="let embed of webCompatible" (click)="getVideos($event, embed, 'web')">
       <ion-label>
         <h2>{{embed.embed}}</h2>
       </ion-label>

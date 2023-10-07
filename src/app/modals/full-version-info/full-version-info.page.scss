@@ -17,6 +17,7 @@ ion-header {
     img {
         width: 150px;
         border-radius: 10px;
+        background-color: unset;
     }
 
     .title {
@@ -85,7 +86,7 @@ ion-header {
 
 .footer_container {
     padding: 20px;
-    background: #102444;
+    background: #002932;
     
     :host-context(body.light) & {
         background: #f7f7f7;

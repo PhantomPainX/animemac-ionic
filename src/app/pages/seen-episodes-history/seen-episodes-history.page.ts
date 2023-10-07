@@ -80,6 +80,11 @@ export class SeenEpisodesHistoryPage implements OnInit {
 
     await this.database.getSeenEpisodesHistory(1, ordering, this.token).then(data => {
       this.results = data.results;
+      for (let episode of this.results) {
+        if (episode.seconds != 0) {
+          episode.progress = episode.seconds / episode.total_seconds;
+        }
+      }
       this.totalResults = data.count;
       this.pagination = {
         'actualPage': 1,
@@ -97,6 +102,13 @@ export class SeenEpisodesHistoryPage implements OnInit {
     if (this.pagination.hasNextPage) {
 
       this.database.getSeenEpisodesHistory(this.pagination.actualPage + 1, this.sortName, this.token).then(data => {
+
+        for (let episode of data.results) {
+          if (episode.seconds != 0) {
+            episode.progress = episode.seconds / episode.total_seconds;
+          }
+        }
+
         this.results = this.results.concat(data.results);
         this.pagination = {
           'actualPage': this.pagination.actualPage + 1,
@@ -291,7 +303,6 @@ export class SeenEpisodesHistoryPage implements OnInit {
       });
     }
 
-    console.log(episode);
     const actionSheet = await this.actionSheetCtrl.create({
       header: episode.episode_data.anime.nombre,
       buttons: buttons

@@ -50,10 +50,8 @@ export class VideoPlayerService {
   }
 
   public async nativePlayer(video: any, subtitleUrl: string, title: string, smallTitle: string, image: string, episode: any, isLogged: boolean, user: any, 
-    settings: Settings, providerName: string, videoProviderDomains: any, videoProviderQuality: string) {
+    settings: Settings, providerName: string, videoProviderDomains: any, videoProviderQuality: string, loader: HTMLIonLoadingElement) {
 
-      const loader = await this.utils.createIonicLoader("Por favor espera...");
-      loader.present();
       const timeSeen = await this.getSeenEpisodeTime(episode.id, user.token);
       loader.dismiss();
       if (timeSeen != null && timeSeen.seconds > 0 && timeSeen.seconds < timeSeen.total_seconds) {
@@ -74,6 +72,7 @@ export class VideoPlayerService {
                 this.zone.run(() => {
                   episode.seconds_seen.seconds = 0;
                   episode.seconds_seen.total_seconds = timeSeen.total_seconds;
+                  episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
                   episode.seconds_seen.episode = episode.id;
                 });
                 this.executePlayer(video, subtitleUrl, title, smallTitle, image,
@@ -131,7 +130,10 @@ export class VideoPlayerService {
         }
       }
 
+      this.sharingService.emitVideoPlaybackStarted(true);
+
       await this.capacitorVideoPlayer.initPlayer(options).then(() => {
+
         this.capacitorVideoPlayer.play({playerId: 'player1'}).then(async () => {
           if (this.platform.is('android')) {
             this.screenOrientation.unlock();
@@ -198,6 +200,7 @@ export class VideoPlayerService {
                     }
                     episode.seconds_seen.seconds = info.currentTime;
                     episode.seconds_seen.total_seconds = this.videoDuration;
+                    episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
                     episode.seconds_seen.episode = episode.id;
 
                     if (!this.episodeWasMarkedAsSeen) {
@@ -258,6 +261,7 @@ export class VideoPlayerService {
                   }
                   episode.seconds_seen.seconds = this.videoDuration;
                   episode.seconds_seen.total_seconds = this.videoDuration;
+                  episode.progress = episode.seconds_seen.seconds / episode.seconds_seen.total_seconds;
                   episode.seconds_seen.episode = episode.id;
 
                   if (!this.episodeWasMarkedAsSeen) {
@@ -340,12 +344,16 @@ export class VideoPlayerService {
           if (this.platform.is('android')) {
             this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
           }
+
+          this.removeAllListeners();
         });
 
         this.endHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerEnded', () => {
           if (this.platform.is('android')) {
             this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
           }
+
+          this.removeAllListeners();
         });
       });
     });
@@ -423,12 +431,16 @@ export class VideoPlayerService {
           if (this.platform.is('android')) {
             this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
           }
+
+          this.removeAllListeners();
         });
 
         this.endHandler = await this.capacitorVideoPlayer.addListener('jeepCapVideoPlayerEnded', () => {
           if (this.platform.is('android')) {
             this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
           }
+
+          this.removeAllListeners();
         });
       });
     });
