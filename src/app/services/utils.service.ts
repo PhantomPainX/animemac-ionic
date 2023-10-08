@@ -120,12 +120,22 @@ export class UtilsService {
       const theme = await this.getAppTheme();
       if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: "#0d1c35" });
+        StatusBar.setBackgroundColor({ color: "#081f25" });
       } else if (theme.light) {
         StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: "#f9f9f9" });
+        StatusBar.setBackgroundColor({ color: "#eefbff" });
+      } else if (theme.dark_orange) {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: "#230c00" });
       } else if (theme.system) {
-
+        const systemTheme = await this.getDeviceSystemTheme();
+        if (systemTheme === "dark") {
+          StatusBar.setStyle({ style: Style.Dark });
+          StatusBar.setBackgroundColor({ color: "#081f25" });
+        } else if (systemTheme === "light") {
+          StatusBar.setStyle({ style: Style.Light });
+          StatusBar.setBackgroundColor({ color: "#eefbff" });
+        }
       }
     }
   }
@@ -136,12 +146,22 @@ export class UtilsService {
       const theme = await this.getAppTheme();
       if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: "#0b192f" });
+        StatusBar.setBackgroundColor({ color: "#07191e" });
       } else if (theme.light) {
         StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: "#FFFFFF" });
+        StatusBar.setBackgroundColor({ color: "#f5fdff" });
+      } else if (theme.dark_orange) {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: "#120600" });
       } else if (theme.system) {
-
+        const systemTheme = await this.getDeviceSystemTheme();
+        if (systemTheme === "dark") {
+          StatusBar.setStyle({ style: Style.Dark });
+          StatusBar.setBackgroundColor({ color: "#07191e" });
+        } else if (systemTheme === "light") {
+          StatusBar.setStyle({ style: Style.Light });
+          StatusBar.setBackgroundColor({ color: "#f5fdff" });
+        }
       }
     }
   }

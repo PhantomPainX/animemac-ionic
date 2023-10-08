@@ -199,7 +199,7 @@ ion-card.anime-grid-card {
     margin: 0;
     border-radius: 5px;
     box-shadow: none;
-    border: var(--ion-color-card-border) 1px solid;
+    border: var(--ion-border-color) 1px solid;
 
     figure {
         margin: 0 !important;
@@ -291,26 +291,13 @@ ion-progress-bar.episode_progress {
     height: 7px;
 }
 
-body.dark {
-    img {
-        background-color: #113644;
-    }
-
-    ion-progress-bar.episode_progress {
-        --background: rgba(255, 255, 255, 0.2);
-        --progress-background: rgba(255, 255, 255, 0.3);
-    }
+img {
+    background-color: var(--image-background);
 }
 
-body.light {
-    img {
-        background-color: #eeeeee;
-    }
-
-    ion-progress-bar.episode_progress {
-        --background: rgba(0, 0, 0, 0.2);
-        --progress-background: rgba(0, 0, 0, 0.3);
-    }
+ion-progress-bar.episode_progress {
+    --background: var(--ion-progress-bar-background-rgba);
+    --progress-background: var(--ion-progress-bar-progress-background-rgba);
 }
 
 .fabButton::part(native) {

@@ -5,24 +5,6 @@ ion-header {
     }
 }
 
-:host-context(body.dark) {
-    ion-header {
-        --background: #0b192f;
-    }
-    ion-toolbar {
-        --background: #0b192f;
-    }
-}
-
-:host-context(body.light) {
-    ion-header {
-        --background: #FFFFFF;
-    }
-    ion-toolbar {
-        --background: #FFFFFF;
-    }
-}
-
 ion-content {
 
     .main__wrapper {
@@ -61,14 +43,6 @@ ion-content {
                     margin-bottom: 5px;
                     text-align: center;
                     color: #FF0000;
-                }
-
-                .dangoanimeInput {
-                    --min-height: 60px;
-                    --ion-item-background: var(--ion-color-form);
-                    border: 1px solid var(--ion-color-card-border);
-                    border-radius: 50px;
-                    margin-bottom: 10px;
                 }
 
                 ion-input {

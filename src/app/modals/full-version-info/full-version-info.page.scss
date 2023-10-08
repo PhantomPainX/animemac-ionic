@@ -30,12 +30,8 @@ ion-header {
         p {
             font-size: 0.9rem;
             font-weight: 500;
-            color: #BEBEBE;
+            color: var(--ion-text-color);
             margin: 0;
-
-            :host-context(body.light) & {
-                color: #858585;
-            }
         }
     }
 }
@@ -73,12 +69,8 @@ ion-header {
             .description {
                 font-size: 0.9rem;
                 font-weight: normal;
-                color: #BEBEBE;
+                color: var(--ion-text-color);
                 margin: 0;
-
-                :host-context(body.light) & {
-                    color: #858585;
-                }
             }
         }
     }
@@ -86,9 +78,5 @@ ion-header {
 
 .footer_container {
     padding: 20px;
-    background: #002932;
-    
-    :host-context(body.light) & {
-        background: #f7f7f7;
-    }
+    background: var(--ion-tab-bar-background);
 }

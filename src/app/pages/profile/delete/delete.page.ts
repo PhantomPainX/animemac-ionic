@@ -53,11 +53,6 @@ export class DeletePage implements OnInit {
     });
   }
 
-  ionViewWillLeave() {
-    this.utils.setStatusBarStyle(true);
-    this.utils.overlayStatusbar(true);
-  }
-
   get errorControl() {
     return this.formPassword.controls;
   }

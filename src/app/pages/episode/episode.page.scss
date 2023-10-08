@@ -21,15 +21,7 @@ ion-thumbnail {
     }
 }
 
-:host-context(body.dark) {
-    ion-item.nextToSeeItem {
-        --background: #00404f;
-        border-top: 1px #004e5f solid;
-    }
-}
-
-:host-context(body.light) {
-    ion-item.nextToSeeItem {
-        --background: #dceafc;
-    }
+ion-item.nextToSeeItem {
+    --background: var(--ion-card-background);
+    border-top: 1px solid var(--ion-border-color);
 }

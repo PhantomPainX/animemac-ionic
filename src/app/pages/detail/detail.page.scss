@@ -281,20 +281,10 @@ ion-content {
 
 }
 
-:host-context(body.dark) {
-    ion-header {
-        --background: #07191e;
-    }
-    ion-toolbar {
-        --background: #07191e;
-    }
+ion-header {
+    --background: var(--ion-background-color);
 }
 
-:host-context(body.light) {
-    ion-header {
-        --background: #FFFFFF;
-    }
-    ion-toolbar {
-        --background: #FFFFFF;
-    }
+ion-toolbar {
+    --background: var(--ion-background-color);
 }

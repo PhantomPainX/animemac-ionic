@@ -81,10 +81,6 @@ export class EpisodePage implements OnInit {
         }
       });
 
-      // setTimeout(() => {
-      //   this.testAutoPlay();
-      // }, 1000);
-
       this.isLogged = await this.localStorage.getLogged();
       if (this.isLogged) {
         this.user = await this.localStorage.getUser();
@@ -441,25 +437,6 @@ export class EpisodePage implements OnInit {
     } else {
       this.localStorage.removeAutoplay(this.anime.id);
     }
-  }
-
-  setTestAutoplayPreferences() {
-    this.localStorage.setAutoplayPreferences(
-      this.anime.id,
-      "animemac",
-      this.videoDomains.getYouruploadDomains(),
-      "default"
-    );
-  }
-
-  testAutoPlay() {
-    this.anime.episodios[0].nextEpisode = this.anime.episodios[1];
-    // this.videoPlayerService.recentlySawVideo$.emit({
-    //   episode: this.anime.episodios[0],
-    // });
-    this.sharingService.emitAutoplayPreferencesChanged({
-      episode: this.anime.episodios[0],
-    });
   }
 
   async autoplayAlgorithm(nextEpisode: any) {

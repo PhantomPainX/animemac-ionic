@@ -47,18 +47,9 @@ ion-header {
                         min-width: 50px;
                         display: flex;
                         justify-content: center;
-
-                        :host-context(body.light) & {
-                            background-color: rgb(255 255 255 / 30%) !important;
-                            height: 100%;
-                            border-radius: 20px;
-                        }
-
-                        :host-context(body.dark) & {
-                            background-color: rgb(25 25 25 / 30%) !important;
-                            height: 100%;
-                            border-radius: 20px;
-                        }
+                        background-color: rgb(25 25 25 / 30%) !important;
+                        height: 100%;
+                        border-radius: 20px;
 
                         ion-button::part(native) {
                             padding-inline-start: 7px;
@@ -82,7 +73,7 @@ ion-header {
                         width: 70px;
                         height: 70px;
                         position: relative;
-                        border: 2px solid rgb(249, 245, 223);
+                        border: 2px solid var(--ion-color-primary);
                     }
     
                     ion-label {

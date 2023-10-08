@@ -41,23 +41,12 @@ ion-content {
         .buttons {
             display: flex;
             justify-content: flex-end;
-
-            :host-context(body.dark) & {
-                background: #003440;
-                ion-button {
-                    color: rgb(228, 228, 228);
-                    font-size: smaller;
-                    font-weight: normal;
-                }
-            }
-
-            :host-context(body.light) & {
-                background: #dddddda7;
-                ion-button {
-                    color: rgb(0, 0, 0);
-                    font-size: smaller;
-                    font-weight: normal;
-                }
+            border-top: 1px solid var(--ion-border-color);
+            background: var(--ion-card-background);
+            ion-button {
+                color: var(--ion-text-color);
+                font-size: smaller;
+                font-weight: normal;
             }
         }
 
@@ -66,7 +55,7 @@ ion-content {
             ion-avatar {
                 position: relative;
                 margin-right: 10px;
-                border: 1px solid var(--ion-color-card-border);
+                border: 1px solid var(--ion-border-color);
 
                 ion-icon {
                     position: absolute;
@@ -77,7 +66,7 @@ ion-content {
                     background: #f0b400;
                     color: #000;
                     border-radius: 50px;
-                    border: 1px solid var(--ion-color-card-border);
+                    border: 1px solid var(--ion-border-color);
                 }
             }
         }

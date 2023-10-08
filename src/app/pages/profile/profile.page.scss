@@ -33,8 +33,8 @@ ion-header {
         ion-segment {
             ion-segment-button {
                 --color: rgb(255, 255, 255);
-                --color-checked: #64fada;
-                --color-focused: #64fada;
+                --color-checked: var(--ion-color-primary);
+                --color-focused: var(--ion-color-primary);
             }
         }
 
@@ -51,7 +51,7 @@ ion-header {
                 height: 100px;
                 position: relative;
                 margin-right: 10px;
-                border: 2px solid rgb(249, 245, 223);
+                border: 2px solid var(--ion-color-primary);
                 z-index: 99999;
 
                 ion-icon {
@@ -60,10 +60,10 @@ ion-header {
                     padding: 7px;
                     bottom: -7px;
                     left: 68px;
-                    background: rgb(252, 238, 159);
-                    color: rgb(44, 44, 44);
+                    background: var(--ion-color-primary);
+                    color: var(--ion-color-primary-contrast);
                     border-radius: 50px;
-                    border: 2px solid rgb(249, 245, 223);
+                    border: 2px solid var(--ion-color-primary);
                 }
             }
 
@@ -71,13 +71,13 @@ ion-header {
                 text-align: center;
                 margin: 9px 0;
                 font-weight: 600;
-                color: rgb(249, 245, 223);
+                color: rgb(223, 241, 249);
                 z-index: 1;
             }
 
             p {
                 margin: 5px 0;
-                color: rgb(249, 245, 223);
+                color: rgb(223, 241, 249);
                 z-index: 1;
             }
         }

@@ -20,6 +20,7 @@ export class SettingsPage implements OnInit {
   public themeOptions: Themes = {
     dark: false,
     light: false,
+    dark_orange: false,
     system: true
   };
   public theme: string = '';
@@ -46,6 +47,7 @@ export class SettingsPage implements OnInit {
         settings.theme = {
           dark: false,
           light: false,
+          dark_orange: false,
           system: true
         };
         await this.localStorage.setSettings(settings);
@@ -59,6 +61,8 @@ export class SettingsPage implements OnInit {
         this.theme = 'dark';
       } else if (this.themeOptions.light) {
         this.theme = 'light';
+      } else if (this.themeOptions.dark_orange) {
+        this.theme = 'dark_orange';
       } else if (this.themeOptions.system) {
         this.theme = 'system';
       }
@@ -108,9 +112,16 @@ export class SettingsPage implements OnInit {
       settings.theme.light = true;
       settings.theme.system = false;
       this.theme = 'light';
+    } else if (value == 'dark_orange') {
+      settings.theme.dark = false;
+      settings.theme.light = false;
+      settings.theme.dark_orange = true;
+      settings.theme.system = false;
+      this.theme = 'dark_orange';
     } else if (value == 'system') {
       settings.theme.dark = false;
       settings.theme.light = false;
+      settings.theme.dark_orange = false;
       settings.theme.system = true;
       this.theme = 'system';
     }

@@ -1,21 +1,3 @@
-:host-context(body.dark) {
-    ion-header {
-        --background: #07191e;
-    }
-    ion-toolbar {
-        --background: #07191e;
-    }
-}
-
-:host-context(body.light) {
-    ion-header {
-        --background: #FFFFFF;
-    }
-    ion-toolbar {
-        --background: #FFFFFF;
-    }
-}
-
 ion-toolbar {
     --padding-top: 0 !important;
     padding-top: 0 !important;

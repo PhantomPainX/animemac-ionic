@@ -72,15 +72,6 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  ionViewWillEnter() {
-    // this.utils.setStatusBarStyle(true);
-    // this.utils.overlayStatusbar(true);
-  }
-
-  ionViewWillLeave() {
-    // this.utils.resetStatusBarColorOfToolbar();
-  }
-
   allowEditProfile() {
     this.formProfile.get('username')?.enable();
     this.formProfile.get('first_name')?.enable();

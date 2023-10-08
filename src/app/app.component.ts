@@ -176,6 +176,7 @@ export class AppComponent {
           theme: {
             dark: false,
             light: false,
+            dark_orange: false,
             system: true
           }
         };
@@ -189,6 +190,7 @@ export class AppComponent {
           localSettings.theme = {
             dark: false,
             light: false,
+            dark_orange: false,
             system: true
           }
           this.localStorage.setSettings(localSettings);
@@ -276,6 +278,7 @@ export class AppComponent {
         localSettings.theme = {
           dark: false,
           light: false,
+          dark_orange: false,
           system: true
         }
         this.localStorage.setSettings(localSettings);
@@ -354,6 +357,8 @@ export class AppComponent {
         this.setTheme('dark');
       } else if (theme.light) {
         this.setTheme('light');
+      } else if (theme.dark_orange) {
+        this.setTheme('dark_orange');
       } else if (theme.system) {
         this.utils.getDeviceSystemTheme().then(systemTheme => {
           if (systemTheme === 'dark') {
@@ -373,19 +378,24 @@ export class AppComponent {
   }
 
   setTheme(theme: string) {
+    document.body.className = '';
     if (theme === 'dark') {
-      document.body.classList.remove('light');
       document.body.classList.add('dark');
       if (this.platform.is('android') && this.platform.is('capacitor')) {
         StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#0d1c35' });
+        StatusBar.setBackgroundColor({ color: '#081f25' });
       }
     } else if (theme === 'light') {
-      document.body.classList.remove('dark');
       document.body.classList.add('light');
       if (this.platform.is('android') && this.platform.is('capacitor')) {
         StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: '#f9f9f9' });
+        StatusBar.setBackgroundColor({ color: '#eefbff' });
+      }
+    } else if (theme === 'dark_orange') {
+      document.body.classList.add('dark_orange');
+      if (this.platform.is('android') && this.platform.is('capacitor')) {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#081f25' });
       }
     }
   }

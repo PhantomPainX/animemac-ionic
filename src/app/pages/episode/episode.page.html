@@ -54,7 +54,7 @@
         </ng-template>
       </ion-popover>
 
-      <ion-button [disabled]="anime.episodios.length == 1" color="primary" (click)="setTestAutoplayPreferences()" (press)="randomEpisodeNotSeen()">
+      <ion-button [disabled]="anime.episodios.length == 1" color="primary" (click)="randomEpisode()" (press)="randomEpisodeNotSeen()">
         <ion-icon slot="icon-only" name="shuffle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
