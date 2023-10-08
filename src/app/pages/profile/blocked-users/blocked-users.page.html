@@ -56,7 +56,7 @@
   </ion-infinite-scroll>
 
   <div class="center" *ngIf="blockedUsers != null && blockedUsers.length == 0">
-    <ion-icon name="leaf-outline" *ngIf="blockedUsers.length == 0"></ion-icon>
+    <ion-icon name="leaf-outline" color="primary" *ngIf="blockedUsers.length == 0"></ion-icon>
     <p *ngIf="blockedUsers.length == 0">No tienes a ningún usuario bloqueado</p>
   </div>
 

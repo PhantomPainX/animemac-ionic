@@ -46,7 +46,7 @@
   </ion-toolbar>
 
   <div class="centerInfo" *ngIf="noResults">
-    <ion-icon name="pizza-outline"></ion-icon>
+    <ion-icon name="pizza-outline" color="primary"></ion-icon>
     <p>No has visto ningún episodio</p>
     <p class="info">(Los episodios que salen en esta sección son los que has visto recientemente en la aplicación)</p>
   </div>
@@ -74,13 +74,13 @@
         </ion-button>
       </ion-buttons>
     </ion-item>
-
-    <ion-infinite-scroll (ionInfinite)="loadMoreResults($event)">
-      <ion-infinite-scroll-content
-        loadingSpinner="dots">
-      </ion-infinite-scroll-content>
-    </ion-infinite-scroll>
   </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMoreResults($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="dots">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
   <ion-list *ngIf="results == undefined && !noResults">
     <ion-item detail="false" *ngFor="let item of [].constructor(18); let i = index">

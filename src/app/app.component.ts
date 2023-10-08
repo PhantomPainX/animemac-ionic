@@ -385,18 +385,21 @@ export class AppComponent {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: '#081f25' });
       }
+      this.utils.setSafariThemeColor("#081f25");
     } else if (theme === 'light') {
       document.body.classList.add('light');
       if (this.platform.is('android') && this.platform.is('capacitor')) {
         StatusBar.setStyle({ style: Style.Light });
         StatusBar.setBackgroundColor({ color: '#eefbff' });
       }
+      this.utils.setSafariThemeColor("#eefbff");
     } else if (theme === 'dark_orange') {
       document.body.classList.add('dark_orange');
       if (this.platform.is('android') && this.platform.is('capacitor')) {
         StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#081f25' });
+        StatusBar.setBackgroundColor({ color: '#230c00' });
       }
+      this.utils.setSafariThemeColor("#230c00");
     }
   }
 

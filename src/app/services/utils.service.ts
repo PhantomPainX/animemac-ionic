@@ -115,9 +115,9 @@ export class UtilsService {
   }
 
   async resetStatusBarColorOfToolbar() {
+    const theme = await this.getAppTheme();
     if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      const theme = await this.getAppTheme();
       if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#081f25" });
@@ -138,12 +138,29 @@ export class UtilsService {
         }
       }
     }
+
+    let background: string = "";
+    if (theme.dark) {
+      background = "#081f25";
+    } else if (theme.light) {
+      background = "#eefbff";
+    } else if (theme.dark_orange) {
+      background = "#230c00";
+    } else if (theme.system) {
+      const systemTheme = await this.getDeviceSystemTheme();
+      if (systemTheme === "dark") {
+        background = "#081f25";
+      } else if (systemTheme === "light") {
+        background = "#eefbff";
+      }
+    }
+    this.setSafariThemeColor(background);
   }
 
   async setDefaultStatusBarColor() {
+    const theme = await this.getAppTheme();
     if (this.platform.is("android") && this.platform.is('capacitor')) {
       StatusBar.setOverlaysWebView({ overlay: false });
-      const theme = await this.getAppTheme();
       if (theme.dark) {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: "#07191e" });
@@ -164,6 +181,23 @@ export class UtilsService {
         }
       }
     }
+
+    let background: string = "";
+    if (theme.dark) {
+      background = "#07191e";
+    } else if (theme.light) {
+      background = "#f5fdff";
+    } else if (theme.dark_orange) {
+      background = "#120600";
+    } else if (theme.system) {
+      const systemTheme = await this.getDeviceSystemTheme();
+      if (systemTheme === "dark") {
+        background = "#07191e";
+      } else if (systemTheme === "light") {
+        background = "#f5fdff";
+      }
+    }
+    this.setSafariThemeColor(background);
   }
 
   setStatusBarColor(color: string, style: Style) {
@@ -193,6 +227,13 @@ export class UtilsService {
       } else {
         StatusBar.setStyle({ style: Style.Light });
       }
+    }
+  }
+
+  setSafariThemeColor(color: string) {
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', color);
     }
   }
 

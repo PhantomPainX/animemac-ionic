@@ -270,6 +270,7 @@ export class DetailPage implements OnInit {
       skeleton.style.setProperty('--background-rgb', red + ',' + green + ',' + blue);
     });
 
+    this.utils.setSafariThemeColor(this.colorCombo.hex);
     if (this.color.isDark) {
       this.utils.setStatusBarColor(this.colorCombo.hex, Style.Dark);
     } else {
