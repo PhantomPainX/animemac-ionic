@@ -111,14 +111,14 @@ export class AppComponent {
 
   ngOnInit() {
 
-    this.platform.ready().then(() => {
+    this.platform.ready().then(async () => {
       if (this.platform.is('capacitor')) {
         this.utils.setDefaultStatusBarColor();
       }
       this.changeToPortraitOrientation();
-      this.addColorSchemeListener();
       this.addNetworkListener();
-      this.checkUserStatus();
+      await this.checkUserStatus();
+      this.addColorSchemeListener();
 
       if (this.liteVersion) {
         if (this.platform.is('android') && this.platform.is('capacitor')) {

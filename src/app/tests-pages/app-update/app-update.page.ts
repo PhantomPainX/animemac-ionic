@@ -25,7 +25,7 @@ export class AppUpdatePage implements OnInit {
     });
   }
 
-  private checkForUpdate() {
+  public checkForUpdate() {
     AppUpdate.getAppUpdateInfo().then((updateInfo) => {
       console.log('updateInfo -> ' + JSON.stringify(updateInfo));
       if (updateInfo.updateAvailability === AppUpdateAvailability.UPDATE_AVAILABLE) {
