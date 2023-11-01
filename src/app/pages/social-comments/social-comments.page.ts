@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActionSheetButton, ActionSheetController, AlertController, IonInfiniteScroll, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { ActionSheetButton, ActionSheetController, AlertController, IonInfiniteScroll, ModalController, Platform, ToastController } from '@ionic/angular';
 import { AnimeComment } from 'src/app/classes/anime-comment/anime-comment';
 import { PrivateUser } from 'src/app/classes/private-user/private-user';
 import { CommentPage } from 'src/app/modals/comment/comment.page';
@@ -39,7 +39,7 @@ export class SocialCommentsPage implements OnInit {
   constructor(public commentsService: CommentsService, public alertCtrl: AlertController, 
     public utils: UtilsService, public actionCtrl: ActionSheetController, 
     public modalCtrl: ModalController, public localStorage: PreferencesService, public platform: Platform, 
-    public menu: MenuController, public moderation: ModerationService, public toastCtrl: ToastController) { }
+    public moderation: ModerationService, public toastCtrl: ToastController) { }
 
   ngOnInit() {
 
@@ -402,10 +402,6 @@ export class SocialCommentsPage implements OnInit {
       event.target.complete();
       this.InfiniteScroll.disabled = true;
     }
-  }
-
-  openMenu() {
-    this.menu.open();
   }
 
   async openReplies(comment: any) {

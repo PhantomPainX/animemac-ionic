@@ -1,5 +1,5 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { ActionSheetController, AlertController, IonInfiniteScroll, MenuController, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
+import { ActionSheetController, AlertController, IonInfiniteScroll, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { EpisodePage } from '../episode/episode.page';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -14,7 +14,7 @@ import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { IonicSlides } from '@ionic/angular';
 
 import { SwiperContainer } from 'swiper/element';
-import { AutoplayOptions } from 'swiper/types';
+
 import { SigninPage } from '../auth/signin/signin.page';
 import { RegisterPage } from '../auth/register/register.page';
 import { ProfileService } from 'src/app/services/profile/profile.service';
@@ -50,7 +50,7 @@ export class HomePage implements OnInit {
   public user: PrivateUser;
   public token: string = "";
   public animeSwiperBreakpoints: any;
-  public autoplaySwiperOptions: AutoplayOptions;
+  public autoplaySwiperOptions: any;
   public nextToSeeSwiperBreakpoints: any;
   public chipsOptions: any;
 
@@ -88,7 +88,6 @@ export class HomePage implements OnInit {
     public utils: UtilsService,
     private localStorage: PreferencesService,
     public route: ActivatedRoute,
-    public menu: MenuController,
     public zone: NgZone,
     public iab: InAppBrowser,
     public profileService: ProfileService,
@@ -723,42 +722,6 @@ export class HomePage implements OnInit {
 
     //go to see more page with params
     this.navCtrl.navigateForward('/see-more', { queryParams: { type: type, title: title, layoutStyle: layoutStyle } });
-  }
-
-  openMenu() {
-    this.menu.open();
-  }
-  openEnd() {
-    this.menu.open('end');
-  }
-  openCustom() {
-    this.menu.enable(true, 'custom');
-    this.menu.open('custom');
-  }
-
-  async openThatModal() {
-    const browser = this.iab.create('https://www.poe.com', '_system', 'location=no');
-    browser.show();
-
-    //check if browser is closed
-    browser.on('loadstop').subscribe(event => {
-      //execute script to get cookies
-      browser.executeScript({
-        code: "document.cookie"
-      }).then((cookie) => {
-        //set cookies
-        console.log("Cookies 1: "+cookie);
-      });
-    });
-
-    browser.on('exit').subscribe(event => {
-      browser.executeScript({
-        code: "document.cookie"
-      }).then((cookie) => {
-        //set cookies
-        console.log("Cookies 2: "+cookie);
-      });
-    });
   }
 
   changeTheme() {

@@ -116,10 +116,10 @@
 
     <ion-spinner color="primary" name="circular" *ngIf="firstSearch"></ion-spinner>
 
-    <ion-icon name="chatbubbles-outline" *ngIf="!firstSearch && comments.length == 0 && isLogged"></ion-icon>
+    <ion-icon color="primary" name="chatbubbles-outline" *ngIf="!firstSearch && comments.length == 0 && isLogged"></ion-icon>
     <p *ngIf="!firstSearch && comments.length == 0 && isLogged">No hay comentarios, ¡se el primero en comentar!</p>
 
-    <ion-icon name="log-in-outline" *ngIf="!firstSearch && comments.length == 0 && !isLogged"></ion-icon>
+    <ion-icon color="primary" name="log-in-outline" *ngIf="!firstSearch && comments.length == 0 && !isLogged"></ion-icon>
     <p *ngIf="!firstSearch && comments.length == 0 && !isLogged">Inicia sesión para comentar</p>
   </div>
 

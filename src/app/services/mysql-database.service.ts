@@ -1353,4 +1353,60 @@ export class MysqlDatabaseService {
     });
   }
 
+  async updateAnimeViaScraping(token: string, animeId: number) {
+    return new Promise<any>((resolve, reject) => {
+      const url: string = this.domain + "/api/v1/update-anime/";
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Token " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          anime_id: animeId
+        })
+      }).then(async response => {
+        const data = await response.json();
+        if (response.status == 200) {
+          resolve(data.message);
+        } else if (response.status == 400) {
+          resolve(data.error);
+        } else {
+          reject(data);
+        }
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  }
+
+  async updateEpisodeViaScraping(token: string, episodeId: number) {
+    return new Promise<any>((resolve, reject) => {
+      const url: string = this.domain + "/api/v1/update-episode/";
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Token " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          episode_id: episodeId
+        })
+      }).then(async response => {
+        const data = await response.json();
+        if (response.status == 200) {
+          resolve(data.message);
+        } else if (response.status == 400) {
+          resolve(data.error);
+        } else {
+          reject(data);
+        }
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  }
+
 }

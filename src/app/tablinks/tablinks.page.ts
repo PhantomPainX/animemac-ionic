@@ -152,9 +152,9 @@ export class TablinksPage implements OnInit {
       //push tab in position 1
       this.tabs.splice(1, 0, {
         routerPath: 'favorites',
-        label: 'Favoritos',
-        icon: 'heart-outline',
-        iconActive: 'heart'
+        label: 'Mis Listas',
+        icon: 'bookmark-outline',
+        iconActive: 'bookmark'
       });
       await this.localStorage.getUser().then((user) => {
         this.user = user;

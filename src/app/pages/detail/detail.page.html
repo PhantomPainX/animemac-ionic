@@ -14,6 +14,9 @@
             <ion-label>Comentarios</ion-label>
             <ion-toggle slot="end" [checked]="!commentsDisabled" (ionChange)="toggleCommentsDisabled()"></ion-toggle>
           </ion-item>
+          <ion-item button lines="full" detail="true" (click)="updateAnimeViaScraping()">
+            <ion-label>Actualizar por scraping</ion-label>
+          </ion-item>
         </ng-template>
       </ion-popover>
 

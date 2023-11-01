@@ -150,10 +150,10 @@
 
     <ion-spinner color="primary" name="circular" *ngIf="firstSearch"></ion-spinner>
 
-    <ion-icon name="chatbox-ellipses-outline" *ngIf="!firstSearch && replies.length == 0 && isLogged"></ion-icon>
+    <ion-icon color="primary" name="chatbox-ellipses-outline" *ngIf="!firstSearch && replies.length == 0 && isLogged"></ion-icon>
     <p *ngIf="!firstSearch && replies.length == 0 && isLogged">¡Se el primero en responderle a {{ comment.user.username }}!</p>
 
-    <ion-icon name="log-in-outline" *ngIf="!firstSearch && replies.length == 0 && !isLogged"></ion-icon>
+    <ion-icon color="primary" name="log-in-outline" *ngIf="!firstSearch && replies.length == 0 && !isLogged"></ion-icon>
     <p *ngIf="!firstSearch && replies.length == 0 && !isLogged">Inicia sesión para responder</p>
   </div>
 

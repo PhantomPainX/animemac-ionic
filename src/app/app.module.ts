@@ -14,7 +14,7 @@ import * as Hammer from 'hammerjs';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 // import { InAppPurchase2 } from '@awesome-cordova-plugins/in-app-purchase-2/ngx'
 
-import { SuperTabsModule } from '@ionic-super-tabs/angular';
+// import { SuperTabsModule } from '@ionic-super-tabs/angular';
 import { ProvidersPopoverComponent } from './components/providers-popover/providers-popover.component';
 import { EmbedsPopoverComponent } from './components/embeds-popover/embeds-popover.component';
 import { FormsModule } from '@angular/forms';
@@ -57,7 +57,7 @@ sessionStorage.setItem = function () {
       rippleEffect: true,
       mode: 'md'
     }
-  ), AppRoutingModule, HammerModule, SuperTabsModule.forRoot() , FormsModule, LazyLoadImageModule, 
+  ), AppRoutingModule, HammerModule, FormsModule, LazyLoadImageModule, 
   HttpClientModule, ServiceWorkerModule.register('ngsw-worker.js', {
   enabled: !isDevMode(),
   // Register the ServiceWorker as soon as the application is stable

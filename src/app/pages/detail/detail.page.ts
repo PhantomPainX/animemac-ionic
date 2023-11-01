@@ -142,7 +142,7 @@ export class DetailPage implements OnInit {
           crossOrigin: 'anonymous',
           pixels: 10000,
           distance: 0.12,
-          splitPower: 10,
+          // splitPower: 10,
           hueDistance: 0.083,
           saturationDistance: 0.2,
           lightnessDistance: 0.2
@@ -728,6 +728,38 @@ export class DetailPage implements OnInit {
       // this.utils.showToast("Hubo un error al tratar de compartir", 1, false);
       console.log(error);
     });
+  }
+
+  public async updateAnimeViaScraping() {
+
+    if (this.anime.episodios.length >= 25) {
+      const alert = await this.alertCtrl.create({
+        header: 'Lo sentimos',
+        message: 'Para proteger nuestros servidores, solo se pueden actualizar animes con menos de 25 episodios. Si deseas puedes actualizar los episodios manualmente.',
+        mode: 'ios',
+        translucent: true,
+        buttons: [
+          {
+            text: 'Entiendo',
+            role: 'cancel'
+          }
+        ]
+      });
+      await alert.present();
+      return;
+    } else {
+      const loader = await this.utils.createIonicLoader("Espera un momento...");
+      await loader.present();
+      this.database.updateAnimeViaScraping(this.token, this.anime.id).then((message) => {
+        loader.dismiss();
+        if (message) {
+          this.utils.showToast(message, 1, true);
+        }
+      }).catch(error => {
+        loader.dismiss();
+        console.log(error);
+      });
+    }
   }
 
 }

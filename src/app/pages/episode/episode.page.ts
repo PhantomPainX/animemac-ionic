@@ -400,6 +400,27 @@ export class EpisodePage implements OnInit {
       icon: 'close'
     }];
 
+    //add seen button after ver comentarios button
+    if (this.isLogged && this.user.is_staff) {
+      buttons.splice(1, 0, {
+        text: 'Actualizar videos',
+        icon: 'refresh',
+        handler: async () => {
+          const loader = await this.utils.createIonicLoader('Espera un momento...');
+          loader.present();
+          this.database.updateEpisodeViaScraping(this.user.token, episode.id).then((message) => {
+            loader.dismiss();
+            if (message) {
+              this.utils.showToast(message, 1, true);
+            }
+          }).catch(error => {
+            loader.dismiss();
+            console.log(error);
+          });
+        }
+      });
+    }
+
     const actionSheet = await this.actionSheetCtrl.create({
       header: "Episodio " + episode.numero,
       subHeader: this.utils.dateAgo(episode.fecha),

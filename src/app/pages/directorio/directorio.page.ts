@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActionSheetController, IonInfiniteScroll, MenuController, ModalController, NavController, Platform } from '@ionic/angular';
+import { ActionSheetController, IonInfiniteScroll, ModalController, NavController, Platform } from '@ionic/angular';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { EpisodePage } from '../episode/episode.page';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -41,8 +41,7 @@ export class DirectorioPage implements OnInit {
     public actionSheetCtrl: ActionSheetController,
     public utils: UtilsService,
     public platform: Platform,
-    public localStorage: PreferencesService,
-    public menu: MenuController
+    public localStorage: PreferencesService
   ) {
   }
 
@@ -308,10 +307,6 @@ export class DirectorioPage implements OnInit {
       buttons: buttons
     });
     await actionSheet.present();
-  }
-
-  openMenu() {
-    this.menu.open();
   }
 
 }

@@ -9,6 +9,7 @@ import { FavoritesPageRoutingModule } from './favorites-routing.module';
 import { FavoritesPage } from './favorites.page';
 import { SharedDirectivesModule } from 'src/app/directives/shared-directives.module';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
     FavoritesPageRoutingModule,
     SharedDirectivesModule,
     ReactiveFormsModule,
-    LazyLoadImageModule
+    LazyLoadImageModule,
+    ScrollingModule
   ],
   declarations: [FavoritesPage]
 })
