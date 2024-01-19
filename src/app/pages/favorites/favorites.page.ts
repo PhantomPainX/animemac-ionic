@@ -189,6 +189,9 @@ export class FavoritesPage implements OnInit {
       });
       
       if (this.historyResults == undefined) {
+        setTimeout(() => {
+          this.historyInfiniteScroll.disabled = true;
+        }, 1);
         this.getHistoryResults(this.sortName);
       }
 
@@ -288,6 +291,11 @@ export class FavoritesPage implements OnInit {
     this.database.toggleFavoriteAnime(this.user.token, anime.id);
     this.results.splice(index, 1);
     slidingItem.close();
+
+    if (this.results.length == 0) {
+      this.noFavAvailable = true;
+      this.favInfiniteScroll.disabled = true;
+    }
   }
 
 

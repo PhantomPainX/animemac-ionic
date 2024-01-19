@@ -19,7 +19,7 @@
         <ion-toggle slot="end" value="pip" [(ngModel)]="pipToggle" (ionChange)="toggle($event)"></ion-toggle>
       </ion-item>
 
-      <ion-item lines="full">
+      <ion-item lines="full" *ngIf="isAndroidDevice">
         <ion-label>Chromecast</ion-label>
         <ion-toggle slot="end" value="chromecast" [(ngModel)]="chromecastToggle" (ionChange)="toggle($event)"></ion-toggle>
       </ion-item>

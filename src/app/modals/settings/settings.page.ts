@@ -29,6 +29,8 @@ export class SettingsPage implements OnInit {
 
   // Is lite version
   public liteVersion: boolean = environment.liteVersion;
+  
+  public isAndroidDevice: boolean = false;
 
   constructor(public navCtrl: NavController, public platform: Platform, public localStorage: PreferencesService, 
     private sharingService: SharingService) {
@@ -38,9 +40,10 @@ export class SettingsPage implements OnInit {
   ngOnInit() {
     
     this.platform.ready().then(async () => {
-      // if (this.platform.is('android')) {
-      //   this.utils.applyStatusBarHeight(this.toolbar.nativeElement);
-      // }
+      if (this.platform.is('android')) {
+        // this.utils.applyStatusBarHeight(this.toolbar.nativeElement);
+        this.isAndroidDevice = true;
+      }
 
       const settings = await this.localStorage.getSettings();
       if (settings.theme == undefined) {

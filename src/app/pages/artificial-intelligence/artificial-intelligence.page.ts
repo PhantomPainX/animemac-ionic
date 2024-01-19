@@ -139,7 +139,7 @@ export class ArtificialIntelligencePage implements OnInit {
       this.poeService.getInterestingFacts(this.anime_name).then((data: any) => {
         this.interestingFacts = data.interesting_facts;
         if (this.interestingFacts == null) {
-          this.error = "No pude encontrar curiosidades de este anime, disculpa :(";
+          this.error = "No pude encontrar curiosidades de este anime";
         }
         this.gettingData = false;
       }).catch(() => this.cancel());
@@ -151,7 +151,7 @@ export class ArtificialIntelligencePage implements OnInit {
           this.characters[i].imagen = "assets/icon/default.webp";
         }
         if (this.characters == null) {
-          this.error = "No pude encontrar personajes de este anime, disculpa :(";
+          this.error = "No pude encontrar personajes de este anime";
         }
         this.gettingData = false;
       }).catch(() => this.cancel());
@@ -159,7 +159,7 @@ export class ArtificialIntelligencePage implements OnInit {
       this.poeService.getStaff(this.anime_name).then((data: any) => {
         this.staff = data.staff;
         if (this.staff == null) {
-          this.error = "No pude encontrar el staff de este anime, disculpa :(";
+          this.error = "No pude encontrar el staff de este anime";
         }
         this.gettingData = false;
       }).catch(() => this.cancel());
@@ -167,7 +167,7 @@ export class ArtificialIntelligencePage implements OnInit {
       this.poeService.getRelevantEpisodes(this.anime_name).then((data: any) => {
         this.relevantEpisodes = data.relevant_episodes;
         if (this.relevantEpisodes == null) {
-          this.error = "No pude encontrar episodios relevantes de este anime, disculpa :(";
+          this.error = "No pude encontrar episodios relevantes de este anime";
         }
         this.gettingData = false;
       }).catch(() => this.cancel());
@@ -175,7 +175,7 @@ export class ArtificialIntelligencePage implements OnInit {
       this.poeService.getRecommendations(this.anime_name).then((data: any) => {
         this.recommendations = data.recommendations;
         if (this.recommendations == null) {
-          this.error = "No pude encontrar recomendaciones basadas de este anime, disculpa :(";
+          this.error = "No pude encontrar recomendaciones basadas de este anime";
         }
         this.gettingData = false;
       }).catch(() => this.cancel());
@@ -258,7 +258,7 @@ export class ArtificialIntelligencePage implements OnInit {
 
   cancel() {
     this.gettingData = false;
-    this.error = "Ocurrio un error al obtener la información, disculpa :(";
+    this.error = "Ocurrio un error al obtener la información";
   }
 
 }

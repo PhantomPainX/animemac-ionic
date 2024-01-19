@@ -146,13 +146,13 @@
           </ion-button>
         </ion-buttons>
       </ion-item>
-  
-      <ion-infinite-scroll (ionInfinite)="loadMoreHistoryResults($event)" #historyInfiniteScroll>
-        <ion-infinite-scroll-content
-          loadingSpinner="dots">
-        </ion-infinite-scroll-content>
-      </ion-infinite-scroll>
     </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="loadMoreHistoryResults($event)" #historyInfiniteScroll>
+      <ion-infinite-scroll-content
+        loadingSpinner="dots">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   
     <ion-list *ngIf="historyResults == undefined && !noHistoryResults">
       <ion-item detail="false" *ngFor="let item of [].constructor(18); let i = index">

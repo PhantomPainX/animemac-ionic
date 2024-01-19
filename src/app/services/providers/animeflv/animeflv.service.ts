@@ -16,16 +16,16 @@ export class AnimeflvService {
 
     return new Promise<any>(async (resolve, reject) => {
 
-      const animeflv_url = "https://animeflv.ws";
+      const animeflv_url = "https://www1.animeflv.ws";
 
       const isLogged = await this.localStorage.getLogged();
       let name = anime_name.replace(/ /g, "+").toLowerCase();
 
       const options = {
-        url: "https://animeflv.ws/browse?q=" + name,
+        url: "https://www1.animeflv.ws/browse?q=" + name,
         // url: "https://animemac.net/api/cors/",
         // data: {
-        //   url: "https://animeflv.ws/browse?q=" + name,
+        //   url: "https://www1.animeflv.ws/browse?q=" + name,
         // },
         readTimeout: 10000,
         connectTimeout: 10000
