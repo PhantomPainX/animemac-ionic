@@ -23,13 +23,22 @@
     <ion-row>
       <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" class="animate__animated animate__fadeIn" *ngFor="let anime of animes">
 
-        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+        <ion-card button class="anime-grid-card" (click)="goToAnimeDetail(anime)">
           <figure>
             <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
           </figure>
           <ion-card-header>
             <div class="title">
               <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+
+            <div class="components">
+              <p>{{ anime.tipo }}</p>
+              <ion-buttons slot="end">
+                <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                  <ion-icon name="ellipsis-horizontal"></ion-icon>
+                </ion-button>
+              </ion-buttons>
             </div>
           </ion-card-header>
         </ion-card>
@@ -55,13 +64,23 @@
     <ion-row>
       <ion-col size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" class="animate__animated animate__fadeIn" *ngFor="let anime of randomAnimes">
 
-        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+        <ion-card button class="anime-grid-card" (click)="goToAnimeDetail(anime)">
           <figure>
             <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
           </figure>
           <ion-card-header>
             <div class="title">
-              <ion-card-title>{{ anime.nombre }}</ion-card-title>
+              <ion-card-title>
+                {{ anime.nombre }}
+              </ion-card-title>
+            </div>
+            <div class="components">
+              <p>{{ anime.tipo }}</p>
+              <ion-buttons slot="end">
+                <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                  <ion-icon name="ellipsis-horizontal"></ion-icon>
+                </ion-button>
+              </ion-buttons>
             </div>
           </ion-card-header>
         </ion-card>
@@ -83,8 +102,11 @@
           </figure>
           <ion-card-header>
             <div class="title">
-              <ion-skeleton-text style="width: 80%; border-radius: 10px;"></ion-skeleton-text>
-              <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+            </div>
+
+            <div class="components">
+              <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
             </div>
           </ion-card-header>
         </ion-card>

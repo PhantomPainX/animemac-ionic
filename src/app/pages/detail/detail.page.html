@@ -50,11 +50,11 @@
       </ion-popover>
 
       <ion-button shape="round" fill="clear" *ngIf="isLogged && !favorited && !loadingFavorite" (click)="toggleFavorite()">
-        <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="bookmark-outline"></ion-icon>
       </ion-button>
 
       <ion-button shape="round" *ngIf="isLogged && favorited && !loadingFavorite" (click)="toggleFavorite()">
-        <ion-icon slot="icon-only" name="heart"></ion-icon>
+        <ion-icon slot="icon-only" name="bookmark"></ion-icon>
       </ion-button>
 
       <ion-button *ngIf="isLogged && loadingFavorite">

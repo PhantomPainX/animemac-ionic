@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActionSheetController, IonInfiniteScroll, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
+import { ActionSheetController, AlertController, IonInfiniteScroll, IonModal, ItemReorderEventDetail, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
 import { MysqlDatabaseService } from 'src/app/services/mysql-database.service';
 import { EpisodePage } from '../episode/episode.page';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -11,6 +11,7 @@ import { ProvidersPopoverComponent } from 'src/app/components/providers-popover/
 import { WebVideoPlayerPage } from 'src/app/modals/web-video-player/web-video-player.page';
 import { Subscription } from 'rxjs';
 import { SharingService } from 'src/app/core/services/sharing/sharing.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-favorites',
@@ -30,6 +31,8 @@ export class FavoritesPage implements OnInit {
   public sortName: string = '-updated_at';
   public isSortPopoverOpened: boolean = false;
 
+  public presentingElement = null;
+
   // Variables para favoritos
   @ViewChild('favInfiniteScroll') favInfiniteScroll: IonInfiniteScroll;
   @ViewChild('favVirtualScroll', { read: ElementRef }) favVirtualScroll: ElementRef;
@@ -44,11 +47,41 @@ export class FavoritesPage implements OnInit {
   public noHistoryResults: boolean = false;
   public historyPagination: any;
   private episodeTimeSeenChangedSubscription: Subscription;
+  private sortHistoryBackup: string = "";
+
+  // Variables para listas
+  @ViewChild('listsInfiniteScroll') public listsInfiniteScroll: IonInfiniteScroll;
+  @ViewChild('modalCreateList') public modalCreateList: IonModal;
+  public listsResults: any;
+  public noListsResults: boolean = false;
+  private listsPagination: any;
+  private sortListsBackup: string = "";
+  private listsCreateModalAction: number = 1; // 1: Crear, 2: Editar
+  private editListActiveObj: any;
+  public dinamicListCreateModalTitle: string = "Crear lista";
+  public dinamicListCreateModalButton: string = "Crear";
+  public listsReorderDisabled: boolean = true;
+
+  public formList: FormGroup;
 
   constructor(public database: MysqlDatabaseService, public modalCtrl: ModalController, 
     public actionSheetCtrl: ActionSheetController, public utils: UtilsService, public platform: Platform, 
     public navCtrl: NavController, public localStorage: PreferencesService,
-    private popoverCtrl: PopoverController, private sharingService: SharingService) {
+    private popoverCtrl: PopoverController, private sharingService: SharingService, 
+    public formBuilder: FormBuilder, private alertCtrl: AlertController) {
+
+      this.formList = this.formBuilder.group({
+        name: ['', [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(128),
+          Validators.pattern(/^[a-zA-ZáéíóúñÁÉÍÓÚÑ0-9 ]*$/)
+        ]],
+        description: ['', [
+          Validators.maxLength(65535),
+          Validators.pattern(/^[a-zA-ZáéíóúñÁÉÍÓÚÑ ]*$/)
+        ]]
+      });
   }
 
   ngOnInit() {
@@ -56,6 +89,8 @@ export class FavoritesPage implements OnInit {
     setTimeout(() => {
       this.favInfiniteScroll.disabled = true;
     }, 1);
+
+    this.presentingElement = document.querySelector('ion-router-outlet');
 
     this.platform.ready().then(async () => {
 
@@ -101,6 +136,8 @@ export class FavoritesPage implements OnInit {
       await this.updateFavorites();
     } else if (this.segmentValue === 'history') {
       await this.getHistoryResults(this.sortName);
+    } else if (this.segmentValue === 'lists') {
+      await this.getUserLists(this.sortName);
     }
 
     event.target.complete();
@@ -184,6 +221,7 @@ export class FavoritesPage implements OnInit {
     }
     
     if (this.segmentValue === 'history') {
+      this.sortName = this.sortHistoryBackup == "" ? '-updated_at' : this.sortHistoryBackup;
       this.episodeTimeSeenChangedSubscription = this.sharingService.getEpisodeTimeSeen().subscribe(async () => {
         this.getHistoryResults(this.sortName);
       });
@@ -218,6 +256,15 @@ export class FavoritesPage implements OnInit {
           this.favInfiniteScroll.disabled = true;
         }, 1);
       }
+    } else if (this.segmentValue === 'lists') {
+      this.listsReorderDisabled = true;
+      this.sortName = this.sortListsBackup == "" ? '-order' : this.sortListsBackup;
+      if (this.listsResults == undefined) {
+        setTimeout(() => {
+          this.listsInfiniteScroll.disabled = true;
+        }, 1);
+        this.getUserLists(this.sortName);
+      }
     }
   }
 
@@ -231,8 +278,15 @@ export class FavoritesPage implements OnInit {
     this.isSortPopoverOpened = false;
     
     if (this.segmentValue === 'history') {
+      this.historyInfiniteScroll.disabled = true;
       this.historyResults = null;
+      this.sortHistoryBackup = sortName;
       this.getHistoryResults(sortName);
+    } else if (this.segmentValue === 'lists') {
+      this.listsResults = null;
+      this.listsInfiniteScroll.disabled = true;
+      this.sortListsBackup = sortName;
+      this.getUserLists(sortName);
     }
   }
 
@@ -359,7 +413,7 @@ export class FavoritesPage implements OnInit {
     if (this.isLogged) {
       buttons.push({
         text: 'Añadir / Eliminar de favoritos',
-        icon: 'heart',
+        icon: 'bookmark',
         handler: () => {
           this.toggleFavorite(episode.episode_data.anime);
         }
@@ -391,7 +445,7 @@ export class FavoritesPage implements OnInit {
 
       loader.dismiss();
       if (added) {
-        this.utils.showIconToast(anime.nombre+" fue agregado a tus favoritos", "heart", 2);
+        this.utils.showIconToast(anime.nombre+" fue agregado a tus favoritos", "bookmark", 2);
       } else {
         this.utils.showIconToast(anime.nombre+" fue eliminado de tus favoritos", "trash", 2);
       }
@@ -511,6 +565,194 @@ export class FavoritesPage implements OnInit {
         this.historyInfiniteScroll.disabled = false;
       }, 1);
       this.noHistoryResults = false;
+    }
+  }
+
+
+  // Lists methods
+
+  private async getUserLists(ordering: string) : Promise<void> {
+
+    this.fetching = true;
+    await this.database.getUserLists(1, ordering, this.user.token).then(data => {
+      this.listsResults = data.results;
+      this.fetching = false;
+
+      this.listsPagination = {
+        'actualPage': 1,
+        'hasNextPage': data.next != null,
+      }
+    }); // no hay catch porque los errores se controlan en el servicio
+
+    if (this.listsResults.length == 0) {
+      this.noListsResults = true;
+      setTimeout(() => {
+        this.listsInfiniteScroll.disabled = true;
+      }, 1);
+    } else {
+      setTimeout(() => {
+        this.listsInfiniteScroll.disabled = false;
+      }, 1);
+      this.noListsResults = false;
+    }
+  }
+
+  public loadMoreListsResults(event) {
+    if (this.listsPagination.hasNextPage) {
+
+      this.database.getUserLists(this.listsPagination.actualPage + 1, this.sortName, this.user.token).then(data => {
+
+        this.listsResults = this.listsResults.concat(data.results);
+        this.listsPagination = {
+          'actualPage': this.listsPagination.actualPage + 1,
+          'hasNextPage': data.next != null,
+        }
+        event.target.complete();
+      }); // no hay catch porque los errores se controlan en el servicio
+
+    } else {
+      event.target.complete();
+      this.listsInfiniteScroll.disabled = true;
+    }
+  }
+
+  public async saveList() {
+
+    let loaderText = this.listsCreateModalAction == 1 ? "Guardando lista..." : "Editando lista...";
+    const loader = await this.utils.createIonicLoader(loaderText);
+    loader.present();
+
+    switch (this.listsCreateModalAction) {
+      case 1: // Crear
+        await this.database.createUserList(this.user.token, this.formList.value.name, this.formList.value.description).then(data => {
+          this.utils.showToast("Lista creada correctamente", 1, true);
+          this.formList.reset();
+          this.listsResults.unshift(data);
+          this.noListsResults = false;
+          this.modalCreateList.dismiss();
+        }).catch(() => {
+          this.utils.showToast("Ha ocurrido un error, intenta más tarde", 2, false);
+        });
+        break;
+      case 2: // Editar
+        this.database.updateUserList(this.user.token, this.editListActiveObj.id, this.formList.value.name, this.formList.value.description, this.editListActiveObj.order).then(data => {
+          this.utils.showToast("Lista editada correctamente", 1, true);
+          this.formList.reset();
+          const editedIndex = this.listsResults.findIndex(list => list.id == this.editListActiveObj.id);
+          this.listsResults[editedIndex] = data;
+          this.modalCreateList.dismiss();
+        }).catch(() => {
+          this.utils.showToast("Ha ocurrido un error, intenta más tarde", 2, false);
+        });
+        break;
+      default:
+        break;
+    }
+    loader.dismiss();
+  }
+
+  public openModalCreateList() {
+    this.listsCreateModalAction = 1;
+    this.formList.reset();
+    this.dinamicListCreateModalTitle = "Crear lista";
+    this.dinamicListCreateModalButton = "Crear";
+    this.modalCreateList.present();
+  }
+
+  public openList(list: any) {
+    console.log(list);
+  }
+
+  public async openListOptions(list: any) {
+    const subHeaderText = list.anime_quantity + " elementos";
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: list.name,
+      subHeader: subHeaderText,
+      buttons: [
+        {
+          text: "Editar",
+          icon: "create",
+          handler: () => {
+            this.formList.controls['name'].setValue(list.name);
+            this.formList.controls['description'].setValue(list.description);
+            this.listsCreateModalAction = 2;
+            this.editListActiveObj = list;
+            this.dinamicListCreateModalTitle = "Editar lista";
+            this.dinamicListCreateModalButton = "Editar";
+            this.modalCreateList.present();
+          }
+        },
+        {
+          text: "Eliminar",
+          icon: "trash",
+          handler: async () => {
+            const alert = await this.alertCtrl.create({
+              header: "Eliminar lista",
+              message: "¿Estás seguro de que quieres eliminarla?",
+              mode: 'ios',
+              translucent: true,
+              buttons: [
+                {
+                  text: "Cancelar",
+                  role: "cancel"
+                },
+                {
+                  text: "Eliminar",
+                  handler: async () => {
+                    const loader = await this.utils.createIonicLoader("Eliminando...");
+                    loader.present();
+                    this.database.deleteUserList(list.id, this.user.token).then(() => {
+                      this.getUserLists(this.sortName);
+                      this.utils.showToast("Lista eliminada correctamente", 1, true);
+                    }).catch(() => {
+                      this.utils.showToast("Ha ocurrido un error, intenta más tarde", 2, false);
+                    }).finally(() => {
+                      loader.dismiss();
+                    });
+                  }
+                }
+              ]
+            });
+            alert.present();
+          }
+        },
+        {
+          text: "Cerrar",
+          role: "cancel",
+          icon: "close"
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  public async handleListReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+    // The `from` and `to` properties contain the index of the item
+    // when the drag started and ended, respectively
+    console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+    
+    const listToBeMoved = this.listsResults[ev.detail.from];
+    const listToBeMovedTo = this.listsResults[ev.detail.to];
+    this.database.updateUserList(this.user.token, listToBeMoved.id, listToBeMoved.name, listToBeMoved.description, listToBeMovedTo.order).catch(() => {
+      this.utils.showToast("Ha ocurrido un error al intentar reordenar", 1, false);
+      this.listsReorderDisabled = true;
+    });
+
+    this.database.updateUserList(this.user.token, listToBeMovedTo.id, listToBeMovedTo.name, listToBeMovedTo.description, listToBeMoved.order).catch(() => {
+      this.utils.showToast("Ha ocurrido un error al intentar reordenar", 1, false);
+      this.listsReorderDisabled = true;
+    });
+
+    ev.detail.complete();
+  }
+
+  public toggleListsReorder() {
+    this.listsReorderDisabled = !this.listsReorderDisabled;
+
+    if (this.listsReorderDisabled) {
+      this.utils.showToast("Reorden desactivado", 1, false);
+    } else {
+      this.utils.showToast("Reorden activado", 1, true);
     }
   }
 }

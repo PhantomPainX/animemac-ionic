@@ -111,7 +111,7 @@
   [breakpoints]="animeSwiperBreakpoints" 
   #swiperContainerBroadcast
   class="animate__animated animate__fadeIn" style="margin-left: 15px;" *ngIf="inBroadcast != undefined">
-    <swiper-slide *ngFor="let anime of inBroadcast" (click)="openAnimeOptions(anime)">
+    <swiper-slide *ngFor="let anime of inBroadcast" (click)="goToAnimeDetail(anime)">
       <div class="animeCard ion-activatable ripple-parent rounded-rectangle">
         <ion-ripple-effect></ion-ripple-effect>
 
@@ -119,8 +119,15 @@
           <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
         </div>
         <div class="info">
-          <div class="title">
-            <h4>{{ anime.nombre }}</h4>
+          <div class="title-button">
+            <div class="title">
+              <h4>{{ anime.nombre }}</h4>
+            </div>
+            <ion-buttons slot="end">
+              <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                <ion-icon name="ellipsis-horizontal"></ion-icon>
+              </ion-button>
+            </ion-buttons>
           </div>
           <p>{{anime.tipo}} • {{anime.estreno}}</p>
 
@@ -209,7 +216,7 @@
         </ion-button>
 
         <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
-          <ion-icon name="ellipsis-vertical"></ion-icon>
+          <ion-icon name="ellipsis-horizontal"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-item>
@@ -274,7 +281,7 @@
   [breakpoints]="animeSwiperBreakpoints" 
   #swiperContainerLatestAnimes
   style="margin-left: 15px;" *ngIf="latestAnimes != undefined" class="animate__animated animate__fadeIn">
-    <swiper-slide *ngFor="let anime of latestAnimes" (click)="openAnimeOptions(anime)">
+    <swiper-slide *ngFor="let anime of latestAnimes" (click)="goToAnimeDetail(anime)">
       <div class="animeCard ion-activatable ripple-parent rounded-rectangle">
         <ion-ripple-effect></ion-ripple-effect>
 
@@ -282,8 +289,15 @@
           <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
         </div>
         <div class="info">
-          <div class="title">
-            <h4>{{ anime.nombre }}</h4>
+          <div class="title-button">
+            <div class="title">
+              <h4>{{ anime.nombre }}</h4>
+            </div>
+            <ion-buttons slot="end">
+              <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                <ion-icon name="ellipsis-horizontal"></ion-icon>
+              </ion-button>
+            </ion-buttons>
           </div>
           <p>{{anime.tipo}} • {{anime.estreno}} • {{ anime.estado }}</p>
 
@@ -356,13 +370,22 @@
   <ion-grid class="anime-grid" *ngIf="latestLatino != undefined">
     <ion-row>
       <ion-col class="animate__animated animate__fadeIn" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let anime of latestLatino">
-        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+        <ion-card button class="anime-grid-card" (click)="goToAnimeDetail(anime)">
           <figure>
             <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
           </figure>
           <ion-card-header>
             <div class="title">
               <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+
+            <div class="components">
+              <p>{{ anime.tipo }}</p>
+              <ion-buttons slot="end">
+                <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                  <ion-icon name="ellipsis-horizontal"></ion-icon>
+                </ion-button>
+              </ion-buttons>
             </div>
           </ion-card-header>
         </ion-card>
@@ -381,8 +404,11 @@
             </figure>
             <ion-card-header>
               <div class="title">
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+              </div>
+
+              <div class="components">
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
               </div>
             </ion-card-header>
           </ion-card>
@@ -421,13 +447,22 @@
     <ion-row>
       <ion-col class="animate__animated animate__fadeIn" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let anime of latestSeries">
 
-        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(anime)">
+        <ion-card button class="anime-grid-card" (click)="goToAnimeDetail(anime)">
           <figure>
             <img defaultImage="{{ domain }}{{ anime.image_thumbnail }}" lazyLoad="{{ anime.imagen }}">
           </figure>
           <ion-card-header>
             <div class="title">
               <ion-card-title>{{ anime.nombre }}</ion-card-title>
+            </div>
+
+            <div class="components">
+              <p>{{ anime.tipo }}</p>
+              <ion-buttons slot="end">
+                <ion-button shape="round" color="primary" (click)="openAnimeOptions(anime); $event.stopPropagation();">
+                  <ion-icon name="ellipsis-horizontal"></ion-icon>
+                </ion-button>
+              </ion-buttons>
             </div>
           </ion-card-header>
         </ion-card>
@@ -446,8 +481,11 @@
             </figure>
             <ion-card-header>
               <div class="title">
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+              </div>
+
+              <div class="components">
+                <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
               </div>
             </ion-card-header>
           </ion-card>

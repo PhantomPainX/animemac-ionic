@@ -58,6 +58,10 @@ export class MysqlDatabaseService {
   public amrGetAnimesByYear: boolean = false;
   public amrCheckAndroidVersion: boolean = false;
   public amrGetSeenEpisodesHistory: boolean = false;
+  public amrGetUserLists: boolean = false;
+  public amrCreateUserList: boolean = false;
+  public amrUpdateUserList: boolean = false;
+  public amrDeleteUserList: boolean = false;
 
 
   constructor(
@@ -1405,6 +1409,158 @@ export class MysqlDatabaseService {
         }
       }).catch((err) => {
         reject(err);
+      });
+    });
+  }
+
+  public getUserLists(page: number, ordering: string, token: string) {
+    return new Promise<any>((resolve) => {
+      const url = this.domain + "/api/v1/lists/?ordering="+ordering+"&page=" + page;
+
+      let headers = {
+        Authorization: 'Token ' + token
+      }
+      fetch(url, {
+        method: 'GET',
+        headers: headers
+
+      }).then(
+        response => response.json()
+
+      ).then(data => {
+          resolve(data);
+      }).catch(() => {
+        if (!this.amrGetUserLists) {
+          this.amrGetUserLists = true;
+          const interval = setInterval(() => {
+            this.getUserLists(page, ordering, token).then(data => {
+              resolve(data);
+              clearInterval(interval);
+              this.amrGetUserLists = false;
+            }).catch(() => {
+              clearInterval(interval);
+            });
+          }, 3000);
+        }
+      });
+    });
+  }
+
+  public createUserList(token: string, name: string, description: string) {
+    return new Promise<any>((resolve) => {
+      const url = this.domain + "/api/v1/lists/";
+
+      let headers = {
+        Authorization: 'Token ' + token,
+        "Content-Type": "application/json"
+      }
+      fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          name: name,
+          description: description,
+          public: false
+        })
+
+      }).then(
+        response => response.json()
+
+      ).then(data => {
+          resolve(data);
+      }).catch(() => {
+        if (!this.amrCreateUserList) {
+          this.amrCreateUserList = true;
+          const interval = setInterval(() => {
+            this.createUserList(token, name, description).then(data => {
+              resolve(data);
+              clearInterval(interval);
+              this.amrCreateUserList = false;
+            }).catch(() => {
+              clearInterval(interval);
+            });
+          }, 3000);
+        }
+      });
+    });
+  }
+
+  public updateUserList(token: string, listId: number, name: string, description: string, order: number) {
+    return new Promise<any>((resolve) => {
+      const url = this.domain + "/api/v1/lists/" + listId + "/";
+
+      let headers = {
+        Authorization: 'Token ' + token,
+        "Content-Type": "application/json"
+      }
+      fetch(url, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({
+          name: name,
+          description: description,
+          order: order,
+        })
+
+      }).then(
+        response => response
+
+      ).then(async data => {
+          const json = await data.json();
+          if (data.status === 200) {
+            resolve(json);
+          } else {
+            resolve(false);
+          }
+      }).catch(() => {
+        if (!this.amrUpdateUserList) {
+          this.amrUpdateUserList = true;
+          const interval = setInterval(() => {
+            this.updateUserList(token, listId, name, description, order).then(data => {
+              resolve(data);
+              clearInterval(interval);
+              this.amrUpdateUserList = false;
+            }).catch(() => {
+              clearInterval(interval);
+            });
+          }, 3000);
+        }
+      });
+    });
+  }
+
+  deleteUserList(listId: number, token: string) : Promise<any> {
+    return new Promise<any>((resolve) => {
+      const url = this.domain + "/api/v1/lists/" + listId + "/";
+
+      fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Token ' + token
+        }
+      }).then(response => response)
+      .then(async data => {
+        if (data.status === 204) {
+          resolve(true);
+
+        } else if (data.status == 403) {
+          resolve(false);
+        } else {
+          resolve(false);
+        }
+      }).catch(() => {
+        if (!this.amrDeleteUserList) {
+          this.amrDeleteUserList = true;
+          const interval = setInterval(() => {
+            this.deleteUserList(listId, token).then(data => {
+              resolve(data);
+              clearInterval(interval);
+              this.amrDeleteUserList = false;
+            }).catch(() => {
+              clearInterval(interval);
+            });
+          }, 3000);
+        }
       });
     });
   }

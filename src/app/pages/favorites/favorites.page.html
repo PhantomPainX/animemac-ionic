@@ -12,21 +12,39 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button shape="round" color="primary" (click)="openSortPopover($event)" [disabled]="fetching || noHistoryResults || noFavAvailable || segmentValue === 'favorites' || segmentValue === 'lists'">
+      <ion-button shape="round" color="primary" (click)="toggleListsReorder()" *ngIf="segmentValue === 'lists'" [disabled]="fetching || noListsResults">
+        <ion-icon name="swap-vertical-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button shape="round" color="primary" (click)="openSortPopover($event)" [disabled]="fetching || segmentValue === 'favorites'">
         <ion-icon slot="start" name="filter-outline"></ion-icon>
       </ion-button>
 
       <ion-popover #sortPopover [isOpen]="isSortPopoverOpened" (didDismiss)="isSortPopoverOpened = false">
         <ng-template>
-          <ion-item lines="full" button (click)="sort('-updated_at')" [disabled]="sortName == '-updated_at'">
+          <!-- De historial [INICIO] -->
+          <ion-item lines="full" button (click)="sort('-updated_at')" [disabled]="sortName == '-updated_at'" *ngIf="segmentValue === 'history'">
             <p>Recientes</p>
             <ion-checkbox slot="end" [checked]="sortName == '-updated_at'"></ion-checkbox>
           </ion-item>
 
-          <ion-item lines="full" button (click)="sort('updated_at')" [disabled]="sortName == 'updated_at'">
+          <ion-item lines="full" button (click)="sort('updated_at')" [disabled]="sortName == 'updated_at'" *ngIf="segmentValue === 'history'">
             <p>Antiguos</p>
             <ion-checkbox slot="end" [checked]="sortName == 'updated_at'"></ion-checkbox>
           </ion-item>
+          <!-- De historial [FIN] -->
+
+          <!-- De listas [INICIO] -->
+          <ion-item lines="full" button (click)="sort('-order')" [disabled]="sortName == '-order'" *ngIf="segmentValue === 'lists'">
+            <p>Ascendente</p>
+            <ion-checkbox slot="end" [checked]="sortName == '-order'"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="full" button (click)="sort('order')" [disabled]="sortName == 'order'" *ngIf="segmentValue === 'lists'">
+            <p>Descendente</p>
+            <ion-checkbox slot="end" [checked]="sortName == 'order'"></ion-checkbox>
+          </ion-item>
+          <!-- De listas [FIN] -->
         </ng-template>
       </ion-popover>
     </ion-buttons>
@@ -54,7 +72,7 @@
 <!-- <ion-content fullscreen scrollEvents="true" [appHideHeader]="header"> -->
 <ion-content fullscreen>
 
-  <ion-refresher [disabled]="fetching || segmentValue === 'lists'" slot="fixed" (ionRefresh)="toggleRefresh($event)">
+  <ion-refresher [disabled]="fetching" slot="fixed" (ionRefresh)="toggleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
@@ -64,7 +82,7 @@
   
     <ion-list *ngIf="results.length > 0" class="favorites-ion-list" style="padding: 0;">
       <ion-item-sliding #slidingItem *ngFor="let result of results; let i = index">
-        <ion-item button class="animate__animated animate__fadeIn animate__faster" (click)="openAnimeOptions(result.anime)">
+        <ion-item button class="animate__animated animate__fadeIn animate__faster" (click)="goToAnimeDetail(result.anime)">
           
           <img class="cover" defaultImage="{{ domain }}{{ result.anime.image_thumbnail }}" lazyLoad="{{ result.anime.imagen }}">
           <ion-label>
@@ -72,6 +90,12 @@
             <p>Tipo: {{ result.anime.tipo }}</p>
             <p>Estreno: {{ result.anime.estreno }}</p>
           </ion-label>
+
+          <ion-buttons slot="end">
+            <ion-button shape="round" color="primary" (click)="openAnimeOptions(result.anime); $event.stopPropagation();">
+              <ion-icon name="ellipsis-horizontal"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-item>
   
         <ion-item-options side="end" (ionSwipe)="deleteFavorite(result.anime, i, slidingItem)">
@@ -104,7 +128,7 @@
   </div>
 
   <div class="centerInfo" *ngIf="segmentValue === 'favorites' && noFavAvailable">
-    <ion-icon name="heart" color="primary"></ion-icon>
+    <ion-icon name="bookmark" color="primary"></ion-icon>
     <p>Agrega algunos animes favoritos</p>
   </div>
 
@@ -142,7 +166,7 @@
           </ion-button>
   
           <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
-            <ion-icon name="ellipsis-vertical"></ion-icon>
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-item>
@@ -187,12 +211,113 @@
   </div>
 
   <!------------------- Página de Listas ------------------->
-  <div class="centerInfo" *ngIf="segmentValue === 'lists'">
-    <ion-icon name="hourglass-outline" color="primary"></ion-icon>
-    <p>Próximamente</p>
+
+  <div *ngIf="segmentValue === 'lists'">
+
+    <ion-list *ngIf="listsResults != undefined && !noListsResults">
+      <ion-reorder-group [disabled]="listsReorderDisabled" (ionItemReorder)="handleListReorder($any($event))">
+        <ion-item button (click)="openList(list)" class="animate__animated animate__fadeIn animate__faster" *ngFor="let list of listsResults" style="margin-bottom: 10px">
+
+          <ion-reorder slot="start"></ion-reorder>
+          <ion-label>
+            <h4>{{ list.name }}</h4>
+            <p>{{ list.description }}</p>
+            <p>{{ list.anime_quantity }} elementos • Actualizado el {{ list.updated_at | date: 'dd/MM/yyyy' }}</p>
+          </ion-label>
+    
+          <ion-buttons slot="end">
+            <ion-button shape="round" color="primary" (click)="openListOptions(list); $event.stopPropagation();">
+              <ion-icon name="ellipsis-horizontal"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-reorder-group>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="loadMoreListsResults($event)" #listsInfiniteScroll>
+      <ion-infinite-scroll-content
+        loadingSpinner="dots">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  
+    <ion-list *ngIf="listsResults == undefined && !noListsResults">
+      <ion-item detail="false" *ngFor="let item of [].constructor(18); let i = index">
+        <ion-buttons slot="end">
+  
+          <ion-button>
+            <ion-skeleton-text style="width: 15px; border-radius: 10px;"></ion-skeleton-text>
+          </ion-button>
+        </ion-buttons>
+  
+        <ion-label>
+          <ion-skeleton-text style="width: 100%; border-radius: 10px;"></ion-skeleton-text>
+          <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+          <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  
+
+    <ion-modal #modalCreateList mode="ios" [presentingElement]="presentingElement">
+      <ng-template>
+        <ion-header mode="md">
+          <ion-toolbar>
+            <ion-title>{{ dinamicListCreateModalTitle }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="modalCreateList.dismiss()" color="primary">
+                <ion-icon slot="icon-only" name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content mode="md">
+          <form [formGroup]="formList" (ngSubmit)="saveList()" class="formLista">
+            <ion-list style="background: transparent">
+
+              <ion-input 
+              fill="solid" 
+              shape="round"
+              label="Nombre"
+              label-placement="floating" 
+              type="text"
+              helperText="5 caracteres mínimo"
+              [clearInput]="true"
+              [counter]="true"
+              maxlength="128"
+              formControlName="name"></ion-input>
+
+              <ion-textarea 
+              label="Descripción" 
+              labelPlacement="floating" 
+              fill="solid" 
+              shape="round"
+              [counter]="true"
+              maxlength="65535"
+              [autoGrow]="true"
+              placeholder="Ingresa una descripción para tu lista"
+              formControlName="description"></ion-textarea>
+
+              <ion-button [disabled]="!formList.valid" expand="block"  shape="round" type="submit">{{ dinamicListCreateModalButton }}</ion-button>
+            </ion-list>
+          </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+  <div class="centerInfo" *ngIf="segmentValue === 'lists' && noListsResults">
+    <ion-icon class="big-icon" name="albums-outline" color="primary"></ion-icon>
+    <p>¡Organiza tus animes de forma sencilla en listas!</p>
     <p class="info">
-      Las listas son una forma de organizar tus animes, por ejemplo, puedes crear una lista llamada "Animes que quiero ver" y agregar todos los que te interesen.
+      <ion-button shape="round" color="primary" (click)="openModalCreateList()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Crear lista
+      </ion-button>
     </p>
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="segmentValue === 'lists' && !noListsResults">
+    <ion-fab-button (click)="openModalCreateList()"><ion-icon name="add"></ion-icon></ion-fab-button>
+  </ion-fab>
 
 </ion-content>

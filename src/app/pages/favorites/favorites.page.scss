@@ -1,4 +1,26 @@
+ion-modal {
+    ion-header {
+        ion-toolbar {
+            --padding-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    }
+}
+
 ion-content {
+
+    .formLista {
+        margin: 10px;
+
+        ion-input {
+            margin-bottom: 15px;
+        }
+
+        ion-textarea {
+            margin-bottom: 15px;
+        }
+    }
+
     .centerInfo {
         display: flex;
         justify-content: center;
@@ -12,8 +34,12 @@ ion-content {
             margin: 0 20px;
         }
 
-        ion-icon {
+        ion-icon.big-icon {
             font-size: 50px;
+        }
+
+        ion-fab {
+            margin-bottom: 60px;
         }
     }
 

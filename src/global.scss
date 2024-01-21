@@ -249,25 +249,44 @@ ion-card.anime-grid-card {
     }
 
     ion-card-header {
-        padding: 10px 5px 10px 5px;
+        padding: 10px 5px 0px 5px;
 
         .title {
             font-size: 13px;
-            text-align: center;
+            text-align: start;
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
 
             ion-skeleton-text {
-                margin: 5px auto;
+                margin: 5px 1px;
                 border-radius: 10px;
             }
 
             ion-card-title {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
                 font-weight: normal;
+            }
+        }
+
+        .components {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+
+            ion-skeleton-text {
+                margin: 5px 1px;
+                border-radius: 10px;
+            }
+
+            p {
+                font-size: 0.7rem;
+                margin: 0;
+                color: var(--ion-color-primary);
             }
         }
     }

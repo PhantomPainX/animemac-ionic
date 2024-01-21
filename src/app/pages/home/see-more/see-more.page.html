@@ -68,13 +68,21 @@
     <ion-row *ngIf="results != undefined">
       <ion-col class="animate__animated animate__fadeIn animate__faster" size="6" size-sm="3" size-md="3" size-lg="2" size-xl="1.5" *ngFor="let result of results">
 
-        <ion-card button class="anime-grid-card" (click)="openAnimeOptions(result)">
+        <ion-card button class="anime-grid-card" (click)="goToAnimeDetail(result)">
           <figure>
             <img defaultImage="{{ domain }}{{ result.image_thumbnail }}" lazyLoad="{{ result.imagen }}">
           </figure>
           <ion-card-header>
             <div class="title">
               <ion-card-title>{{ result.nombre }}</ion-card-title>
+            </div>
+            <div class="components">
+              <p>{{ result.tipo }}</p>
+              <ion-buttons slot="end">
+                <ion-button shape="round" color="primary" (click)="openAnimeOptions(result); $event.stopPropagation();">
+                  <ion-icon name="ellipsis-horizontal"></ion-icon>
+                </ion-button>
+              </ion-buttons>
             </div>
           </ion-card-header>
         </ion-card>
@@ -96,8 +104,11 @@
           </figure>
           <ion-card-header>
             <div class="title">
-              <ion-skeleton-text style="width: 80%; border-radius: 10px;"></ion-skeleton-text>
-              <ion-skeleton-text style="width: 60%; border-radius: 10px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+            </div>
+
+            <div class="components">
+              <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
             </div>
           </ion-card-header>
         </ion-card>
@@ -126,7 +137,7 @@
         </ion-button>
 
         <ion-button shape="round" color="primary" (click)="openEpisodeOptions(episode)">
-          <ion-icon name="ellipsis-vertical"></ion-icon>
+          <ion-icon name="ellipsis-horizontal"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-item>

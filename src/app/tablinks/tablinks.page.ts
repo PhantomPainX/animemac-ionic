@@ -114,7 +114,7 @@ export class TablinksPage implements OnInit {
   ngOnInit() {
     this.platform.ready().then(async () => {
       // Android App Check Correct Version
-      if (this.platform.is('android')) {
+      if (this.platform.is('android') && this.platform.is('capacitor')) {
         if (!this.liteVersion) {
           this.database.checkAndroidVersion().then((res) => {
             if (res) {

@@ -224,7 +224,7 @@ export class DirectorioPage implements OnInit {
 
       loader.dismiss();
       if (added) {
-        this.utils.showIconToast(anime.nombre+" fue agregado a tus favoritos", "heart", 2);
+        this.utils.showIconToast(anime.nombre+" fue agregado a tus favoritos", "bookmark", 2);
       } else {
         this.utils.showIconToast(anime.nombre+" fue eliminado de tus favoritos", "trash", 2);
       }
@@ -289,7 +289,7 @@ export class DirectorioPage implements OnInit {
     if (this.isLogged) {
       buttons.push({
         text: 'Añadir / Eliminar de favoritos',
-        icon: 'heart',
+        icon: 'bookmark',
         handler: () => {
           this.toggleFavorite(anime);
         }
